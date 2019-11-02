@@ -57,27 +57,6 @@
                         required: true,
                         email: true
                     },
-                    phone: {
-                        required: true,
-                        number: true,
-                        rangelength: [3, 15]
-                    },
-                    fullname: {
-                        id_zh: true,
-                        required: true
-                    },
-                    gender: {
-                        required: true,
-                        min: 1
-                    },
-                    schoolnum: {
-                        id: true,
-                        required: true
-                    },
-                    nativeplace: {
-                        id_zh: true,
-                        required: true
-                    },
                     tnc: {
                         required: true
                     }
@@ -99,29 +78,9 @@
                         required: "请输入邮箱",
                         email: "邮箱格式不正确"
                     },
-                    phone: {
-                        required: "请输入电话",
-                        number: "电话格式不正确",
-                        rangelength: "电话格式不正确"
-                    },
-                    fullname: {
-                        required: "请输入姓名"
-                    },
-                    gender: {
-                        required: "请选择性别",
-                        min: "请选择性别"
-                    },
-                    schoolnum: {
-                        id: "学号只能包含英文、数字、下划线",
-                        required: "请输入学号"
-                    },
-                    nativeplace: {
-                        id_zh: "籍贯只能包含英文、数字、下划线、中文",
-                        required: "请输入籍贯"
-                    },
                     tnc: {
                         required: "请先同意条款"
-                    },
+                    }
                 },
 
                 highlight: function(element) { // hightlight error inputs

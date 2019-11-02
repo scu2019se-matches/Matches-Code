@@ -44,24 +44,20 @@
                             <form id="reg_form" class="register-form" method="post">
                                 <input type="hidden" name="action" value="register">
                                 <div class="form-group">
-                                    <label>用户名</label>
-                                    <input name="username" type="text" class="form-control" placeholder="User Name">
-                                </div>
-                                <div class="form-group">
-                                    <label>密码</label>
-                                    <input name="password" id="register_password" type="password" class="form-control" placeholder="Password">
-                                </div>
-                                <div class="form-group">
-                                    <label>确认密码</label>
-                                    <input name="rpassword" type="password" class="form-control" placeholder="Repeat Password">
-                                </div>
-                                <div class="form-group">
-                                    <label>邮箱</label>
+                                    <label>* 邮箱</label>
                                     <input name="email" type="text" class="form-control" placeholder="Email Address">
                                 </div>
                                 <div class="form-group">
-                                    <label>电话</label>
-                                    <input name="phone" type="text" class="form-control" placeholder="Phone Number">
+                                    <label>* 用户名</label>
+                                    <input name="username" type="text" class="form-control" placeholder="User Name">
+                                </div>
+                                <div class="form-group">
+                                    <label>* 密码</label>
+                                    <input name="password" id="register_password" type="password" class="form-control" placeholder="Password">
+                                </div>
+                                <div class="form-group">
+                                    <label>* 确认密码</label>
+                                    <input name="rpassword" type="password" class="form-control" placeholder="Repeat Password">
                                 </div>
                                 <div class="form-group">
                                     <label>姓名</label>
@@ -74,14 +70,6 @@
                                             <option value="1">男</option>
                                             <option value="2">女</option>
                                         </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>学号</label>
-                                    <input name="schoolnum" type="text" class="form-control" placeholder="School Number">
-                                </div>
-                                <div class="form-group">
-                                    <label>籍贯</label>
-                                    <input name="nativeplace" type="text" class="form-control" placeholder="Native Place">
                                 </div>
                                 <div class="checkbox">
                                     <label id="register_tnc">
