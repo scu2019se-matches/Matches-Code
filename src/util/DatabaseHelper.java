@@ -2,7 +2,7 @@ package util;
 
 import java.sql.*;
 
-public class DatabaseHelper
+public class DatabaseHelper implements AutoCloseable
 {
     // 数据库IP
     private static final String DB_IP = "127.0.0.1";
@@ -30,22 +30,8 @@ public class DatabaseHelper
             e.printStackTrace();
         }
         try {
-
             conn = DriverManager.getConnection(DB_URL, DB_USR, DB_PASS);
             st = conn.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 关闭连接
-     */
-    public void dispose()
-    {
-        try {
-            st.close();
-            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,5 +69,19 @@ public class DatabaseHelper
             e.printStackTrace();
         }
         return ret;
+    }
+
+    /**
+     * 关闭数据库连接
+     */
+    @Override
+    public void close() {
+        System.out.println("close");
+        try {
+            st.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

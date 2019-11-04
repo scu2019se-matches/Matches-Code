@@ -21,43 +21,42 @@ public class QueryBuilder{
     private static JSONObject dbconfig;
 
     static{
+        dbconfig = new JSONObject();
         String sql = String.format(
                 "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE " +
                 "FROM information_schema.COLUMNS " +
                 "WHERE TABLE_SCHEMA = '%s'", DatabaseHelper.DB_NAME);
-        DatabaseHelper db = new DatabaseHelper();
-        ResultSet rs = db.executeQuery(sql);
-        dbconfig = new JSONObject();
-        try {
-            while(rs.next()){
-                String tableName = rs.getString("TABLE_NAME");
-                String columnName = rs.getString("COLUMN_NAME");
-                String dataType = rs.getString("DATA_TYPE");
-                if(!dbconfig.has(tableName)){
-                    dbconfig.put(tableName, new JSONObject());
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs = db.executeQuery(sql);
+            try {
+                while(rs.next()){
+                    String tableName = rs.getString("TABLE_NAME");
+                    String columnName = rs.getString("COLUMN_NAME");
+                    String dataType = rs.getString("DATA_TYPE");
+                    if(!dbconfig.has(tableName)){
+                        dbconfig.put(tableName, new JSONObject());
+                    }
+                    DataType dataTypeId = DataType.None;
+                    switch(dataType.toLowerCase()){
+                        case "tinyint":case "smallint":case "mediumint":
+                        case "int":case "integer":case "bigint":
+                            dataTypeId = DataType.Integer;
+                            break;
+                        case "char":case "varchar":case "tinytext":
+                        case "text":case "mediumtext":case "longtext":
+                            dataTypeId = DataType.Text;
+                            break;
+                        default:
+                            System.out.printf("不支持的字段类型\"%s\"\n", dataType);
+                            throw new NotImplementedException();
+                    }
+                    dbconfig.getJSONObject(tableName).put(columnName, dataTypeId);
                 }
-                DataType dataTypeId = DataType.None;
-                switch(dataType.toLowerCase()){
-                    case "tinyint":case "smallint":case "mediumint":
-                    case "int":case "integer":case "bigint":
-                        dataTypeId = DataType.Integer;
-                        break;
-                    case "char":case "varchar":case "tinytext":
-                    case "text":case "mediumtext":case "longtext":
-                        dataTypeId = DataType.Text;
-                        break;
-                    default:
-                        System.out.printf("不支持的字段类型\"%s\"\n", dataType);
-                        throw new NotImplementedException();
-                }
-                dbconfig.getJSONObject(tableName).put(columnName, dataTypeId);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } finally {
-            db.dispose();
         }
         System.out.println(dbconfig.toString());
     }

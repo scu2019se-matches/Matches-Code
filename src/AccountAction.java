@@ -94,24 +94,24 @@ public class AccountAction extends HttpServlet
         queryBuilder.clear();
         queryBuilder.set("email", email);
         queryBuilder.set("password", password);
-        DatabaseHelper db = new DatabaseHelper();
-        String sql=queryBuilder.getSelectStmt();
-        rs = db.executeQuery(sql);
-        if(!rs.next()) {
-            session.setAttribute("login_errno", 3);
-            session.setAttribute("login_msg", "邮箱或密码错误");
-            response.sendRedirect("login.jsp");
-            db.dispose();
-            return;
+
+        try(DatabaseHelper db = new DatabaseHelper()){
+            String sql=queryBuilder.getSelectStmt();
+            rs = db.executeQuery(sql);
+            if(!rs.next()) {
+                session.setAttribute("login_errno", 3);
+                session.setAttribute("login_msg", "邮箱或密码错误");
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            session.setAttribute("id", Integer.toString(rs.getInt("id")));
+            session.setAttribute("username", rs.getString("username"));
+            session.setAttribute("email", rs.getInt("email"));
+            session.setAttribute("login_time", System.currentTimeMillis());
+            session.setAttribute("check", 1L); // reserved
+            session.setAttribute("login_errno", 0);
         }
 
-        session.setAttribute("id", Integer.toString(rs.getInt("id")));
-        session.setAttribute("username", rs.getString("username"));
-        session.setAttribute("email", rs.getInt("email"));
-        db.dispose();
-        session.setAttribute("login_time", System.currentTimeMillis());
-        session.setAttribute("check", 1L); // reserved
-        session.setAttribute("login_errno", 0);
         response.sendRedirect("index.jsp");
     }
 
@@ -134,28 +134,30 @@ public class AccountAction extends HttpServlet
 
         QueryBuilder q = new QueryBuilder("user");
         JSONObject res = new JSONObject();
-        DatabaseHelper db = new DatabaseHelper();
         boolean flag = true;
 
         q.set("email", request.getParameter("email"));
-        ResultSet rs = db.executeQuery(q.getSelectStmt());
-        if(rs.next())
-        {
-            res.put("register_errno", 2);
-            res.put("register_msg", String.format("邮箱\"%s\"已经注册", q.get("email")));
-            flag = false;
+
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs = db.executeQuery(q.getSelectStmt());
+            if(rs.next())
+            {
+                res.put("register_errno", 2);
+                res.put("register_msg", String.format("邮箱\"%s\"已经注册", q.get("email")));
+                flag = false;
+            }
+            if(flag)
+            {
+                q.set("username", request.getParameter("username"));
+                q.set("fullname", request.getParameter("fullname"));
+                q.set("gender", Integer.parseInt(request.getParameter("gender")));
+                String password = request.getParameter("password");
+                q.set("password", MD5Util.MD5(password));
+                db.execute(q.getInsertStmt());
+                res.put("register_errno", 0);
+            }
         }
-        if(flag)
-        {
-            q.set("username", request.getParameter("username"));
-            q.set("fullname", request.getParameter("fullname"));
-            q.set("gender", Integer.parseInt(request.getParameter("gender")));
-            String password = request.getParameter("password");
-            q.set("password", MD5Util.MD5(password));
-            db.execute(q.getInsertStmt());
-            res.put("register_errno", 0);
-        }
-        db.dispose();
+
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         out.print(res);
