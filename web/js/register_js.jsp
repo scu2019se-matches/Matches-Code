@@ -109,16 +109,17 @@
         };
 
         var register_btn_onClick = function() {
-            if(!$("#reg_form").valid())return;
+            console.log("register_btn_onClick");
+            if(!$("#reg_form").valid()){
+                console.log("register_btn_onClick valid failed");
+                return;
+            }
             url = "<%=request.getContextPath()%>/AccountAction?action=register";
             url += "&username="+reg_form.username.value;
             url += "&password="+reg_form.password.value;
             url += "&email="+reg_form.email.value;
-            url += "&phone="+reg_form.phone.value;
             url += "&fullname="+reg_form.fullname.value;
             url += "&gender="+reg_form.gender.value;
-            url += "&schoolnum="+reg_form.schoolnum.value;
-            url += "&nativeplace="+reg_form.nativeplace.value;
             console.log(url);
             $.post(url, function(result){
                 console.log("register callback");

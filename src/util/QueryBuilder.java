@@ -1,154 +1,188 @@
 package util;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.ranges.Range;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.io.*;
+import java.security.InvalidParameterException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+
 /**
  * Created by silenus on 2019/11/2.
  */
 
-abstract class QueryBuilderBase {
+public class QueryBuilder{
 
-    protected static final int INUL = 0x80000000;
+    private static JSONObject dbconfig;
 
-    protected static final String SNUL = null;
-
-    protected static boolean isNull(String arg)
-    {
-        return arg == SNUL;
-    }
-
-    protected static boolean isNull(int arg)
-    {
-        return arg == INUL;
-    }
-
-    public abstract String getTableName();
-
-    public abstract void reset();
-    public abstract String getSelectStmt();
-    public abstract String getUpdateStmt();
-    public abstract String getInsertStmt();
-    public abstract String getDeleteStmt();
-}
-
-public class QueryBuilder extends QueryBuilderBase {
-
-    private int id = INUL;
-    public int getId(){return id;}
-    public void setId(int value){id = value;}
-
-    private String username = SNUL;
-    public String getUsername(){return username;}
-    public void setUsername(String value){username = value;}
-
-    private String password = SNUL;
-    public String getPassword(){return password;}
-    public void setPassword(String value){password = value;}
-
-    private String email = SNUL;
-    public String getEmail(){return email;}
-    public void setEmail(String value){email = value;}
-
-    private String fullname = SNUL;
-    public String getFullname(){return fullname;}
-    public void setFullname(String value){fullname = value;}
-
-    private int gender = INUL;
-    public int getGender(){return gender;}
-    public void setGender(int value){gender = value;}
-
-    @Override
-    public String getTableName() {
-        return "user";
-    }
-
-    @Override
-    public void reset() {
-
-    }
-
-    @Override
-    public String getSelectStmt() {
-        StringBuilder sql = new StringBuilder(String.format("select * from `%s` where 1=1", getTableName()));
-//        if(!isNull(getId()))
-//            sql.append(String.format("and `id`=%d", getId()));
-        if(!isNull(getUsername()))
-            sql.append(String.format("and `username`='%s'", getUsername()));
-        if(!isNull(getPassword()))
-            sql.append(String.format("and `password`='%s'", getPassword()));
-        if(!isNull(getEmail()))
-            sql.append(String.format("and `email`='%s'", getEmail()));
-        if(!isNull(getFullname()))
-            sql.append(String.format("and `fullname`='%s'", getFullname()));
-        if(!isNull(getGender()))
-            sql.append(String.format("and `gender`=%d", getGender()));
-        return sql.toString();
-    }
-
-    @Override
-    public String getUpdateStmt() {
-        return null;
-    }
-
-    @Override
-    public String getInsertStmt() {
-        StringBuilder keys = new StringBuilder();
-        StringBuilder values = new StringBuilder();
-        if(!isNull(getId())){
-            if(keys.length() != 0){
-                keys.append(", ");
-                values.append(", ");
-            }
-            keys.append("`id`");
-            values.append(String.format("%d", getId()));
-        }
-        if(!isNull(getUsername())){
-            if(keys.length() != 0){
-                keys.append(", ");
-                values.append(", ");
-            }
-            keys.append("`username`");
-            values.append(String.format("'%s'", getUsername()));
-        }
-        if(!isNull(getPassword())){
-            if(keys.length() != 0){
-                keys.append(", ");
-                values.append(", ");
-            }
-            keys.append("`password`");
-            values.append(String.format("'%s'", getPassword()));
-        }
-        if(!isNull(getEmail())){
-            if(keys.length() != 0){
-                keys.append(", ");
-                values.append(", ");
-            }
-            keys.append("`email`");
-            values.append(String.format("'%s'", getEmail()));
-        }
-        if(!isNull(getFullname())){
-            if(keys.length() != 0){
-                keys.append(", ");
-                values.append(", ");
-            }
-            keys.append("`fullname`");
-            values.append(String.format("'%s'", getFullname()));
-        }
-        if(!isNull(getGender())){
-            if(keys.length() != 0){
-                keys.append(", ");
-                values.append(", ");
-            }
-            keys.append("`gender`");
-            values.append(String.format("%d", getGender()));
-        }
+    static{
         String sql = String.format(
-                "insert into `%s` (%s) values(%s)",
-                getTableName(), keys.toString(), values.toString()
-        );
+                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE " +
+                "FROM information_schema.COLUMNS " +
+                "WHERE TABLE_SCHEMA = '%s'", DatabaseHelper.DB_NAME);
+        DatabaseHelper db = new DatabaseHelper();
+        ResultSet rs = db.executeQuery(sql);
+        dbconfig = new JSONObject();
+        try {
+            while(rs.next()){
+                String tableName = rs.getString("TABLE_NAME");
+                String columnName = rs.getString("COLUMN_NAME");
+                String dataType = rs.getString("DATA_TYPE");
+                if(!dbconfig.has(tableName)){
+                    dbconfig.put(tableName, new JSONObject());
+                }
+                DataType dataTypeId = DataType.None;
+                switch(dataType.toLowerCase()){
+                    case "tinyint":case "smallint":case "mediumint":
+                    case "int":case "integer":case "bigint":
+                        dataTypeId = DataType.Integer;
+                        break;
+                    case "char":case "varchar":case "tinytext":
+                    case "text":case "mediumtext":case "longtext":
+                        dataTypeId = DataType.Text;
+                        break;
+                    default:
+                        System.out.printf("不支持的字段类型\"%s\"\n", dataType);
+                        throw new NotImplementedException();
+                }
+                dbconfig.getJSONObject(tableName).put(columnName, dataTypeId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            db.dispose();
+        }
+        System.out.println(dbconfig.toString());
+    }
+
+    private enum DataType{
+        None, Text, Integer
+    }
+
+    private HashMap<String, Object> cons = new HashMap<>();
+    private JSONObject tableConfig = null;
+    private String tableName = null;
+
+    public QueryBuilder(String tableName){
+        if(!dbconfig.has(tableName)){
+            throw new InvalidParameterException(String.format("数据表\"%s\"不存在", tableName));
+        }
+        try {
+            tableConfig = dbconfig.getJSONObject(tableName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        this.tableName = tableName;
+    }
+
+    public void set(String key, Object value){
+        if(!tableConfig.has(key)){
+            throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
+        }
+        try {
+            switch ((DataType)tableConfig.get(key)){
+                case Integer:
+                    if(!(value instanceof Integer)){
+                        throw new IllegalArgumentException("value不是整数类型");
+                    }
+                    cons.put(key, value);
+                    break;
+                case Text:
+                    if(!(value instanceof String)){
+                        throw new IllegalArgumentException("value不是字符串类型");
+                    }
+                    cons.put(key, value);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Object get(String key){
+        if(!tableConfig.has(key)){
+            throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
+        }
+        return cons.get(key);
+    }
+
+    public void clear(){
+        cons.clear();
+    }
+
+    public String getWhereClause(){
+        StringBuilder sql = new StringBuilder();
+        try {
+            for(String key : cons.keySet()){
+                if(sql.length() != 0){
+                    sql.append(" and ");
+                }
+                switch((DataType)tableConfig.get(key)){
+                    case Integer:
+                        sql.append(String.format("`%s`=%d", key, cons.get(key)));
+                        break;
+                    case Text:
+                        sql.append(String.format("`%s`='%s'", key, cons.get(key)));
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "where " + sql.toString();
+    }
+
+    public String getSelectStmt(){
+        String sql = String.format("select * from `%s` %s", tableName, getWhereClause());
         return sql;
     }
 
-    @Override
-    public String getDeleteStmt() {
-        return null;
+    public String getInsertStmt(){
+        StringBuilder keys = new StringBuilder();
+        StringBuilder values = new StringBuilder();
+        try {
+            for(String key : cons.keySet()){
+                if(keys.length() != 0){
+                    keys.append(", ");
+                }
+                if(values.length() != 0){
+                    values.append(", ");
+                }
+                keys.append(String.format("`%s`", key));
+                switch((DataType)tableConfig.get(key)){
+                    case Integer:
+                        values.append(cons.get(key));
+                        break;
+                    case Text:
+                        values.append(String.format("'%s'", cons.get(key)));
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String sql = String.format("insert into `%s` (%s) values(%s)", tableName, keys.toString(), values.toString());
+        return sql;
+    }
+
+    public static void main(String[] args){
+        QueryBuilder queryBuilder = new QueryBuilder("user");
+        queryBuilder.set("id", 1);
+        queryBuilder.set("username", "abc");
+        System.out.println(queryBuilder.getSelectStmt());
+        System.out.println(queryBuilder.getInsertStmt());
     }
 }

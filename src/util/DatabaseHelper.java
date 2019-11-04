@@ -4,14 +4,20 @@ import java.sql.*;
 
 public class DatabaseHelper
 {
-    // 数据库URL
-    private static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8";
-
+    // 数据库IP
+    private static final String DB_IP = "127.0.0.1";
+    // 端口号
+    private static final String DB_PORT = "3306";
+    // 数据库名
+    static final String DB_NAME = "test";
     // 用户名
     private static final String DB_USR = "root";
-
     // 密码
     private static final String DB_PASS = "1234";
+
+    private static final String DB_URL = String.format(
+            "jdbc:mysql://%s:%s/%s?%s",
+            DB_IP, DB_PORT, DB_NAME, "useUnicode=true&characterEncoding=UTF-8");
 
     private Connection conn = null;
     private Statement st = null;
@@ -24,6 +30,7 @@ public class DatabaseHelper
             e.printStackTrace();
         }
         try {
+
             conn = DriverManager.getConnection(DB_URL, DB_USR, DB_PASS);
             st = conn.createStatement();
         } catch (SQLException e) {
@@ -51,6 +58,7 @@ public class DatabaseHelper
      */
     public boolean execute(String sql)
     {
+        System.out.printf("DatabaseHelper.execute sql = %s\n", sql);
         boolean ret = false;
         try {
             ret = st.execute(sql);
@@ -67,6 +75,7 @@ public class DatabaseHelper
      */
     public ResultSet executeQuery(String sql)
     {
+        System.out.printf("DatabaseHelper.executeQuery sql = %s\n", sql);
         ResultSet ret = null;
         try {
             ret = st.executeQuery(sql);

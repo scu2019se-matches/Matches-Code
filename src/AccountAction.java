@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 /**
@@ -26,7 +27,7 @@ import util.QueryBuilder;
 @WebServlet("/AccountAction")
 public class AccountAction extends HttpServlet
 {
-    private QueryBuilder queryBuilder = new QueryBuilder();
+    private QueryBuilder queryBuilder = new QueryBuilder("user");
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -90,9 +91,9 @@ public class AccountAction extends HttpServlet
 
         ResultSet rs=null;
         password = MD5Util.MD5(password);
-        queryBuilder.reset();
-        queryBuilder.setEmail(email);
-        queryBuilder.setPassword(password);
+        queryBuilder.clear();
+        queryBuilder.set("email", email);
+        queryBuilder.set("password", password);
         DatabaseHelper db = new DatabaseHelper();
         String sql=queryBuilder.getSelectStmt();
         rs = db.executeQuery(sql);
@@ -100,12 +101,14 @@ public class AccountAction extends HttpServlet
             session.setAttribute("login_errno", 3);
             session.setAttribute("login_msg", "邮箱或密码错误");
             response.sendRedirect("login.jsp");
+            db.dispose();
             return;
         }
 
         session.setAttribute("id", Integer.toString(rs.getInt("id")));
         session.setAttribute("username", rs.getString("username"));
         session.setAttribute("email", rs.getInt("email"));
+        db.dispose();
         session.setAttribute("login_time", System.currentTimeMillis());
         session.setAttribute("check", 1L); // reserved
         session.setAttribute("login_errno", 0);
@@ -129,29 +132,30 @@ public class AccountAction extends HttpServlet
 
         request.setCharacterEncoding("UTF-8");
 
-        QueryBuilder q = new QueryBuilder();
+        QueryBuilder q = new QueryBuilder("user");
         JSONObject res = new JSONObject();
         DatabaseHelper db = new DatabaseHelper();
         boolean flag = true;
 
-        q.setEmail(request.getParameter("email"));
+        q.set("email", request.getParameter("email"));
         ResultSet rs = db.executeQuery(q.getSelectStmt());
         if(rs.next())
         {
             res.put("register_errno", 2);
-            res.put("register_msg", String.format("邮箱\"%s\"已经注册", q.getEmail()));
+            res.put("register_msg", String.format("邮箱\"%s\"已经注册", q.get("email")));
             flag = false;
         }
         if(flag)
         {
-            q.setUsername(request.getParameter("username"));
-            q.setFullname(request.getParameter("fullname"));
-            q.setGender(Integer.parseInt(request.getParameter("gender")));
+            q.set("username", request.getParameter("username"));
+            q.set("fullname", request.getParameter("fullname"));
+            q.set("gender", Integer.parseInt(request.getParameter("gender")));
             String password = request.getParameter("password");
-            q.setPassword(MD5Util.MD5(password));
+            q.set("password", MD5Util.MD5(password));
             db.execute(q.getInsertStmt());
             res.put("register_errno", 0);
         }
+        db.dispose();
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         out.print(res);
