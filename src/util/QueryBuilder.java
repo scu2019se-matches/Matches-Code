@@ -48,7 +48,7 @@ public class QueryBuilder{
                             break;
                         default:
                             System.out.printf("不支持的字段类型\"%s\"\n", dataType);
-                            throw new NotImplementedException();
+//                            throw new NotImplementedException();
                     }
                     dbconfig.getJSONObject(tableName).put(columnName, dataTypeId);
                 }
