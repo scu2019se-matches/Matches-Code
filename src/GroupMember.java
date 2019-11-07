@@ -21,12 +21,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 
-@WebServlet("/GroupManagement")
-public class GroupManagement extends HttpServlet {
+@WebServlet("/GroupMember")
+public class GroupMember extends HttpServlet {
 
     private static JSONArray queryResult = null;
     private static QueryBuilder queryBuilder = null;
@@ -36,7 +34,7 @@ public class GroupManagement extends HttpServlet {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        queryBuilder = new QueryBuilder("group");
+        queryBuilder = new QueryBuilder("groupmember");
     }
 
     @Override
@@ -77,49 +75,44 @@ public class GroupManagement extends HttpServlet {
         HttpSession session = request.getSession();
         request.setCharacterEncoding("utf-8");	//设置编码
 
-        String title=request.getParameter("title");
-        String password=request.getParameter("password");
-        String creatorId=(String)session.getAttribute("id");
-        String creator=(String)session.getAttribute("username");
+        String groupId=request.getParameter("group_id");
+        String creatorId=request.getParameter("creator_id");
+        String userId=(String)session.getAttribute("user_id");
+        String user=(String)session.getAttribute("username");
         String createTime=(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date());
 
         queryBuilder.clear();
-        queryBuilder.set("title",new String(title.getBytes("iso-8859-1"),"utf-8"));
-        queryBuilder.set("password",MD5Util.MD5(password));
+        queryBuilder.set("groupId",Integer.parseInt(groupId));
         queryBuilder.set("creatorId",Integer.parseInt(creatorId));
-        queryBuilder.set("creator",creator);
+        queryBuilder.set("userId",Integer.parseInt(userId));
+        queryBuilder.set("user",user);
         queryBuilder.set("createTime",createTime);
-        queryBuilder.set("userNumber",1);
+        queryBuilder.set("grades",0);
 
         String sql=queryBuilder.getInsertStmt();
         DatabaseHelper db = new DatabaseHelper();
         db.execute(sql);
-        response.sendRedirect("group/list.jsp");
+        response.sendRedirect("groupdetails/member/list.jsp");
     }
     private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
 
-        String id=request.getParameter("group_id");
-        String password=request.getParameter("password");
-        String title=request.getParameter("title");
-        String creator=request.getParameter("creator");
+        String userId=request.getParameter("user_id");
+        String groupId=request.getParameter("group_id");
         String orderBy=request.getParameter("orderby");
         if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
         {
             System.out.println("getResult exist_result=false or null");
             queryBuilder.clear();
-            if(id!=null){
-                queryBuilder.set("id",Integer.parseInt(id));
+            if(userId!=null){
+                queryBuilder.set("userId",Integer.parseInt(userId));
             }
-            if(password!=null&&password!="null"){
-                queryBuilder.set("password",MD5Util.MD5(password));
+            if(groupId!=null){
+                queryBuilder.set("groupId",Integer.parseInt(groupId));
             }
-
-            queryBuilder.set("title",title,1);
-            queryBuilder.set("creator",creator,1);
-            queryBuilder.set("orderBy",orderBy);
+            queryBuilder.set("orderBy",request.getParameter("orderby"));
 
             String sql=queryBuilder.getSelectStmt();
             DatabaseHelper db=new DatabaseHelper();
@@ -131,7 +124,7 @@ public class GroupManagement extends HttpServlet {
         session.setAttribute("queryResult",queryResult);
         out.flush();
         out.close();
-        System.out.println("exit group getResult");
+        System.out.println("exit group_member getResult");
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
 
@@ -155,12 +148,12 @@ public class GroupManagement extends HttpServlet {
         {
             JSONObject item = new JSONObject();
             item.put("id", rs.getInt("id"));
-            item.put("title", rs.getString("title"));
+            item.put("group_id", rs.getInt("groupId"));
             item.put("creator_id", rs.getInt("creatorId"));
-            item.put("creator", rs.getString("creator"));
+            item.put("user_id", rs.getInt("userId"));
+            item.put("user", rs.getString("user"));
             item.put("create_time", rs.getString("createTime"));
-            item.put("password", rs.getString("password"));
-            item.put("user_number", rs.getInt("userNumber"));
+            item.put("grades", rs.getInt("grades"));
             if(auth>1||rs.getInt("creatorId")==user_id){
                 item.put("auth", 1);
             }else{

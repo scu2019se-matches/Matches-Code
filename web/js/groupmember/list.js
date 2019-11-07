@@ -1,5 +1,5 @@
 var Data=[];
-var module="/GroupManagement";
+var module="/GroupMember";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
@@ -70,7 +70,8 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        var user_id=$("#userId").val();
+        // var user_id="<%=session.getAttribute("id")%>";
+        var user_id=3;
         enterGroup(id,user_id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
@@ -137,38 +138,36 @@ function Record(){
     });
 }
 function enterGroup(id,user_id) {
-    url =ContextPath+"/GroupMember?action=get_record&group_id="+id+"&user_id="+user_id;
+    url =ContextPath+"GroupMember?action=get_record&id="+id+"userId="+user_id;
     $.post(url, function (json) {
-        if(json.length<1){
+        if(json.length()<1){
             swal({
-                title: "输入密码",
-                text: "你还不是该组成员",
-                type: "input",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                confirmButtonText: "确定",
-                cancelButtonText: "放弃",
-                animation: "slide-from-top",
-                inputPlaceholder: "输入区"
-            },function (inputValue) {
-                url=initurl+"?action=get_record&group_id="+id+"&password="+inputValue;
-                $.post(url, function (json1) {
-                    console.log("json1"+json1);
-                    if(json1.length<1){
-                        swal.showInputError("密码错误");
-                    }else{
-                        var creator_id = json1[0]["creatorId"];
-                        url=ContextPath+"/GroupMember?action=add_record&creator_id="+creator_id+"&group_id="+id;
-                        $.post(url, function (json2) {
-                            swal("密码正确", "你已成功加入该分组");
-                            // window.location.href="../groupdetails/member/list.jsp?groupId="+id;
-                        })
-                    }
-                });
-            }
+                    title: "输入密码",
+                    text: "你还不是该组成员",
+                    type: "input",
+                    showCancelButton: true,
+                    closeOnConfirm: true,
+                    confirmButtonText: "确定",
+                    cancelButtonText: "放弃",
+                    animation: "slide-from-top",
+                    inputPlaceholder: "输入区"
+                },function (inputValue) {
+                    url=initurl+"action=get_record&id="+id+"&password="+password;
+                    $.post(url, function (json) {
+                        if(json.length()<1){
+                            swal.showInputError("密码错误");
+                        }else{
+                            url=ContextPath+"GroupMember?action=add_record&user_id="+user_id+"group_id="+id;
+                            $.post(url, function (json) {
+                                swal("密码正确", "你已成功加入该分组");
+                                window.location.href="../GroupMember/list.jsp?gourpId="+id;
+                            })
+                        }
+                    });
+                }
             );
         }else{
-            // window.location.href="../groupdetails/member/list.jsp?groupId="+id;
+            window.location.href=ContextPath+"GroupMember/list.jsp?gourpId="+id;
         }
     });
 }

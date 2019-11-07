@@ -13,15 +13,15 @@
         <div class="form-group">
             <label class="control-label">字段选择</label>
             <select id="key1" class="form-control">
-                <option value="createTime" selected="selected">创建时间</option>
-                <option value="userNumber" >组员数量</option>
+                <option value="create_time" selected="selected">创建时间</option>
+                <option value="user_number" >组员数量</option>
             </select>
         </div>
         <div class="form-group">
             <select id="key2" class="form-control">
                 <option value="" selected="selected">请选择</option>
-                <option value="createTime">创建时间</option>
-                <option value="userNumber" >组员数量</option>
+                <option value="create_time">创建时间</option>
+                <option value="user_number" >组员数量</option>
             </select>
         </div>
     </div>

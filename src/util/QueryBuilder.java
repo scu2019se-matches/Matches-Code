@@ -44,6 +44,7 @@ public class QueryBuilder{
                             break;
                         case "char":case "varchar":case "tinytext":
                         case "text":case "mediumtext":case "longtext":
+                        case "datetime":case "date":case "time":case "timestamp":
                             dataTypeId = DataType.Text;
                             break;
                         default:
@@ -89,6 +90,7 @@ public class QueryBuilder{
         }
         if(key=="orderBy"){
             orderString=value.toString();
+            return;
         }else if(!tableConfig.has(key)){
             throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
         }
@@ -116,12 +118,12 @@ public class QueryBuilder{
     }
 
     public void set(String key, Object value,int ks){
-
         if(value=="null"||value==null||value.equals(null)||value.equals("null")){
             return;
         }
         if(key=="orderBy"){
             orderString=value.toString();
+            return;
         }else if(!tableConfig.has(key)){
             throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
         }
@@ -174,14 +176,14 @@ public class QueryBuilder{
                 switch((DataType)tableConfig.get(key)){
                     case Integer:
                         if(queryKs.get(key)!=null&&queryKs.get(key)==1){
-                            sql.append(String.format("`%s` like '%%d%'", key, cons.get(key)));
+                            sql.append(String.format("`%s` like '%%%d%%'", key, cons.get(key)));
                         }else{
                             sql.append(String.format("`%s`=%d", key, cons.get(key)));
                         }
                         break;
                     case Text:
                         if(queryKs.get(key)!=null&&queryKs.get(key)==1){
-                            sql.append(String.format("`%s` like '%%s%'", key, cons.get(key)));
+                            sql.append(String.format("`%s` like '%%%s%%'", key, cons.get(key)));
                         }else{
                             sql.append(String.format("`%s`='%s'", key, cons.get(key)));
                         }

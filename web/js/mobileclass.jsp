@@ -198,12 +198,34 @@ var Dialog = function() {
                     confirmButtonText: "确定",
                     cancelButtonText: "放弃",
                     closeOnConfirm: true
-                },
-                fnCallback
+                }
         );
     };
     var showText = function(sText, sTitle, fnCallback) {
         swal(sText,sTitle);
+    };
+    var showPrompt= function(sText, sTitle, fnCallback) {
+        swal({
+                title: sTitle,
+                text: sText,
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: true,
+                confirmButtonText: "确定",
+                cancelButtonText: "放弃",
+                animation: "slide-from-top",
+                inputPlaceholder: "输入区"
+            },
+        function(inputValue){
+            $("input[name='inputTmp']").val(inputValue);
+            if (inputValue === false) return false;
+            if (inputValue === "") {
+                swal.showInputError("输入不能为空");
+                return false;
+            }
+            swal("Hey !!", "You wrote: " + inputValue, "success");
+        }
+        );
     };
 
     return {
@@ -212,7 +234,8 @@ var Dialog = function() {
         showWarning: showWarning,
         showInfo: showInfo,
         showComfirm: showComfirm,
-        showText:showText
+        showText:showText,
+        showPrompt:showPrompt
     };
 }();
 </script>

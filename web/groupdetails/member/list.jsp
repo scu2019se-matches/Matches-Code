@@ -19,7 +19,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="<%=request.getContextPath()%>/image/png" sizes="16x16" href="<%=request.getContextPath()%>/images/favicon.png">
-    <title>活动与任务平台 | 分组管理</title>
+    <title>活动与任务平台 | 小组成员</title>
     <link href="<%=request.getContextPath()%>/css/lib/dropzone/dropzone.css" rel="stylesheet">
     <!-- Custom CSS -->
     <%@include file="../page_css.jsp"%>
@@ -31,7 +31,6 @@
     <%@include file="../page_header.jsp"%>
     <%@include file="../page_sidebar_menu.jsp"%>
     <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
-    <input type="hidden" id="userId" name="userId" value="<%=session.getAttribute("id")%>" />
 
     <!-- Page wrapper  -->
     <div class="page-wrapper">
@@ -41,7 +40,7 @@
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">活动与任务平台</a></li>
-                    <li class="breadcrumb-item active">分组管理</li>
+                    <li class="breadcrumb-item active">小组成员</li>
                 </ol>
             </div>
         </div>
@@ -88,8 +87,8 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">分组列表</h4>
-                    <h6 class="card-subtitle">这是所有用户创建的分组</h6>
+                    <h4 class="card-title">小组成员列表</h4>
+                    <h6 class="card-subtitle">这是所有小组成员</h6>
                     <div class="table-responsive m-t-40">
                         <table id="example23" class="display nowrap table table-hover table-bordered" cellspacing="2px" width="100%">
                             <thead>
@@ -144,7 +143,7 @@
 <script src="<%=request.getContextPath()%>/js/lib/dropzone/dropzone.js"></script>
 
 
-<script src="<%=request.getContextPath()%>/js/group/list.js"></script>
+<script src="<%=request.getContextPath()%>/js/groupmember/list.js"></script>
 <%--<script src="<%=request.getContextPath()%>/js/lib/atatables/datatables-init.js"></script>--%>
 
 </body>
