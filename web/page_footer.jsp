@@ -7,4 +7,4 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<footer class="footer"> © 2019 XM07 移动互动课堂开发小组</footer>
+<footer class="footer"> © 2019 活动与任务平台</footer>

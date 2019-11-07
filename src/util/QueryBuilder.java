@@ -66,6 +66,8 @@ public class QueryBuilder{
     }
 
     private HashMap<String, Object> cons = new HashMap<>();
+    private HashMap<String, Integer> queryKs = new HashMap<>();//0精确,1模糊
+    String orderString=null;
     private JSONObject tableConfig = null;
     private String tableName = null;
 
@@ -82,9 +84,15 @@ public class QueryBuilder{
     }
 
     public void set(String key, Object value){
-        if(!tableConfig.has(key)){
+        if(value=="null"||value==null||value.equals(null)||value.equals("null")){
+            return;
+        }
+        if(key=="orderBy"){
+            orderString=value.toString();
+        }else if(!tableConfig.has(key)){
             throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
         }
+
         try {
             switch ((DataType)tableConfig.get(key)){
                 case Integer:
@@ -107,6 +115,39 @@ public class QueryBuilder{
         }
     }
 
+    public void set(String key, Object value,int ks){
+
+        if(value=="null"||value==null||value.equals(null)||value.equals("null")){
+            return;
+        }
+        if(key=="orderBy"){
+            orderString=value.toString();
+        }else if(!tableConfig.has(key)){
+            throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
+        }
+        try {
+            switch ((DataType)tableConfig.get(key)){
+                case Integer:
+                    if(!(value instanceof Integer)){
+                        throw new IllegalArgumentException("value不是整数类型");
+                    }
+                    cons.put(key, value);
+                    queryKs.put(key,ks);
+                    break;
+                case Text:
+                    if(!(value instanceof String)){
+                        throw new IllegalArgumentException("value不是字符串类型");
+                    }
+                    cons.put(key, value);
+                    queryKs.put(key,ks);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     public Object get(String key){
         if(!tableConfig.has(key)){
             throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
@@ -116,10 +157,15 @@ public class QueryBuilder{
 
     public void clear(){
         cons.clear();
+        queryKs.clear();
+        orderString=null;
     }
 
     public String getWhereClause(){
         StringBuilder sql = new StringBuilder();
+        if(cons.keySet().size()<1){
+            return "";
+        }
         try {
             for(String key : cons.keySet()){
                 if(sql.length() != 0){
@@ -127,10 +173,18 @@ public class QueryBuilder{
                 }
                 switch((DataType)tableConfig.get(key)){
                     case Integer:
-                        sql.append(String.format("`%s`=%d", key, cons.get(key)));
+                        if(queryKs.get(key)!=null&&queryKs.get(key)==1){
+                            sql.append(String.format("`%s` like '%%d%'", key, cons.get(key)));
+                        }else{
+                            sql.append(String.format("`%s`=%d", key, cons.get(key)));
+                        }
                         break;
                     case Text:
-                        sql.append(String.format("`%s`='%s'", key, cons.get(key)));
+                        if(queryKs.get(key)!=null&&queryKs.get(key)==1){
+                            sql.append(String.format("`%s` like '%%s%'", key, cons.get(key)));
+                        }else{
+                            sql.append(String.format("`%s`='%s'", key, cons.get(key)));
+                        }
                         break;
                     default:
                         throw new NotImplementedException();
@@ -141,9 +195,14 @@ public class QueryBuilder{
         }
         return "where " + sql.toString();
     }
-
+    public String getOrderClause(){
+        if(orderString==null||orderString=="null"){
+            return "";
+        }
+        return " order by "+orderString;
+    }
     public String getSelectStmt(){
-        String sql = String.format("select * from `%s` %s", tableName, getWhereClause());
+        String sql = String.format("select * from `%s` %s %s", tableName, getWhereClause(),getOrderClause());
         return sql;
     }
 

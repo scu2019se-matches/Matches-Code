@@ -1,10 +1,9 @@
 var question_list=[];
-var module="/QuestionnairePublish";
+var module="/GroupManagement";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
 
-console.log("file_statistic js初始化执行完毕！");
 
 /*================================================================================*/
 var chart = null;
@@ -31,7 +30,7 @@ var Page = function(){
                 "inside": true
             }],
             "categoryAxis": {
-                "title": "发布时间"
+                "title": "上传时间"
             },
             "chartScrollbar": {
                 "graph": "g1",
@@ -68,7 +67,7 @@ var Page = function(){
 
             "graphs": [{
                 "alphaField": "alpha",
-                "balloonText": "<span style='font-size:13px;'>[[category]]发布的问卷数[[title]]:<b>[[value]]</b> [[additional]]</span>",
+                "balloonText": "<span style='font-size:13px;'>[[category]]上传的文件数[[title]]:<b>[[value]]</b> [[additional]]</span>",
                 "dashLengthField": "dashLengthColumn",
                 "fillAlphas": 1,
                 "title": "数量",
@@ -80,9 +79,9 @@ var Page = function(){
                 "menu":[{
                     "class": "export-main",
                     "menu": [
-                        { "fileName": "发布的问卷时间统计", "format": "png", "label": "导出为PNG" },
-                        { "fileName": "发布的问卷时间统计", "format": "jpg", "label": "导出为JPG" },
-                        { "fileName": "发布的问卷时间统计", "format": "svg", "label": "导出为SVG" },
+                        { "fileName": "文件上传时间统计", "format": "png", "label": "导出为PNG" },
+                        { "fileName": "文件上传时间统计", "format": "jpg", "label": "导出为JPG" },
+                        { "fileName": "文件上传时间统计", "format": "svg", "label": "导出为SVG" },
                     ]
                 }]
             }
@@ -122,6 +121,6 @@ var Page = function(){
     };
 }();
 function returnBack(){
-    window.location.href=ContextPath+"/questionnaire/publish/questionnaire_list.jsp";
+    window.location.href=ContextPath+"/group/list.jsp";
 };
 

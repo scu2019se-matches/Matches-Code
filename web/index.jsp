@@ -19,7 +19,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
-    <title>移动互动课堂 | 首页</title>
+    <title>活动与任务平台 | 首页</title>
     <%@include file="page_css.jsp"%>
 </head>
 
@@ -35,7 +35,7 @@
                 <div class="col-md-5 align-self-center"></div>
                 <div class="col-md-7 align-self-center">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">移动互动课堂</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">活动与任务平台</a></li>
                         <li class="breadcrumb-item active">首页</li>
                     </ol>
                 </div>
@@ -53,8 +53,8 @@
                                     <i class="ti-home bg-primary"></i>
                                 </div>
                                 <div class="stat-content">
-                                    <div class="stat-heading color-primary">用户信息管理</div>
-                                    <div class="stat-text">系统用户概览</div>
+                                    <div class="stat-heading color-primary">个人中心</div>
+                                    <div class="stat-text">查看用户信息</div>
                                 </div>
                             </div>
                         </div>
@@ -67,22 +67,22 @@
                                     <i class="ti-file bg-success"></i>
                                 </div>
                                 <div class="stat-content">
-                                    <div class="stat-heading color-success">问卷管理</div>
-                                    <div class="stat-text">问卷概览</div>
+                                    <div class="stat-heading color-success">活动管理</div>
+                                    <div class="stat-text">查看活动</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <div class="card">
-                            <a href="<%=request.getContextPath()%>/file/file_list.jsp"></a>
+                            <a href="<%=request.getContextPath()%>/group/list.jsp"></a>
                             <div class="stat-widget-five">
                                 <div class="stat-icon">
                                     <i class="ti-info bg-danger"></i>
                                 </div>
                                 <div class="stat-content">
-                                    <div class="stat-heading color-danger">文件管理</div>
-                                    <div class="stat-text">文件概览</div>
+                                    <div class="stat-heading color-danger">任务管理</div>
+                                    <div class="stat-text">创建与进入分组</div>
                                 </div>
                             </div>
                         </div>

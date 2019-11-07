@@ -16,7 +16,7 @@
                 <b><img src="<%=request.getContextPath()%>/images/logo.png" alt="homepage" class="dark-logo" /></b>
                 <!--End Logo icon -->
                 <!-- Logo text -->
-                <span alt="homepage" class="dark-logo" >移动互动课堂</span>
+                <span alt="homepage" class="dark-logo" >活动与任务平台</span>
                 <%--<span><img src="<%=request.getContextPath()%>/images/logo-text.png" alt="homepage" class="dark-logo" /></span>--%>
             </a>
         </div>
@@ -37,6 +37,20 @@
                         <ul class="dropdown-user">
                             <li role="separator" class="divider"></li>
                             <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 个人信息</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 每日任务</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 关注的活动</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 发布的活动</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 发布的评论</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 收到的回复</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 加入的分组</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 创建的分组</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="<%=request.getContextPath()%>/AccountAction?action=logout"> 退出登录</a></li>
                         </ul>

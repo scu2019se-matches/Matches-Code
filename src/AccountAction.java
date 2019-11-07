@@ -42,9 +42,9 @@ public class AccountAction extends HttpServlet
                 case "login":
                     login(request, response);
                     break;
-//                case "logout":
-//                    logout(request, response);
-//                    break;
+                case "logout":
+                    logout(request, response);
+                    break;
                 case "register":
                     register(request, response);
                     break;
@@ -115,17 +115,17 @@ public class AccountAction extends HttpServlet
         response.sendRedirect("index.jsp");
     }
 
-//    private void logout(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
-//        System.out.println("enter AccountAction.logout");
-//        HttpSession session = request.getSession();
-//
-//        session.removeAttribute("guid");
-//        session.removeAttribute("username");
-//        session.removeAttribute("login_time");
-//        session.removeAttribute("authorization");
-//        session.removeAttribute("check");
-//        response.sendRedirect("login.jsp");
-//    }
+    private void logout(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+        System.out.println("enter AccountAction.logout");
+        HttpSession session = request.getSession();
+
+        session.removeAttribute("id");
+        session.removeAttribute("username");
+        session.removeAttribute("login_time");
+        session.removeAttribute("authorization");
+        session.removeAttribute("check");
+        response.sendRedirect("login.jsp");
+    }
 
     private void register(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, ServletException, SQLException {
         System.out.println("enter AccountAction.register");

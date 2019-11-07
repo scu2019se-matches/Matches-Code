@@ -1,5 +1,5 @@
 var Data=[];
-var module="/QuestionnaireAnswer";
+var module="/GroupManagement";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 function Record() {
@@ -54,24 +54,25 @@ function Record() {
 }
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
-    var json =$("#jsonData").val();
-    var json =jsonData;
-    console.log(jsonData);
-    for (var i = 0; i < json.length; i++) {
-        var id = json[i]["guid"];
-        var title = json[i]["title"];
-        var author_name = json[i]["author_name"];
-        var change_time = json[i]["change_time"];
-        var create_time = json[i]["create_time"];
-        var answer_num = json[i]["answer_num"];
-        var user_name = json[i]["user_name"];
-        dataTable.row.add([id, title, author_name, create_time, change_time,answer_num,user_name]).draw().node();
-    }
+        var json =$("#jsonData").val();
+        var json =jsonData;
+        console.log(jsonData);
+        for (var i = 0; i < json.length; i++) {
+            var id = json[i]["guid"];
+            var title = json[i]["title"];
+            var context = json[i]["context"];
+            var user_name = json[i]["user_name"];
+            var create_time = json[i]["create_time"];
+            var change_time = json[i]["change_time"];
+            var download_num = json[i]["download_num"];
+            var change_num = json[i]["change_num"];
+            dataTable.row.add([id, title, context, user_name, create_time, change_time, download_num, change_num]).draw().node();
+        }
 }
 function printRecord(){
     window.print();
 }
 function returnBack(){
-    history.back();
+    window.location.href="list.jsp";
 }
 Record();

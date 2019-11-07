@@ -24,6 +24,7 @@
             $('.card').has('a').click(
                     function() {
                         var href=$(this).find('a').first().attr('href');
+                        console.log(href);
                         window.location.href=href;
                     }
             );
