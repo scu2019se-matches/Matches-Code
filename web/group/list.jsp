@@ -130,7 +130,7 @@
 <!-- End Wrapper -->
 <%@include file="../page_js.jsp"%>
 <%@include file="../js/mobileclass.jsp"%>
-<script src="../js/tabview.js"></script>
+<script src="<%=request.getContextPath()%>/js/tabview.js"></script>
 
 
 <script src="<%=request.getContextPath()%>/js/lib/datatables/datatables.min.js"></script>

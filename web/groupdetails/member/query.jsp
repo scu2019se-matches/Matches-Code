@@ -11,16 +11,8 @@
     <div class="col-lg-6">
         <div class="card">
             <div class="form-group">
-                <p class="text-muted m-b-15 f-s-12">小组昵称</p>
-                <input type="text" id="title" name="title" class="form-control input-focus" placeholder="输入小组昵称">
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="form-group">
-                <p class="text-muted m-b-15 f-s-12">创建者</p>
-                <input type="text" id="creator" name="creator" class="form-control input-focus" placeholder="输入小组创建者">
+                <p class="text-muted m-b-15 f-s-12">用户</p>
+                <input type="text" id="user" name="user" class="form-control input-focus" placeholder="输入小组用户昵称">
             </div>
         </div>
     </div>

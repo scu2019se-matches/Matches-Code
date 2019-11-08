@@ -77,9 +77,9 @@ public class GroupMember extends HttpServlet {
 
         String groupId=request.getParameter("group_id");
         String creatorId=request.getParameter("creator_id");
-        String userId=(String)session.getAttribute("user_id");
+        String userId=(String)session.getAttribute("id");
         String user=(String)session.getAttribute("username");
-        String createTime=(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date());
+        String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
 
         queryBuilder.clear();
         queryBuilder.set("groupId",Integer.parseInt(groupId));
@@ -100,6 +100,7 @@ public class GroupMember extends HttpServlet {
         HttpSession session = request.getSession();
 
         String userId=request.getParameter("user_id");
+        String user=request.getParameter("user");
         String groupId=request.getParameter("group_id");
         String orderBy=request.getParameter("orderby");
         if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
@@ -112,6 +113,7 @@ public class GroupMember extends HttpServlet {
             if(groupId!=null){
                 queryBuilder.set("groupId",Integer.parseInt(groupId));
             }
+            queryBuilder.set("user",request.getParameter("user"),1);
             queryBuilder.set("orderBy",request.getParameter("orderby"));
 
             String sql=queryBuilder.getSelectStmt();
@@ -154,6 +156,7 @@ public class GroupMember extends HttpServlet {
             item.put("user", rs.getString("user"));
             item.put("create_time", rs.getString("createTime"));
             item.put("grades", rs.getInt("grades"));
+            item.put("commodity", rs.getInt("commodity"));
             if(auth>1||rs.getInt("creatorId")==user_id){
                 item.put("auth", 1);
             }else{

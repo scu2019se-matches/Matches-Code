@@ -19,14 +19,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 
-@WebServlet("/GroupManagement")
-public class GroupManagement extends HttpServlet {
+@WebServlet("/GroupTask")
+public class GroupTask extends HttpServlet {
 
     private static JSONArray queryResult = null;
     private static QueryBuilder queryBuilder = null;
@@ -37,8 +36,8 @@ public class GroupManagement extends HttpServlet {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        queryBuilder = new QueryBuilder("group");
-        queryAnotherBuilder = new QueryBuilder("groupmember");
+        queryBuilder = new QueryBuilder("task");
+        queryAnotherBuilder = new QueryBuilder("taskhistory");
     }
 
     @Override
@@ -89,62 +88,38 @@ public class GroupManagement extends HttpServlet {
         String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
 
         ResultSet rs = db.executeQuery("select max(id) from `group`");
+        rs.next();
         int groupId=1;
-        if(rs.next()){
-            groupId = rs.getInt(1)+1;
-        }
-
-        queryBuilder.clear();
-        queryBuilder.set("id",groupId);
-        queryBuilder.set("title",new String(title.getBytes("iso-8859-1"),"utf-8"));
-        queryBuilder.set("password",MD5Util.MD5(password));
-        queryBuilder.set("creatorId",Integer.parseInt(creatorId));
-        queryBuilder.set("creator",creator);
-        queryBuilder.set("createTime",createTime);
-        queryBuilder.set("userNumber",1);
 
         sql=queryBuilder.getInsertStmt();
         db.execute(sql);
 
-        //组内成员添加组长记录
-        String userId=(String)session.getAttribute("id");
-        String user=(String)session.getAttribute("username");
-        queryAnotherBuilder.clear();
-        queryAnotherBuilder.set("groupId",groupId);
-        queryAnotherBuilder.set("creatorId",Integer.parseInt(creatorId));
-        queryAnotherBuilder.set("userId",Integer.parseInt(userId));
-        queryAnotherBuilder.set("user",user);
-        queryAnotherBuilder.set("createTime",createTime);
-        queryAnotherBuilder.set("grades",0);
+
 
         sql=queryAnotherBuilder.getInsertStmt();
         db = new DatabaseHelper();
         db.execute(sql);
         response.sendRedirect("group/list.jsp");
     }
-    private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
+    private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException, ParseException {
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
 
-        String id=request.getParameter("group_id");
-        String password=request.getParameter("password");
-        String title=request.getParameter("title");
-        String creator=request.getParameter("creator");
+        String groupId=request.getParameter("group_id");
+        String grades=request.getParameter("grades");
+        String context=request.getParameter("context");
         String orderBy=request.getParameter("orderby");
         if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
         {
             System.out.println("getResult exist_result=false or null");
             queryBuilder.clear();
-            if(id!=null){
-                queryBuilder.set("id",Integer.parseInt(id));
-            }
-            if(password!=null&&password!="null"){
-                queryBuilder.set("password",MD5Util.MD5(password));
-            }
 
-            queryBuilder.set("title",title,1);
-            queryBuilder.set("creator",creator,1);
+            queryBuilder.set("groupId",groupId);
+            if(grades!=null){
+                queryBuilder.set("grades",Integer.parseInt(grades));
+            }
+            queryBuilder.set("context",context,1);
             queryBuilder.set("orderBy",orderBy);
 
             String sql=queryBuilder.getSelectStmt();
@@ -153,18 +128,11 @@ public class GroupManagement extends HttpServlet {
             processResult(request,rs);
             session.setAttribute("exist_result", false);
         }
-        for(int i=0;i<queryResult.length();i++)
-        {
-            System.out.printf("queryResult[%d] id=%d title=%s creatorId=%d \n",i,
-                    queryResult.getJSONObject(i).getInt("id"),
-                    queryResult.getJSONObject(i).getString("title"),
-                    queryResult.getJSONObject(i).getInt("creator_id"));
-        }
         out.print(queryResult);
         session.setAttribute("queryResult",queryResult);
         out.flush();
         out.close();
-        System.out.println("exit group getResult");
+        System.out.println("exit group_task getResult");
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
 
@@ -177,27 +145,59 @@ public class GroupManagement extends HttpServlet {
     }
 
 
-    private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException {
+    private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();
         int user_id=Integer.parseInt(session.getAttribute("id").toString());
         int auth=Integer.parseInt(session.getAttribute("auth")==null?"0":session.getAttribute("auth").toString());
         queryResult = new JSONArray("[]");
         rs.beforeFirst();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String queryTime=dateFormat.format(new Date());
+        DatabaseHelper db = new DatabaseHelper();
+        ResultSet  finished=null;
         while(rs.next())
         {
             JSONObject item = new JSONObject();
             item.put("id", rs.getInt("id"));
-            item.put("title", rs.getString("title"));
+            item.put("group_id", rs.getInt("groupId"));
             item.put("creator_id", rs.getInt("creatorId"));
             item.put("creator", rs.getString("creator"));
+            item.put("context", rs.getString("context"));
+            item.put("grades", rs.getInt("grades"));
             item.put("create_time", rs.getString("createTime"));
-            item.put("password", rs.getString("password"));
-            item.put("user_number", rs.getInt("userNumber"));
+            item.put("begin_time", rs.getString("beginTime"));
+            item.put("end_time", rs.getString("endTime"));
             if(auth>1||rs.getInt("creatorId")==user_id){
                 item.put("auth", 1);
             }else{
                 item.put("auth", 0);
             }
+            //任务状态:0未开始,1进行中,2已结束
+            int task_status=0,my_status=0;
+            if(dateFormat.parse(rs.getString("endTime")).compareTo(dateFormat.parse(queryTime))<0){
+                task_status=2;
+            }else if(dateFormat.parse(rs.getString("beginTime")).compareTo(dateFormat.parse(queryTime))<0){
+                task_status=1;
+            }
+            //我的完成状态:0已完成,不可点击,1可点击,2不可操作
+            if(task_status!=1){
+                my_status=2;
+            }else{
+                queryAnotherBuilder.clear();
+                queryAnotherBuilder.set("groupId",rs.getInt("groupId"));
+                queryAnotherBuilder.set("taskId",rs.getInt("id"));
+                queryAnotherBuilder.set("userId",user_id);
+                finished= db.executeQuery(queryAnotherBuilder.getSelectStmt());
+//                finished.next();
+                System.out.println("finished:"+finished);
+                if(!finished.next()){
+                    my_status=1;
+                }
+
+            }
+            item.put("task_status", task_status);
+            item.put("my_status", my_status);
+            System.out.println("my_status:"+my_status);
 //            item.put("user_id", user_id);
             queryResult.put(item);
         }

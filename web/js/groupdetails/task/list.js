@@ -1,5 +1,5 @@
 var Data=[];
-var module="/GroupManagement";
+var module="/GroupTask";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
@@ -13,7 +13,7 @@ function Record(){
                 title: 'groupinfo',
                 className: 'buttons-excel hidden',
                 exportOptions: {
-                    columns: [ 0,1,2,3,4 ]
+                    columns: [ 0,1,2]
                 }
             },
         ],
@@ -28,11 +28,11 @@ function Record(){
                 "sortDescending": ": activate to sort column descending"
             },
             "sProcessing":   "处理中...",
-            "sLengthMenu":   "_MENU_ 组/页",
-            "sZeroRecords":  "<span'>没有找到对应的组！</span>",
-            "sInfo":         "显示第 _START_ 至 _END_ 个组，共 _TOTAL_ 个",
-            "sInfoEmpty":    "显示第 0 至 0 个组，共 0 个",
-            "sInfoFiltered": "(由 _MAX_ 个组过滤)",
+            "sLengthMenu":   "_MENU_ 任务/页",
+            "sZeroRecords":  "<span'>没有找到对应的任务！</span>",
+            "sInfo":         "显示第 _START_ 至 _END_ 个任务，共 _TOTAL_ 个",
+            "sInfoEmpty":    "显示第 0 至 0 个任务，共 0 个",
+            "sInfoFiltered": "(由 _MAX_ 个任务过滤)",
             "sInfoPostFix":  "",
             "sSearch":       "搜索:",
             "oPaginate": {
@@ -44,25 +44,59 @@ function Record(){
         },
         "columnDefs": [
             {
-                "targets":5,
+                "targets":3,
                 "mRender":
                     function(data, type, full) {
-                        sReturn=""
-                        if(full[5]==1) {
-                            sReturn = sReturn +
-                                "<button type=\"button\" class=\"edit-button btn btn-success btn-sm btn-rounded m-b-10 m-l-5\">修改</button>" +
-                                "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>"
+                        sReturn="";
+                        if(full[3]==0) {
+                            sReturn=
+                                '<span class="badge badge-primary">'+
+                                "将开始"+'</span>';
+                        }else if(full[3]==1){
+                            sReturn='<span class="badge badge-success">'+
+                                "进行中"+'</span>';
+                        }else{
+                            sReturn=
+                                '<span class="badge badge-danger">'+
+                                "已结束"+'</span>';
                         }
-                        sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">进入</button>";
+                        if(full[4]==2){
+                            sReturn+=
+                                '<span class="badge badge-danger m-l-5">'+
+                                "不可操作"+'</span>';
+                        }else if(full[4]==1){
+                            sReturn+='<span class="badge badge-success m-l-5">'+
+                                "今日可完成"+'</span>';
+                        }else{
+                            sReturn+=
+                                '<span class="badge badge-primary  m-l-5">'+
+                                "今日已完成"+'</span>';
+                        }
                         return sReturn;
                     },
             },
             {
-                "targets":[1,2,5],
+                "targets":4,
+                "mRender":
+                    function(data, type, full) {
+                        sReturn="";
+                        if(full[5]==1) {
+                            sReturn = sReturn +
+                                "<button type=\"button\" class=\"edit-button btn btn-success btn-sm btn-rounded m-b-10 m-l-5\">修改</button>" +
+                                "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>";
+                        }
+                        if(full[4]==1){
+                            sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">标记完成</button>";
+                        }
+                        return sReturn;
+                    },
+            },
+            {
+                "targets":[0],
                 "orderable": false,
             },
         ],
-        "aLengthMenu": [[10,15,20,25,40,50,-1],[10,15,20,25,40,50,"所有小组"]],
+        "aLengthMenu": [[10,15,20,25,40,50,-1],[10,15,20,25,40,50,"所有任务"]],
     });
     getAllRecord();
 
@@ -70,7 +104,8 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        var user_id=$("#userId").val();
+        // var user_id="<%=session.getAttribute("id")%>";
+        var user_id=3;
         enterGroup(id,user_id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
@@ -136,48 +171,6 @@ function Record(){
         Dialog.showSuccess("修改成功","操作成功");
     });
 }
-function enterGroup(id,user_id) {
-    url =ContextPath+"/GroupMember?action=get_record&group_id="+id+"&user_id="+user_id;
-    $.post(url, function (json) {
-        if(json.length<1){
-            swal({
-                title: "输入密码",
-                text: "你还不是该组成员",
-                type: "input",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                confirmButtonText: "确定",
-                cancelButtonText: "放弃",
-                animation: "slide-from-top",
-                inputPlaceholder: "输入区"
-            },function (inputValue) {
-                url=initurl+"?action=get_record&group_id="+id+"&password="+inputValue;
-                $.post(url, function (json1) {
-                    console.log(json1);
-                    if(json1.length<1){
-                        swal.showInputError("密码错误");
-                    }else{
-                        var creator_id = json1[0]["creator_id"];
-                        url=ContextPath+"/GroupMember?action=add_record&creator_id="+creator_id+"&group_id="+id;
-
-                        $.post(url, function (json2) {
-                            swal({
-                                title : "密码正确",
-                                text : "你已成功加入该分组！",
-                                type : "success",
-                            }, function() {
-                                window.location.href="../groupdetails/member/list.jsp?group_id="+id;
-                            });
-                        })
-                    }
-                });
-            }
-            );
-        }else{
-            window.location.href="../groupdetails/member/list.jsp?group_id="+id;
-        }
-    });
-}
 function modifyRecord(url) {
     $.post(url, function (json) {
 
@@ -201,14 +194,17 @@ function getAllRecord(){
         Data = json;
         // console.log(json);
         for (var i = 0; i < json.length; i++) {
-            var id = json[i]["id"];
-            var title = json[i]["title"];
-            var creator = json[i]["creator"];
+            var task_id = json[i]["task_id"];
+            var context = json[i]["context"];
+            var grades = json[i]["grades"];
             var create_time = json[i]["create_time"];
-            var user_number = json[i]["user_number"];
+            var begin_time = json[i]["begin_time"];
+            var end_time = json[i]["end_time"];
+            var task_status = json[i]["task_status"];
+            var my_status = json[i]["my_status"];
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth]).draw().node();
+            dataTable.row.add([context, grades,end_time,task_status,my_status,auth]).draw().node();
         }
     });
 }
@@ -218,14 +214,17 @@ function getSelectedRecord(url){
     $.post(url, function (json) {
         Data = json;
         for (var i = 0; i < json.length; i++) {
-            var id = json[i]["id"];
-            var title = json[i]["title"];
-            var creator = json[i]["creator"];
+            var task_id = json[i]["task_id"];
+            var context = json[i]["context"];
+            var grades = json[i]["grades"];
             var create_time = json[i]["create_time"];
-            var user_number = json[i]["user_number"];
+            var begin_time = json[i]["begin_time"];
+            var end_time = json[i]["end_time"];
+            var task_status = json[i]["task_status"];
+            var my_status = json[i]["my_status"];
             var auth = json[i]["auth"];
-            var password = json[i]["password"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth,password]).draw().node();
+            // var user_id = json[i]["user_id"];
+            dataTable.row.add([context, grades,end_time,task_status,my_status,auth]).draw().node();
         }
     });
 }

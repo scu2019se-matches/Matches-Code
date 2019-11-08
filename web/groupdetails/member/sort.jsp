@@ -13,15 +13,25 @@
         <div class="form-group">
             <label class="control-label">字段选择</label>
             <select id="key1" class="form-control">
-                <option value="create_time" selected="selected">创建时间</option>
-                <option value="user_number" >组员数量</option>
+                <option value="createTime" selected="selected">加入时间</option>
+                <option value="grades" >积分</option>
+                <option value="commodity" >物品数</option>
             </select>
         </div>
         <div class="form-group">
             <select id="key2" class="form-control">
                 <option value="" selected="selected">请选择</option>
-                <option value="create_time">创建时间</option>
-                <option value="user_number" >组员数量</option>
+                <option value="grades" >积分</option>
+                <option value="commodity" >物品数</option>
+                <option value="createTime">加入时间</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select id="key3" class="form-control">
+                <option value="" selected="selected">请选择</option>
+                <option value="commodity" >物品数</option>
+                <option value="createTime">加入时间</option>
+                <option value="grades" >积分</option>
             </select>
         </div>
     </div>
@@ -35,6 +45,12 @@
         </div>
         <div class="form-group">
             <select id="rule2" class="form-control" data-placeholder="asc" tabindex="2">
+                <option value="asc" selected="selected">升序</option>
+                <option value="desc">降序</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select id="rule3" class="form-control" data-placeholder="asc" tabindex="2">
                 <option value="asc" selected="selected">升序</option>
                 <option value="desc">降序</option>
             </select>
