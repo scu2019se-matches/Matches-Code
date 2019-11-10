@@ -32,6 +32,32 @@
             <ul class="navbar-nav my-lg-0">
                 <!-- Profile -->
                 <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-muted  " href="#" id="2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-envelope"></i>
+                        <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right mailbox animated slideInRight" aria-labelledby="2">
+                        <ul>
+                            <li>
+                                <div class="drop-title">你收到的回复</div>
+                            </li>
+                            <li>
+                                <div class="header-notify">
+                                    <!-- Message -->
+                                    <a href="#">
+                                        <div class="notification-contnet">
+                                            <h5>某用户</h5>
+                                            <span class="mail-desc">回复了你</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="nav-link text-center" href="javascript:void(0);"> See all e-Mails <i class="fa fa-angle-right"></i> </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-muted  " href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i></a>
                     <div class="dropdown-menu dropdown-menu-right animated slideInRight">
                         <ul class="dropdown-user">

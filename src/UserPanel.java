@@ -6,7 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import util.DatabaseHelper;
-import util.MD5Util;
 import util.QueryBuilder;
 
 import javax.servlet.ServletException;
@@ -24,8 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-@WebServlet("/GroupTask")
-public class GroupTask extends HttpServlet {
+@WebServlet("/UserPanel")
+public class UserPanel extends HttpServlet {
 
     private static JSONArray queryResult = null;
     private static QueryBuilder queryBuilder = null;

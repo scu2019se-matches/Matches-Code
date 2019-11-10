@@ -2,6 +2,8 @@ var Data=[];
 var module="/GroupTask";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
+var GroupId=$("#group_id").val();
+var UserId=$("#user_id").val();
 var initurl=ContextPath+module;
 function Record(){
     $.fn.dataTable.ext.errMode = "none";
@@ -21,7 +23,7 @@ function Record(){
         fixedColumns: {
             leftColumns: 1
         },
-        // ordering: false,
+        ordering: false,
         "oLanguage": {
             "aria": {
                 "sortAscending": ": activate to sort column ascending",
@@ -189,7 +191,7 @@ function deleteRecord(id) {
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
-    var url=initurl+"?action=get_record";
+    var url=initurl+"?action=get_record&group_id="+GroupId;
     $.post(url, function (json) {
         Data = json;
         // console.log(json);
@@ -248,16 +250,18 @@ function expordExcel(){
 function sortRecord(){
     var key1 = $("#key1").val();
     var key2 = $("#key2").val();
+    var key3 = $("#key3").val();
     var rule1 = $("#rule1").val();
     var rule2 = $("#rule2").val();
-    var url =initurl+"?action=get_record";
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    if (title != "") {
-        url += "&title=" + title;
+    var rule3 = $("#rule3").val();
+    var url =initurl+"?action=get_record&group_id="+GroupId;
+    var context = $("#context").val();
+    var grades = $("#grades").val();
+    if (context != "") {
+        url += "&context=" + context;
     }
-    if (creator != "") {
-        url += "&creator=" + creator;
+    if (grades != "") {
+        url += "&grades=" + grades;
     }
     var tmp="&orderby=";
     var flag=0;
@@ -281,18 +285,28 @@ function sortRecord(){
             flag=1;
         }
     }
+    if (key3 != "") {
+        if(flag){
+            tmp += " ," + key3;
+            tmp += " " + rule3;
+        }else{
+            tmp += " " + key3;
+            tmp += " " + rule3;
+            flag=1;
+        }
+    }
     url=url+tmp;
     getSelectedRecord(url);
 };
 function searchRecord(){
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    var url =initurl+"?action=get_record";
-    if (title != "") {
-        url += "&title=" + title;
+    var context = $("#context").val();
+    var grades = $("#grades").val();
+    var url =initurl+"?action=get_record&group_id="+GroupId;
+    if (context != "") {
+        url += "&context=" + context;
     }
-    if (creator != "") {
-        url += "&creator=" + creator;
+    if (grades != "") {
+        url += "&grades=" + grades;
     }
     getSelectedRecord(url);
 };
