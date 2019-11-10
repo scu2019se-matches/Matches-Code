@@ -64,58 +64,37 @@
 
         <div class="col-md-12">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="card bg-primary p-20">
                         <div class="media widget-ten">
                             <div class="media-left meida media-middle">
                                 <span><i class="ti-bag f-s-40"></i></span>
                             </div>
                             <div class="media-body media-text-right">
-                                <h2 class="color-white text-white">278</h2>
+                                <h2 class="color-white text-white" id="grades" name="grades">
+                                    12
+                                </h2>
                                 <p class="m-b-0 text-white">积分</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="card bg-warning p-20">
                         <div class="media widget-ten">
                             <div class="media-left meida media-middle">
                                 <span><i class="ti-comment f-s-40"></i></span>
                             </div>
                             <div class="media-body media-text-right">
-                                <h2 class="color-white text-white">278</h2>
+                                <h2 class="color-white text-white" id="commodity" name="commodity">
+                                    278
+                                </h2>
                                 <p class="m-b-0 text-white">物品数</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-success p-20">
-                        <div class="media widget-ten">
-                            <div class="media-left meida media-middle">
-                                <span><i class="ti-vector f-s-40"></i></span>
-                            </div>
-                            <div class="media-body media-text-right">
-                                <h2 class="color-white text-white">27647</h2>
-                                <p class="m-b-0 text-white">成功执行任务</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card bg-danger p-20">
-                        <div class="media widget-ten">
-                            <div class="media-left meida media-middle">
-                                <span><i class="ti-location-pin f-s-40"></i></span>
-                            </div>
-                            <div class="media-body media-text-right">
-                                <h2 class="color-white text-white">278</h2>
-                                <p class="m-b-0 text-white">使用物品</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
             <!-- /# card -->
             <div class="card">
@@ -127,27 +106,14 @@
                         <table class="table table-hover ">
                             <thead>
                             <tr>
-                                <th>#</th>
+                                <th>序号</th>
                                 <th>名称</th>
                                 <th>价格</th>
                                 <th>数量</th>
                                 <th>使用</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Kolor Tea Shirt For Man</td>
-                                <td>7</td>
-                                <td>
-                                    <button type="button" class="btn btn-success btn-xs"><i class="ti-minus"></i></button>
-                                    7
-                                    <button type="button" class="btn btn-success btn-xs"><i class="ti-plus"></i></button>
-                                </td>
-                                <td class="color-primary">
-                                    <button type="button" class="btn btn-info btn-xs"><i class="ti-close"></i></button>
-                                </td>
-                            </tr>
+                            <tbody id="commodity_table">
                             </tbody>
                         </table>
                     </div>
