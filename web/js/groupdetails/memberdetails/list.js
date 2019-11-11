@@ -82,7 +82,7 @@ function getCommodity(){
     // alert(url);
     $.post(url, function (json) {
         Data = json;
-        // console.log(json);
+        console.log(json);
         var html="";
         for (var i = 0; i < json.length; i++) {
             if(json[i]==null)continue;
@@ -99,14 +99,21 @@ function getCommodity(){
             +"<td>"+commodity+"</td>"
             +"<td>"+grades+"</td>"
             +"<td>"
-                +"<button type=\"button\" class=\"btn btn-success btn-xs\"><i class=\"ti-minus\"></i></button>"
-                +"<span class=\"badge\">"+count+"</span>"
-                +"<button type=\"button\" class=\"btn btn-success btn-xs\"><i class=\"ti-plus\"></i></button>"
-            +"</td>"
-            +"<td class=\"color-primary\">"
+            if(auth==1){
+                html+="<button type=\"button\" class=\"btn btn-success btn-xs\"><i class=\"ti-minus\"></i></button>"
+            }
+            html+="<span class=\"badge\">"+count+"</span>"
+            if(auth==1){
+                html+="<button type=\"button\" class=\"btn btn-success btn-xs\"><i class=\"ti-plus\"></i></button>"
+                +"</td>"
+                +"<td class=\"color-primary\">"
                 +"<button type=\"button\" class=\"btn btn-info btn-xs\"><i class=\"ti-close\"></i></button>"
-            +"</td>"
-            +"</tr>"
+                +"</td>"
+                +"</tr>"
+            }else{
+                html+="</td>"
+                    +"<td><p class=\"badge badge-success\">无此权限</p></td>";
+            }
         }
         document.getElementById("commodity_table").innerHTML=html;
     });
@@ -136,9 +143,9 @@ function ReturnBack(){
 getAllRecord();
 
 function addGrades(){
-    if(Auth>1||UserId==3){
+    if(Auth>1){
         swal({
-                title: "输入数量",
+                title: "输入奖赏积分",
                 text: "1-1000",
                 type: "input",
                 showCancelButton: true,
@@ -182,7 +189,51 @@ function addGrades(){
     }
 }
 function subGrades(){
-
+    if(Auth>1){
+        swal({
+                title: "输入惩罚积分",
+                text: "1-1000",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                confirmButtonText: "确定",
+                cancelButtonText: "放弃",
+                animation: "slide-from-top",
+                inputPlaceholder: "输入区"
+            },function (num){
+                if (num<1||num>1000) {
+                    swal.showInputError("范围1-1000");
+                    return false;
+                }
+                swal({
+                    title: "输入备注",
+                    text: "可不填",
+                    type: "input",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: "确定",
+                    cancelButtonText: "放弃",
+                    animation: "slide-from-top",
+                    inputPlaceholder: "输入区"
+                },function (context) {
+                    num=-num;
+                    url=ContextPath+"/MemberPanel?action=modify_grades&operator_id="+UserId+"&group_id="+GroupId+
+                        "&member_id="+MemberId+"&grades="+num+"&context="+context;
+                    console.log(url);
+                    $.post(url, function (json2) {
+                        swal({
+                            title : "操作完成",
+                            type : "success",
+                        }, function() {
+                            location.reload();
+                        });
+                    });
+                })
+            }
+        );
+    }else{
+        Dialog.showError("提示","你无权进行此操作");
+    }
 }
 
 

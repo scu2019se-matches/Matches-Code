@@ -106,7 +106,7 @@ public class AccountAction extends HttpServlet
             }
             session.setAttribute("id", Integer.toString(rs.getInt("id")));
             session.setAttribute("username", rs.getString("username"));
-            session.setAttribute("email", rs.getInt("email"));
+            session.setAttribute("email", rs.getString("email"));
             session.setAttribute("auth", rs.getInt("auth"));
             session.setAttribute("login_time", System.currentTimeMillis());
             session.setAttribute("check", 1L); // reserved

@@ -142,8 +142,7 @@ public class GroupMember extends HttpServlet {
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException {
         HttpSession session = request.getSession();
         int user_id=Integer.parseInt(session.getAttribute("id").toString());
-//        int auth=Integer.parseInt(session.getAttribute("auth").toString());
-        int auth=1;
+        int auth=Integer.parseInt(session.getAttribute("auth")==null?"0":session.getAttribute("auth").toString());
         queryResult = new JSONArray("[]");
         rs.beforeFirst();
         while(rs.next())
