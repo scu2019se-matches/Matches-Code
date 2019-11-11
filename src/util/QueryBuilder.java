@@ -49,7 +49,7 @@ public class QueryBuilder{
                             break;
                         default:
                             System.out.printf("不支持的字段类型\"%s\"\n", dataType);
-//                            throw new NotImplementedException();
+                            throw new NotImplementedException();
                     }
                     dbconfig.getJSONObject(tableName).put(columnName, dataTypeId);
                 }
@@ -150,6 +150,7 @@ public class QueryBuilder{
             e.printStackTrace();
         }
     }
+
     public Object get(String key){
         if(!tableConfig.has(key)){
             throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
@@ -163,6 +164,10 @@ public class QueryBuilder{
         orderString=null;
     }
 
+    /**
+     *
+     * @return SQL的where子句
+     */
     public String getWhereClause(){
         StringBuilder sql = new StringBuilder();
         if(cons.keySet().size()<1){
@@ -175,11 +180,11 @@ public class QueryBuilder{
                 }
                 switch((DataType)tableConfig.get(key)){
                     case Integer:
-                        if(queryKs.get(key)!=null&&queryKs.get(key)==1){
-                            sql.append(String.format("`%s` like '%%%d%%'", key, cons.get(key)));
-                        }else{
+//                        if(queryKs.get(key)!=null&&queryKs.get(key)==1){
+//                            sql.append(String.format("`%s` like '%%%d%%'", key, cons.get(key)));
+//                        }else{
                             sql.append(String.format("`%s`=%d", key, cons.get(key)));
-                        }
+//                        }
                         break;
                     case Text:
                         if(queryKs.get(key)!=null&&queryKs.get(key)==1){
@@ -197,17 +202,31 @@ public class QueryBuilder{
         }
         return "where " + sql.toString();
     }
+
+    /**
+     *
+     * @return
+     */
     public String getOrderClause(){
         if(orderString==null||orderString=="null"){
             return "";
         }
         return " order by "+orderString;
     }
+
+    /**
+     *
+     * @return SQL查询语句
+     */
     public String getSelectStmt(){
         String sql = String.format("select * from `%s` %s %s", tableName, getWhereClause(),getOrderClause());
         return sql;
     }
 
+    /**
+     *
+     * @return SQL插入语句
+     */
     public String getInsertStmt(){
         StringBuilder keys = new StringBuilder();
         StringBuilder values = new StringBuilder();
@@ -235,6 +254,48 @@ public class QueryBuilder{
             e.printStackTrace();
         }
         String sql = String.format("insert into `%s` (%s) values(%s)", tableName, keys.toString(), values.toString());
+        return sql;
+    }
+
+    /**
+     *
+     * @return SQL修改语句
+     */
+    public String getUpdateStmt(){
+        assert(cons.containsKey("id"));
+        // [TODO] 如果没有修改怎么处理
+        assert(cons.size() >= 2);
+        StringBuilder s = new StringBuilder();
+        try {
+            for(String key : cons.keySet()){
+                if(s.length() != 0){
+                    s.append(", ");
+                }
+                switch((DataType)tableConfig.get(key)){
+                    case Integer:
+                        s.append(String.format("`%s`=%d", key, cons.get(key)));
+                        break;
+                    case Text:
+                        s.append(String.format("`%s`='%s'", key, cons.get(key)));
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String sql = String.format("update `%s` set %s where `id`=%d", tableName, s.toString(), (int)cons.get("id"));
+        return sql;
+    }
+
+    /**
+     *
+     * @return SQL删除语句
+     */
+    public String getDeleteStmt(){
+        assert(cons.containsKey("id"));
+        String sql = String.format("delete from `%s` where `id`=%d", tableName, (int)cons.get("id"));
         return sql;
     }
 
