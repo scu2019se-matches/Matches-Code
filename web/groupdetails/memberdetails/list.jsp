@@ -33,6 +33,7 @@
     <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
     <input type="hidden" id="group_id" name="group_id" value="<%=request.getParameter("group_id")%>" />
     <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
+    <input type="hidden" id="auth" name="auth" value="<%=session.getAttribute("auth")%>" />
     <input type="hidden" id="member_id" name="member_id" value="<%=request.getParameter("member_id")%>" />
 
     <!-- Page wrapper  -->
@@ -56,6 +57,8 @@
                         <%--<label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>--%>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="commodityRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">进入商城</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="taskRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查看任务</span></a> </li>
+                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="addGrades()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">手动奖励</span></a> </li>
+                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="subGrades()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">手动扣除</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="ReturnBack()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">返回</span></a> </li>
                     </ul>
                 </div>
@@ -124,18 +127,7 @@
                     <h4>个人记录</h4>
                 </div>
                 <div class="card-body">
-                    <ul class="timeline">
-                        <li>
-                            <div class="timeline-badge success"><i class="fa fa-check-circle-o"></i></div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h5 class="timeline-title">完成了英语学习半小时</h5>
-                                </div>
-                                <div class="timeline-body">
-                                    <p>15分钟前</p>
-                                </div>
-                            </div>
-                        </li>
+                    <ul class="timeline" id="member_record">
                     </ul>
                 </div>
             </div>

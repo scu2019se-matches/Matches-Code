@@ -19,6 +19,8 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @WebServlet("/MemberPanel")
 public class MemberPanel extends HttpServlet {
@@ -59,7 +61,9 @@ public class MemberPanel extends HttpServlet {
                 case "getStatistics":
                     getStatistics(request, response);
                     break;
-
+                case "modify_grades":
+                    modifyGrades(request, response);
+                    break;
                 default:
                     System.out.println("memberDetails: invalid action: "+action);
                     break;
@@ -110,10 +114,37 @@ public class MemberPanel extends HttpServlet {
 
     }
     private void getStatistics(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
 
+        String groupId=request.getParameter("group_id");
+        String memberId=request.getParameter("member_id");
+        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
+        {
+            System.out.println("getResult exist_result=false or null");
+            queryAnotherBuilder.clear();
+
+            queryAnotherBuilder.set("groupId",Integer.parseInt(groupId));
+            queryAnotherBuilder.set("memberId",Integer.parseInt(memberId));
+            queryAnotherBuilder.set("orderBy","createTime desc");
+
+            String sql=queryAnotherBuilder.getSelectStmt();
+            DatabaseHelper db=new DatabaseHelper();
+            ResultSet rs=db.executeQuery(sql);
+            processRecord(request,rs);
+            session.setAttribute("exist_result", false);
+        }
+        out.print(queryResult);
+        session.setAttribute("queryResult",queryResult);
+        out.flush();
+        out.close();
+        System.out.println("exit member_record getResult");
     }
 
+    private void modifyGrades(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
 
+    }
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();
         int user_id=Integer.parseInt(session.getAttribute("id").toString());
@@ -134,6 +165,31 @@ public class MemberPanel extends HttpServlet {
             }else{
                 item.put("auth", 0);
             }
+            queryResult.put(item);
+        }
+    }
+    private void processRecord(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException{
+        HttpSession session = request.getSession();
+        queryResult = new JSONArray("[]");
+        rs.beforeFirst();
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm");
+//        String queryTime=dateFormat.format(new Date());
+        while(rs.next())
+        {
+            JSONObject item = new JSONObject();
+            item.put("id", rs.getInt("id"));
+            item.put("group_id", rs.getInt("groupId"));
+            item.put("operator_id", rs.getInt("operatorId"));
+            item.put("operator", rs.getString("operator"));
+            item.put("member_id", rs.getInt("memberId"));
+            item.put("member", rs.getString("member"));
+            item.put("object", rs.getString("object"));
+            item.put("type", rs.getString("type"));
+            item.put("context", rs.getString("context"));
+            item.put("remarks", rs.getString("remarks"));
+            item.put("type", rs.getString("type"));
+//            item.put("create_time",dateFormat.format((rs.getString("createTime"))));
+            item.put("create_time",rs.getString("createTime"));
             queryResult.put(item);
         }
     }
