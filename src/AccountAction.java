@@ -48,9 +48,9 @@ public class AccountAction extends HttpServlet
                 case "register":
                     register(request, response);
                     break;
-//                case "getmenu":
-//                    getMenu(request, response);
-//                    break;
+                case "getmenu":
+                    getMenu(request, response);
+                    break;
             }
         }
         catch(Exception ex)
@@ -107,6 +107,7 @@ public class AccountAction extends HttpServlet
             session.setAttribute("id", Integer.toString(rs.getInt("id")));
             session.setAttribute("username", rs.getString("username"));
             session.setAttribute("email", rs.getInt("email"));
+            session.setAttribute("auth", rs.getInt("auth"));
             session.setAttribute("login_time", System.currentTimeMillis());
             session.setAttribute("check", 1L); // reserved
             session.setAttribute("login_errno", 0);
@@ -122,7 +123,7 @@ public class AccountAction extends HttpServlet
         session.removeAttribute("id");
         session.removeAttribute("username");
         session.removeAttribute("login_time");
-        session.removeAttribute("authorization");
+        session.removeAttribute("auth");
         session.removeAttribute("check");
         response.sendRedirect("login.jsp");
     }
@@ -151,6 +152,7 @@ public class AccountAction extends HttpServlet
                 q.set("username", request.getParameter("username"));
                 q.set("fullname", request.getParameter("fullname"));
                 q.set("gender", Integer.parseInt(request.getParameter("gender")));
+                q.set("auth", 1); // 1 for user, >1 for admin
                 String password = request.getParameter("password");
                 q.set("password", MD5Util.MD5(password));
                 db.execute(q.getInsertStmt());
@@ -165,54 +167,52 @@ public class AccountAction extends HttpServlet
         out.close();
     }
 
-//    private void getMenu(HttpServletRequest request, HttpServletResponse response) throws SQLException, JSONException, IOException {
-//        System.out.println("enter AccountAction.getMenu");
-//
-//        HttpSession session = request.getSession();
-//        DatabaseHelper db=new DatabaseHelper();
-//
-//        if(session.getAttribute("guid")==null)
-//        {
-//            System.out.println("Authorization.getMenu: error: not login");
-//            return;
-//        }
-//        int auth=(int)session.getAttribute("authorization");
-//        System.out.printf("auth = %d\n", auth);
-//
-//        String sql=String.format("select * from `menu_tree` where authorization&%d>0", auth);
-//        System.out.println(sql);
-//        ResultSet rs2 =db.executeQuery(sql);
-//        JSONArray menu=new JSONArray();
-//        while(rs2.next())
-//        {
-//            if(rs2.getString("parent")==null)
-//            {
-//                JSONObject header=new JSONObject();
-//                header.put("title", rs2.getString("title"));
-//                header.put("sub", new JSONArray());
-//                menu.put(rs2.getInt("id"), header);
-//            }
-//        }
-//        rs2.beforeFirst();
-//        while(rs2.next())
-//        {
-//            if(rs2.getString("parent")!=null)
-//            {
-//                JSONObject item=new JSONObject();
-//                int parent = rs2.getInt("parent");
-//                item.put("title", rs2.getString("title"));
-//                item.put("href", rs2.getString("href").length()>0 ? rs2.getString("href") : "#");
-//                ((JSONArray)(((JSONObject)(menu.get(parent))).get("sub"))).put(item);
-//            }
-//        }
-//
-//        response.setContentType("application/json; charset=UTF-8");
-//        PrintWriter out = response.getWriter();
-//        out.print(menu);
-//        out.flush();
-//        out.close();
-//
-//        System.out.println("exit AccountAction.getMenu");
-//    }
+    private void getMenu(HttpServletRequest request, HttpServletResponse response) throws SQLException, JSONException, IOException {
+        System.out.println("enter AccountAction.getMenu");
+
+        HttpSession session = request.getSession();
+        if(session.getAttribute("auth") == null)
+        {
+            System.out.println("Authorization.getMenu: error: not login");
+            return;
+        }
+        int auth = (int)session.getAttribute("auth");
+
+        JSONArray menu = new JSONArray();
+        String sql = String.format("select * from `menutree` where `auth`&%d>0", auth);
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs2 = db.executeQuery(sql);
+            while(rs2.next())
+            {
+                if(rs2.getString("parent") == null)
+                {
+                    JSONObject header = new JSONObject();
+                    header.put("title", rs2.getString("title"));
+                    header.put("sub", new JSONArray());
+                    menu.put(rs2.getInt("id"), header);
+                }
+            }
+            rs2.beforeFirst();
+            while(rs2.next())
+            {
+                if(rs2.getString("parent") != null)
+                {
+                    JSONObject item = new JSONObject();
+                    int parent = rs2.getInt("parent");
+                    item.put("title", rs2.getString("title"));
+                    item.put("href", rs2.getString("href").length()>0 ? rs2.getString("href") : "#");
+                    ((JSONArray)(((JSONObject)(menu.get(parent))).get("sub"))).put(item);
+                }
+            }
+        }
+
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.print(menu);
+        out.flush();
+        out.close();
+
+        System.out.println("exit AccountAction.getMenu");
+    }
 
 }
