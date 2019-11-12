@@ -112,7 +112,7 @@ function getCommodity(){
                 +"</tr>"
             }else{
                 html+="</td>"
-                    +"<td><p class=\"badge badge-success\">无此权限</p></td>";
+                    +"<td><p class=\"badge badge-warning\">无此权限</p></td>";
             }
         }
         document.getElementById("commodity_table").innerHTML=html;

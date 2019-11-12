@@ -222,3 +222,8 @@ function taskRecord(){
     var group_id=$("#group_id").val();
     window.location.href="../task/list.jsp?group_id="+group_id;
 }
+function toMyDetails(){
+    var url="../memberdetails/list.jsp?group_id="+GroupId+"&member_id="+UserId;
+    window.location.href=url;
+}
+

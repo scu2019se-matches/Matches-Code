@@ -311,3 +311,6 @@ function searchRecord(){
     getSelectedRecord(url);
 };
 Record();
+function ReturnBack(){
+    history.go(-1);
+}

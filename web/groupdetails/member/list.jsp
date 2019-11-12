@@ -58,6 +58,7 @@
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">排序</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="getAllRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">显示所有</span></a> </li>
+                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="toMyDetails()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">我的统计</span></a> </li>
 
 
                         <li class="nav-item dropdown">

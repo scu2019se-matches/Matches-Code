@@ -28,6 +28,9 @@
     <div id="main-wrapper">
         <%@include file="page_header.jsp"%>
         <%@include file="page_sidebar_menu.jsp"%>
+        <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
+        <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
+        <input type="hidden" id="auth" name="auth" value="<%=session.getAttribute("auth")%>" />
         <!-- Page wrapper  -->
         <div class="page-wrapper">
             <!-- Bread crumb -->
@@ -109,13 +112,7 @@
                             <div class="todo-list">
                                 <div class="tdl-holder">
                                     <div class="tdl-content">
-                                        <ul>
-                                            <li class="color-primary">
-                                                <label>
-                                                    <input type="checkbox"><i class="bg-primary"></i><span>口语练习半小时</span>
-                                                    <%--<a href='#' class="ti-close"></a>--%>
-                                                </label>
-                                            </li>
+                                        <ul id="task_list_todo">
                                         </ul>
                                     </div>
                                 </div>
@@ -170,9 +167,11 @@
 </body>
 
 </html>
+
 <script type="text/javascript">
     jQuery(document).ready(function() {
         MobileClass.init();
         Page.init();
     });
 </script>
+<script src="<%=request.getContextPath()%>/js/userpanel.js"></script>

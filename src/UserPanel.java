@@ -47,22 +47,18 @@ public class UserPanel extends HttpServlet {
         {
             switch(action)
             {
-                case "get_record":
-                    getRecord(request, response);
+                case "get_task":
+                    getTask(request, response);
                     break;
-                case "add_record":
-                    addRecord(request, response);
+                case "finish_task":
+                    finishTask(request, response);
                     break;
-                case "delete_record":
-                    deleteRecord(request, response);
+                case "recover_task":
+                    recoverTask(request, response);
                     break;
-                case "modify_record":
-                    modifyRecord(request, response);
+                case "get_activity":
+                    getActivity(request, response);
                     break;
-                case "getStatistics":
-                    getStatistics(request, response);
-                    break;
-
                 default:
                     System.out.println("group: invalid action: "+action);
                     break;
@@ -73,7 +69,30 @@ public class UserPanel extends HttpServlet {
             ex.printStackTrace();
         }
     }
-    public void addRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void getTask(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException, ParseException {
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+
+        String userId=request.getParameter("user_id");
+        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
+        {
+            System.out.println("getResult exist_result=false or null");
+            String sql="select * from task where groupId in" +
+                    "(select groupId from groupmember where userId=" +userId+ ")";
+            DatabaseHelper db=new DatabaseHelper();
+            ResultSet rs=db.executeQuery(sql);
+            processTask(request,rs);
+            session.setAttribute("exist_result", false);
+        }
+        out.print(queryResult);
+        session.setAttribute("queryResult",queryResult);
+        out.flush();
+        out.close();
+        System.out.println("exit userpanel_task getResult");
+    }
+
+    public void finishTask(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession();
         request.setCharacterEncoding("utf-8");	//设置编码
         DatabaseHelper db = new DatabaseHelper();
@@ -92,59 +111,19 @@ public class UserPanel extends HttpServlet {
 
         sql=queryBuilder.getInsertStmt();
         db.execute(sql);
-
-
-
         sql=queryAnotherBuilder.getInsertStmt();
         db = new DatabaseHelper();
         db.execute(sql);
         response.sendRedirect("group/list.jsp");
     }
-    private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException, ParseException {
-        response.setContentType("application/json; charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        HttpSession session = request.getSession();
-
-        String groupId=request.getParameter("group_id");
-        String grades=request.getParameter("grades");
-        String context=request.getParameter("context");
-        String orderBy=request.getParameter("orderby");
-        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
-        {
-            System.out.println("getResult exist_result=false or null");
-            queryBuilder.clear();
-
-            queryBuilder.set("groupId",Integer.parseInt(groupId));
-            if(grades!=null){
-                queryBuilder.set("grades",Integer.parseInt(grades));
-            }
-            queryBuilder.set("context",context,1);
-            queryBuilder.set("orderBy",orderBy);
-
-            String sql=queryBuilder.getSelectStmt();
-            DatabaseHelper db=new DatabaseHelper();
-            ResultSet rs=db.executeQuery(sql);
-            processResult(request,rs);
-            session.setAttribute("exist_result", false);
-        }
-        out.print(queryResult);
-        session.setAttribute("queryResult",queryResult);
-        out.flush();
-        out.close();
-        System.out.println("exit group_task getResult");
-    }
-    private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
+    private void recoverTask(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
 
     }
-    private void modifyRecord(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
-
-    }
-    private void getStatistics(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
+    private void getActivity(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
 
     }
 
-
-    private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
+    private void processTask(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();
         int user_id=Integer.parseInt(session.getAttribute("id").toString());
         int auth=Integer.parseInt(session.getAttribute("auth")==null?"0":session.getAttribute("auth").toString());
@@ -187,8 +166,6 @@ public class UserPanel extends HttpServlet {
                 queryAnotherBuilder.set("taskId",rs.getInt("id"));
                 queryAnotherBuilder.set("userId",user_id);
                 finished= db.executeQuery(queryAnotherBuilder.getSelectStmt());
-//                finished.next();
-//                System.out.println("finished:"+finished);
                 if(!finished.next()){
                     my_status=1;
                 }
@@ -196,8 +173,6 @@ public class UserPanel extends HttpServlet {
             }
             item.put("task_status", task_status);
             item.put("my_status", my_status);
-//            System.out.println("my_status:"+my_status);
-//            item.put("user_id", user_id);
             queryResult.put(item);
         }
     }
