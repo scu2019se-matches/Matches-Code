@@ -120,6 +120,7 @@ public class GroupManagement extends HttpServlet {
         sql=queryAnotherBuilder.getInsertStmt();
         db = new DatabaseHelper();
         db.execute(sql);
+        db.close();
         response.sendRedirect("group/list.jsp");
     }
     private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
@@ -152,6 +153,7 @@ public class GroupManagement extends HttpServlet {
             ResultSet rs=db.executeQuery(sql);
             processResult(request,rs);
             session.setAttribute("exist_result", false);
+            db.close();
         }
         for(int i=0;i<queryResult.length();i++)
         {

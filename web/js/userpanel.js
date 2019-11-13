@@ -17,7 +17,8 @@ function getTask(){
         var html="";
         var html1="";
         for (var i = 0; i < json.length; i++) {
-            var task_id = json[i]["task_id"];
+            var task_id = json[i]["id"];
+            var group_id = json[i]["group_id"];
             var context = json[i]["context"];
             var creator = json[i]["creator"];
             var grades = json[i]["grades"];
@@ -30,7 +31,9 @@ function getTask(){
             if(my_status==1){
                 html+="<li class=\"color-primary\">"
                     +"<label>"
-                    +"<input type=\"checkbox\"><i class=\"bg-primary\"></i><span>"+creator+"发布:     "+context+"</span>"
+                    +"<input type=\"checkbox\" id=\""+"task-"+group_id+"-"+task_id+"\">"
+                    +"<i class=\"bg-primary\"></i><span>"
+                    +creator+"发布:     "+context+"</span>"
                     +"</label>"
                     +"</li>"
             }else if(my_status==0){
@@ -41,14 +44,27 @@ function getTask(){
                     +"</li>"
             }
         }
+        if(json.length==0){
+            html="<div class='alert alert-light'>暂无任务</div>";
+        }
         document.getElementById("task_list_todo").innerHTML=html+html1;
+
     });
 };
-
-function changeTimeFormat(time){
-    return time;
-    time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
-    time = time.split(':');
-    return time[1]+"月"+time[2]+"日  "+time[3]+":"+time[4];
+$('ul#task_list_todo').on('click','input',function () {
+    var id=$(this)[0].id;
+    [group_id,task_id]=getTaskByRegex(id);
+    var url=initurl+"?action=finish_task&group_id="+group_id+"&user_id="+UserId
+        +"&task_id="+task_id;
+    $.post(url, function (json) {
+        getTask();
+    });
+});
+function getTaskByRegex(input){
+    if(input){
+        input = input.split('-');
+        return [input[1],input[2]];
+    }
+    return [0,0];
 }
 getAllRecord();

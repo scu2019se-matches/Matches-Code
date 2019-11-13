@@ -88,7 +88,7 @@ function Record(){
                                 "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>";
                         }
                         if(full[4]==1){
-                            sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">标记完成</button>";
+                            sReturn=sReturn+"<button type=\"button\" class=\"finish-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">标记完成</button>";
                         }
                         return sReturn;
                     },
@@ -102,13 +102,10 @@ function Record(){
     });
     getAllRecord();
 
-    $('#example23 tbody').on('click', '.enter-button', function (event) {
+    $('#example23 tbody').on('click', '.finish-button', function (event) {
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
-        var id = data[0];
-        // var user_id="<%=session.getAttribute("id")%>";
-        var user_id=3;
-        enterGroup(id,user_id);
+        finishTask(data[0],data[1],data[6]);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
@@ -173,6 +170,15 @@ function Record(){
         Dialog.showSuccess("修改成功","操作成功");
     });
 }
+function finishTask(task,grades,task_id){
+    var url=ContextPath+module+"?action=finish_task&group_id="+GroupId+"&user_id="+UserId
+        +"&task_id="+task_id+"&grades="+grades+"&task="+task;
+    // console.log(url);
+    $.post(url, function (jsonObject) {
+        // history.go(-1);
+        getAllRecord();
+    });
+}
 function modifyRecord(url) {
     $.post(url, function (json) {
 
@@ -196,7 +202,7 @@ function getAllRecord(){
         Data = json;
         // console.log(json);
         for (var i = 0; i < json.length; i++) {
-            var task_id = json[i]["task_id"];
+            var task_id = json[i]["id"];
             var context = json[i]["context"];
             var grades = json[i]["grades"];
             var create_time = json[i]["create_time"];
@@ -206,7 +212,7 @@ function getAllRecord(){
             var my_status = json[i]["my_status"];
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
-            dataTable.row.add([context, grades,end_time,task_status,my_status,auth]).draw().node();
+            dataTable.row.add([context, grades,end_time,task_status,my_status,auth,task_id]).draw().node();
         }
     });
 }
@@ -216,7 +222,7 @@ function getSelectedRecord(url){
     $.post(url, function (json) {
         Data = json;
         for (var i = 0; i < json.length; i++) {
-            var task_id = json[i]["task_id"];
+            var task_id = json[i]["id"];
             var context = json[i]["context"];
             var grades = json[i]["grades"];
             var create_time = json[i]["create_time"];
@@ -226,7 +232,7 @@ function getSelectedRecord(url){
             var my_status = json[i]["my_status"];
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
-            dataTable.row.add([context, grades,end_time,task_status,my_status,auth]).draw().node();
+            dataTable.row.add([context, grades,end_time,task_status,my_status,auth,task_id]).draw().node();
         }
     });
 }
@@ -310,7 +316,11 @@ function searchRecord(){
     }
     getSelectedRecord(url);
 };
-Record();
+function toMyDetails(){
+    var url="../memberdetails/list.jsp?group_id="+GroupId+"&member_id="+UserId;
+    window.location.href=url;
+}
 function ReturnBack(){
     history.go(-1);
 }
+Record();

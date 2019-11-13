@@ -28,6 +28,7 @@ public class GroupMember extends HttpServlet {
 
     private static JSONArray queryResult = null;
     private static QueryBuilder queryBuilder = null;
+    private static QueryBuilder GroupBuilder = null;
     static {
         try {
             queryResult = new JSONArray("[]");
@@ -35,6 +36,7 @@ public class GroupMember extends HttpServlet {
             e.printStackTrace();
         }
         queryBuilder = new QueryBuilder("groupmember");
+        GroupBuilder = new QueryBuilder("group");
     }
 
     @Override
@@ -92,6 +94,17 @@ public class GroupMember extends HttpServlet {
         String sql=queryBuilder.getInsertStmt();
         DatabaseHelper db = new DatabaseHelper();
         db.execute(sql);
+
+        GroupBuilder.clear();
+        GroupBuilder.set("id",Integer.parseInt(groupId));
+        sql=GroupBuilder.getSelectStmt();
+        ResultSet rs=db.executeQuery(sql);
+        rs.next();
+        int userNumber=rs.getInt("userNumber");
+        GroupBuilder.set("userNumber",userNumber+1);
+        sql=GroupBuilder.getUpdateStmt();
+        db.execute(sql);
+        db.close();
         response.sendRedirect("groupdetails/member/list.jsp");
     }
     private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
@@ -121,6 +134,7 @@ public class GroupMember extends HttpServlet {
             ResultSet rs=db.executeQuery(sql);
             processResult(request,rs);
             session.setAttribute("exist_result", false);
+            db.close();
         }
         out.print(queryResult);
         session.setAttribute("queryResult",queryResult);

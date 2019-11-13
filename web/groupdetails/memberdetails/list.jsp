@@ -126,9 +126,8 @@
                 <div class="card-title">
                     <h4>个人记录</h4>
                 </div>
-                <div class="card-body">
-                    <ul class="timeline" id="member_record">
-                    </ul>
+                <div class="card-body" id="member_record">
+
                 </div>
             </div>
         </div>

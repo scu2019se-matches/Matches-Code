@@ -28,6 +28,8 @@ public class MemberPanel extends HttpServlet {
     private static JSONArray queryResult = null;
     private static QueryBuilder queryBuilder = null;
     private static QueryBuilder queryAnotherBuilder = null;
+    private static QueryBuilder taskHistoryBuilder = null;
+    private static QueryBuilder groupMemberBuilder = null;
     static {
         try {
             queryResult = new JSONArray("[]");
@@ -36,6 +38,8 @@ public class MemberPanel extends HttpServlet {
         }
         queryBuilder = new QueryBuilder("membercommodity");
         queryAnotherBuilder = new QueryBuilder("memberrecord");
+        taskHistoryBuilder = new QueryBuilder("taskhistory");
+        groupMemberBuilder = new QueryBuilder("groupmember");
     }
 
     @Override
@@ -100,6 +104,7 @@ public class MemberPanel extends HttpServlet {
             ResultSet rs=db.executeQuery(sql);
             processResult(request,rs);
             session.setAttribute("exist_result", false);
+            db.close();
         }
         out.print(queryResult);
         session.setAttribute("queryResult",queryResult);
@@ -133,6 +138,7 @@ public class MemberPanel extends HttpServlet {
             DatabaseHelper db=new DatabaseHelper();
             ResultSet rs=db.executeQuery(sql);
             processRecord(request,rs);
+            db.close();
             session.setAttribute("exist_result", false);
         }
         out.print(queryResult);
@@ -143,7 +149,49 @@ public class MemberPanel extends HttpServlet {
     }
 
     private void modifyGrades(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
+        System.out.println("enter member_grades modify");
+        request.setCharacterEncoding("utf-8");	//设置编码
+        HttpSession session = request.getSession();
+        String operatorId=request.getParameter("operator_id");
+        String groupId=request.getParameter("group_id");
+        String memberId=request.getParameter("member_id");
+        String grades=request.getParameter("grades");
+        String remarks=request.getParameter("remarks");
+        //查询id
+        DatabaseHelper db=new DatabaseHelper();
+        groupMemberBuilder.clear();
+        groupMemberBuilder.set("groupId",Integer.parseInt(groupId));
+        groupMemberBuilder.set("userId",Integer.parseInt(memberId));
+        String sql=groupMemberBuilder.getSelectStmt();
+        ResultSet rs=db.executeQuery(sql);
+        rs.next();
+        int id=rs.getInt("id");
+        int init_grades=rs.getInt("grades");
+        String member=rs.getString("user");
+        //更改积分
+//        System.out.println("grades:"+grades+"init_grades:"+init_grades);
+        groupMemberBuilder.set("id",id);
+        groupMemberBuilder.set("grades",init_grades+Integer.parseInt(grades));
+        sql=groupMemberBuilder.getUpdateStmt();
+        db.execute(sql);
 
+        //添加记录
+        queryAnotherBuilder.clear();
+        queryAnotherBuilder.set("groupId",Integer.parseInt(groupId));
+        queryAnotherBuilder.set("operatorId",Integer.parseInt(operatorId));
+        queryAnotherBuilder.set("operator",session.getAttribute("username"));
+        queryAnotherBuilder.set("memberId",Integer.parseInt(memberId));
+        queryAnotherBuilder.set("member",member);
+        queryAnotherBuilder.set("object","grades");
+        queryAnotherBuilder.set("type","modify");
+        queryAnotherBuilder.set("context","积分"+grades);
+        queryAnotherBuilder.set("remarks",remarks);
+        queryAnotherBuilder.set("createTime",(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));
+//        System.out.println("sql:"+sql);
+        sql=queryAnotherBuilder.getInsertStmt();
+        db.execute(sql);
+        db.close();
+        System.out.println("exit member_grades modify");
     }
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();

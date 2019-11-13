@@ -15,7 +15,7 @@ function getAllRecord(){
 function getUserData(){
     var url=ContextPath+"/GroupMember?action=get_record&group_id="+GroupId+"&user_id="+MemberId;
     $.post(url, function (json) {
-        Data = json;
+        // Data = json;
         // console.log(json);
         var grades = json[0].grades;
         var commodity = json[0].commodity;
@@ -26,9 +26,9 @@ function getUserData(){
 function statisticRecord(){
     var url=initurl+"?action=getStatistics&group_id="+GroupId+"&member_id="+MemberId;
     $.post(url, function (json) {
-        Data = json;
+        // Data = json;
         // console.log(json);
-        var html="";
+        var html="<ul class=\"timeline\" >";
         for (var i = 0; i < json.length; i++) {
             var id = json[i]["id"];
             var operator_id = json[i]["operator_id"];
@@ -58,8 +58,9 @@ function statisticRecord(){
                 html+="          <h5 class=\"timeline-title\">"+operator+"完成了任务 "+context+"</h5>"
             }else if(object=="grades"){
                 html+="          <h5 class=\"timeline-title\">"+operator+"改动了积分 "+context+"</h5>"
-                html+="<p class=\"badge badge-success\">"+"备注:"+remarks+"</p>"
-
+                if(remarks){
+                    html+="<p class=\"badge badge-success\">"+"备注:"+remarks+"</p>"
+                }
             }else if(type=="buy"){
                 html+="          <h5 class=\"timeline-title\">"+operator+"购买了物品 "+context+"</h5>"
             }else if(type=="sell"){
@@ -74,6 +75,11 @@ function statisticRecord(){
             +      "</div>"
             +"</li>"
         }
+        if(json.length==0){
+            html="<div class='alert alert-warning'>暂时还没有记录哦</div>";
+        }else{
+            html+='            </ul>';
+        }
         document.getElementById("member_record").innerHTML=html;
     });
 };
@@ -81,8 +87,8 @@ function getCommodity(){
     var url=initurl+"?action=get_record&group_id="+GroupId+"&member_id="+MemberId;
     // alert(url);
     $.post(url, function (json) {
-        Data = json;
-        console.log(json);
+        // Data = json;
+        // console.log(json);
         var html="";
         for (var i = 0; i < json.length; i++) {
             if(json[i]==null)continue;
@@ -115,6 +121,10 @@ function getCommodity(){
                     +"<td><p class=\"badge badge-warning\">无此权限</p></td>";
             }
         }
+        if(json.length==0){
+            html="<tr>"
+            +"<th scope=\"row\">还没有任何物品哦</th>"
+        }
         document.getElementById("commodity_table").innerHTML=html;
     });
 }
@@ -140,7 +150,6 @@ function taskRecord(){
 function ReturnBack(){
     history.go(-1);
 }
-getAllRecord();
 
 function addGrades(){
     if(Auth>1){
@@ -169,16 +178,16 @@ function addGrades(){
                     cancelButtonText: "放弃",
                     animation: "slide-from-top",
                     inputPlaceholder: "输入区"
-                },function (context) {
+                },function (remarks) {
                     url=ContextPath+"/MemberPanel?action=modify_grades&operator_id="+UserId+"&group_id="+GroupId+
-                    "&member_id="+MemberId+"&grades="+num+"&context="+context;
+                    "&member_id="+MemberId+"&grades="+num+"&remarks="+remarks;
                     console.log(url);
                     $.post(url, function (json2) {
                         swal({
                             title : "操作完成",
                             type : "success",
                         }, function() {
-                            location.reload();
+                            history.go(0);
                         });
                     });
                 })
@@ -215,17 +224,17 @@ function subGrades(){
                     cancelButtonText: "放弃",
                     animation: "slide-from-top",
                     inputPlaceholder: "输入区"
-                },function (context) {
+                },function (remarks) {
                     num=-num;
                     url=ContextPath+"/MemberPanel?action=modify_grades&operator_id="+UserId+"&group_id="+GroupId+
-                        "&member_id="+MemberId+"&grades="+num+"&context="+context;
+                        "&member_id="+MemberId+"&grades="+num+"&remarks="+remarks;
                     console.log(url);
                     $.post(url, function (json2) {
                         swal({
                             title : "操作完成",
                             type : "success",
                         }, function() {
-                            location.reload();
+                            history.go(0);
                         });
                     });
                 })
@@ -236,9 +245,10 @@ function subGrades(){
     }
 }
 
+getAllRecord();
 
 function changeTimeFormat(time){
-    return time;
+    // return time;
     time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
     time = time.split(':');
     return time[1]+"月"+time[2]+"日  "+time[3]+":"+time[4];

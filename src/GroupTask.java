@@ -30,6 +30,8 @@ public class GroupTask extends HttpServlet {
     private static JSONArray queryResult = null;
     private static QueryBuilder queryBuilder = null;
     private static QueryBuilder queryAnotherBuilder = null;
+    private static QueryBuilder memberRecordBuilder = null;
+    private static QueryBuilder groupMemberBuilder = null;
     static {
         try {
             queryResult = new JSONArray("[]");
@@ -38,6 +40,8 @@ public class GroupTask extends HttpServlet {
         }
         queryBuilder = new QueryBuilder("task");
         queryAnotherBuilder = new QueryBuilder("taskhistory");
+        memberRecordBuilder = new QueryBuilder("memberrecord");
+        groupMemberBuilder = new QueryBuilder("groupmember");
     }
 
     @Override
@@ -63,7 +67,9 @@ public class GroupTask extends HttpServlet {
                 case "getStatistics":
                     getStatistics(request, response);
                     break;
-
+                case "finish_task":
+                    finishTask(request, response);
+                    break;
                 default:
                     System.out.println("group: invalid action: "+action);
                     break;
@@ -75,31 +81,7 @@ public class GroupTask extends HttpServlet {
         }
     }
     public void addRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpSession session = request.getSession();
-        request.setCharacterEncoding("utf-8");	//设置编码
-        DatabaseHelper db = new DatabaseHelper();
-        String sql="";
 
-        //增加组
-        String title=request.getParameter("title");
-        String password=request.getParameter("password");
-        String creatorId=(String)session.getAttribute("id");
-        String creator=(String)session.getAttribute("username");
-        String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
-
-        ResultSet rs = db.executeQuery("select max(id) from `group`");
-        rs.next();
-        int groupId=1;
-
-        sql=queryBuilder.getInsertStmt();
-        db.execute(sql);
-
-
-
-        sql=queryAnotherBuilder.getInsertStmt();
-        db = new DatabaseHelper();
-        db.execute(sql);
-        response.sendRedirect("group/list.jsp");
     }
     private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException, ParseException {
         response.setContentType("application/json; charset=UTF-8");
@@ -127,6 +109,7 @@ public class GroupTask extends HttpServlet {
             ResultSet rs=db.executeQuery(sql);
             processResult(request,rs);
             session.setAttribute("exist_result", false);
+            db.close();
         }
         out.print(queryResult);
         session.setAttribute("queryResult",queryResult);
@@ -142,6 +125,63 @@ public class GroupTask extends HttpServlet {
     }
     private void getStatistics(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
 
+    }
+    private void finishTask(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        DatabaseHelper db = new DatabaseHelper();
+        String sql="";
+
+        //增加积分
+        String groupId=request.getParameter("group_id");
+        String userId=request.getParameter("user_id");
+        String grades=request.getParameter("grades");
+        String taskId=request.getParameter("task_id");
+        String task=request.getParameter("task");
+        String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
+        //查询id
+        groupMemberBuilder.clear();
+        groupMemberBuilder.set("groupId",Integer.parseInt(groupId));
+        groupMemberBuilder.set("userId",Integer.parseInt(userId));
+        sql=groupMemberBuilder.getSelectStmt();
+        ResultSet rs=db.executeQuery(sql);
+        rs.next();
+        int id=rs.getInt("id");
+        int init_grades=rs.getInt("grades");
+        String member=rs.getString("user");
+        //更改积分
+        groupMemberBuilder.set("id",id);
+        groupMemberBuilder.set("grades",init_grades+Integer.parseInt(grades));
+        sql=groupMemberBuilder.getUpdateStmt();
+        db.execute(sql);
+
+
+        //添加操作记录
+        memberRecordBuilder.clear();
+        memberRecordBuilder.set("groupId",Integer.parseInt(groupId));
+        memberRecordBuilder.set("operatorId",Integer.parseInt(userId));
+        memberRecordBuilder.set("operator",session.getAttribute("username"));
+        memberRecordBuilder.set("memberId",Integer.parseInt(userId));
+        memberRecordBuilder.set("member",member);
+        memberRecordBuilder.set("object","task");
+        memberRecordBuilder.set("type","tag");
+        memberRecordBuilder.set("context",task+"+"+grades);
+        memberRecordBuilder.set("createTime",createTime);
+        sql=memberRecordBuilder.getInsertStmt();
+        db.execute(sql);
+
+
+        //添加任务历史记录
+        queryAnotherBuilder.clear();
+        queryAnotherBuilder.set("groupId",Integer.parseInt(groupId));
+        queryAnotherBuilder.set("taskId",Integer.parseInt(taskId));
+        queryAnotherBuilder.set("userId",Integer.parseInt(userId));
+        queryAnotherBuilder.set("user",session.getAttribute("username"));
+        queryAnotherBuilder.set("createTime",createTime);
+        sql=queryAnotherBuilder.getInsertStmt();
+        db.execute(sql);
+        db.close();
+        System.out.println("exit member_task finish");
     }
 
 
