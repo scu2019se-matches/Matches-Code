@@ -70,7 +70,6 @@ public class QueryBuilder{
     private HashMap<String, Integer> queryKs = new HashMap<>();//0精确,1模糊
     String orderString=null;
     private JSONObject tableConfig = null;
-    private String tableName = null;
 
     public QueryBuilder(String tableName){
         if(!dbconfig.has(tableName)){
@@ -82,6 +81,14 @@ public class QueryBuilder{
             e.printStackTrace();
         }
         this.tableName = tableName;
+    }
+
+    private String tableName = null;
+    public String getTableName(){
+        return tableName;
+    }
+    public void setTableName(String value){
+        tableName = value;
     }
 
     public void set(String key, Object value){
@@ -219,7 +226,7 @@ public class QueryBuilder{
      * @return SQL查询语句
      */
     public String getSelectStmt(){
-        String sql = String.format("select * from `%s` %s %s", tableName, getWhereClause(),getOrderClause());
+        String sql = String.format("select * from %s %s %s", tableName, getWhereClause(),getOrderClause());
         return sql;
     }
 
@@ -253,7 +260,7 @@ public class QueryBuilder{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String sql = String.format("insert into `%s` (%s) values(%s)", tableName, keys.toString(), values.toString());
+        String sql = String.format("insert into %s (%s) values(%s)", tableName, keys.toString(), values.toString());
         return sql;
     }
 
@@ -286,7 +293,7 @@ public class QueryBuilder{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String sql = String.format("update `%s` set %s where `id`=%d", tableName, s.toString(), (int)cons.get("id"));
+        String sql = String.format("update %s set %s where `id`=%d", tableName, s.toString(), (int)cons.get("id"));
         return sql;
     }
 
@@ -297,7 +304,7 @@ public class QueryBuilder{
      */
     public String getDeleteStmt(){
         assert(cons.containsKey("id"));
-        String sql = String.format("delete from `%s` where `id`=%d", tableName, (int)cons.get("id"));
+        String sql = String.format("delete from %s where `id`=%d", tableName, (int)cons.get("id"));
         return sql;
     }
 

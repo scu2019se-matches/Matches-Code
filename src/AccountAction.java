@@ -35,6 +35,7 @@ public class AccountAction extends HttpServlet
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         System.out.println("AccountAction action="+action);
+        if(action == null)return;
         try
         {
             switch(action)

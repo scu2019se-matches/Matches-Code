@@ -1,7 +1,9 @@
 var Data=[];
-var module="/GroupMember";
+var module="/Commodity";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
+var group_id=$("#group_id").val();
+var user_id=$("#user_id").val();
 var initurl=ContextPath+module;
 function Record(){
     $.fn.dataTable.ext.errMode = "none";
@@ -29,7 +31,7 @@ function Record(){
             },
             "sProcessing":   "处理中...",
             "sLengthMenu":   "_MENU_ 组/页",
-            "sZeroRecords":  "<span'>没有找到对应的组！</span>",
+            "sZeroRecords":  "<span'>没有找到对应的商品！</span>",
             "sInfo":         "显示第 _START_ 至 _END_ 个组，共 _TOTAL_ 个",
             "sInfoEmpty":    "显示第 0 至 0 个组，共 0 个",
             "sInfoFiltered": "(由 _MAX_ 个组过滤)",
@@ -44,25 +46,22 @@ function Record(){
         },
         "columnDefs": [
             {
-                "targets":5,
+                "targets": 3,
+                "orderable": false,
                 "mRender":
                     function(data, type, full) {
-                        sReturn=""
-                        if(full[5]==1) {
+                        sReturn = ""
+                        if(full[3] == user_id) {
                             sReturn = sReturn +
                                 "<button type=\"button\" class=\"edit-button btn btn-success btn-sm btn-rounded m-b-10 m-l-5\">修改</button>" +
                                 "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>"
                         }
-                        sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">进入</button>";
+                        sReturn = sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">兑换</button>";
                         return sReturn;
                     },
-            },
-            {
-                "targets":[1,2,5],
-                "orderable": false,
-            },
+            }
         ],
-        "aLengthMenu": [[10,15,20,25,40,50,-1],[10,15,20,25,40,50,"所有小组"]],
+        "aLengthMenu": [[10,15,20,25,40,50,-1],[10,15,20,25,40,50,"所有商品"]],
     });
     getAllRecord();
 
@@ -70,9 +69,7 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        // var user_id="<%=session.getAttribute("id")%>";
-        var user_id=3;
-        enterGroup(id,user_id);
+        buyCommodity(id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
@@ -137,37 +134,14 @@ function Record(){
         Dialog.showSuccess("修改成功","操作成功");
     });
 }
-function enterGroup(id,user_id) {
-    url =ContextPath+"GroupMember?action=get_record&id="+id+"userId="+user_id;
+function buyCommodity(commodityId) {
+    var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
+        ContextPath, module, "buyCommodity", commodityId, group_id);
     $.post(url, function (json) {
-        if(json.length()<1){
-            swal({
-                    title: "输入密码",
-                    text: "你还不是该组成员",
-                    type: "input",
-                    showCancelButton: true,
-                    closeOnConfirm: true,
-                    confirmButtonText: "确定",
-                    cancelButtonText: "放弃",
-                    animation: "slide-from-top",
-                    inputPlaceholder: "输入区"
-                },function (inputValue) {
-                    url=initurl+"action=get_record&id="+id+"&password="+password;
-                    $.post(url, function (json) {
-                        if(json.length()<1){
-                            swal.showInputError("密码错误");
-                        }else{
-                            url=ContextPath+"GroupMember?action=add_record&user_id="+user_id+"group_id="+id;
-                            $.post(url, function (json) {
-                                swal("密码正确", "你已成功加入该分组");
-                                window.location.href="../GroupMember/list.jsp?gourpId="+id;
-                            })
-                        }
-                    });
-                }
-            );
+        if(json.errno != 0){
+            Dialog.showWarning(json.msg, "");
         }else{
-            window.location.href=ContextPath+"GroupMember/list.jsp?gourpId="+id;
+            Dialog.showSuccess("兑换成功", "");
         }
     });
 }
@@ -189,19 +163,16 @@ function deleteRecord(id) {
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
-    var url=initurl+"?action=get_record";
+    var url = String.format("{0}?action={1}&group_id={2}",
+        initurl, "get_record", group_id);
     $.post(url, function (json) {
         Data = json;
-        // console.log(json);
         for (var i = 0; i < json.length; i++) {
-            var id = json[i]["id"];
-            var title = json[i]["title"];
-            var creator = json[i]["creator"];
-            var create_time = json[i]["create_time"];
-            var user_number = json[i]["user_number"];
-            var auth = json[i]["auth"];
-            // var user_id = json[i]["user_id"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth]).draw().node();
+            var id = json[i]["commodityId"];
+            var title = json[i]["context"];
+            var grades = json[i]["grades"];
+            var creatorId = json[i]["creatorId"];
+            dataTable.row.add([id, title, grades, creatorId]).draw().node();
         }
     });
 }
