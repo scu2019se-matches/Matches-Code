@@ -76,9 +76,9 @@ function Record(){
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var id = $(_this).parent().prev().text();
-            console.log("id"+id);
-            deleteRecord(id);
+            var member_id = $(_this).parent().prev().text();
+            deleteRecord(member_id);
+            // console.log("id"+member_id);
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();
@@ -86,24 +86,13 @@ function Record(){
         });
 
     });
-
 }
 function enterDetails(member_id) {
     var url="../memberdetails/list.jsp?group_id="+GroupId+"&member_id="+member_id;
     window.location.href=url;
-    // alert(url);
 }
-function modifyRecord(url) {
-    $.post(url, function (json) {
-
-    });
-}
-function deleteRecord(id) {
-    var url=ContextPath+module+"?action=delete_record";
-    if (id !="") {
-        url += "&id=" + id;
-    }
-    // console.log("删除操作url"+url);
+function deleteRecord(member_id) {
+    var url=ContextPath+module+"?action=delete_record&group_id="+GroupId+"&member_id="+member_id;
     $.post(url, function (jsonObject) {
 
     });
@@ -123,7 +112,7 @@ function getAllRecord(){
             var grades = json[i]["grades"];
             var commodity = json[i]["commodity"];
             var auth = json[i]["auth"];
-            dataTable.row.add([user_id, user,create_time,grades,commodity,auth]).draw().node();
+            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,auth]).draw().node();
         }
     });
 }
@@ -140,7 +129,7 @@ function getSelectedRecord(url){
             var grades = json[i]["grades"];
             var commodity = json[i]["commodity"];
             var auth = json[i]["auth"];
-            dataTable.row.add([user_id, user,create_time,grades,commodity,auth]).draw().node();
+            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,auth]).draw().node();
         }
     });
 }

@@ -18,8 +18,8 @@
                         <div class="row">
                             <div class="col-md-12 ">
                                 <div class="form-group">
-                                    <label>昵称</label>
-                                    <input type="text" id="title" name="title" class="form-control" required>
+                                    <label>描述</label>
+                                    <input type="text" id="context" name="context" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -27,7 +27,15 @@
                             <div class="col-md-12 ">
                                 <div class="form-group">
                                     <label class="control-label">密码</label>
-                                    <input type="text" id="password" name="password" class="form-control">
+                                    <input type="number" id="grades" name="grades" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 ">
+                                <div class="form-group">
+                                    <label class="control-label">任务范围</label>
+                                    <input type="text" id="dateRangeSelect" name="dateRangeSelect" class="form-control">
                                 </div>
                             </div>
                         </div>

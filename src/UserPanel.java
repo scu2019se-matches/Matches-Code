@@ -27,20 +27,20 @@ import java.util.Date;
 public class UserPanel extends HttpServlet {
 
     private static JSONArray queryResult = null;
-    private static QueryBuilder queryBuilder = null;
-    private static QueryBuilder queryAnotherBuilder = null;
-    private static QueryBuilder memberRecordBuilder = null;
-    private static QueryBuilder groupMemberBuilder = null;
+    private static QueryBuilder Task = null;
+    private static QueryBuilder TaskHistoryTable = null;
+    private static QueryBuilder MemberRecordTable = null;
+    private static QueryBuilder GroupMemberTable = null;
     static {
         try {
             queryResult = new JSONArray("[]");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        queryBuilder = new QueryBuilder("task");
-        queryAnotherBuilder = new QueryBuilder("taskhistory");
-        memberRecordBuilder = new QueryBuilder("memberrecord");
-        groupMemberBuilder = new QueryBuilder("groupmember");
+        Task = new QueryBuilder("task");
+        TaskHistoryTable = new QueryBuilder("taskhistory");
+        MemberRecordTable = new QueryBuilder("memberrecord");
+        GroupMemberTable = new QueryBuilder("groupmember");
     }
 
     @Override
@@ -76,17 +76,14 @@ public class UserPanel extends HttpServlet {
         HttpSession session = request.getSession();
 
         String userId=request.getParameter("user_id");
-        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
-        {
-            System.out.println("getResult exist_result=false or null");
-            String sql="select * from task where groupId in" +
-                    "(select groupId from groupmember where userId=" +userId+ ")";
-            DatabaseHelper db=new DatabaseHelper();
-            ResultSet rs=db.executeQuery(sql);
-            processTask(request,rs);
-            session.setAttribute("exist_result", false);
-            db.close();
-        }
+        System.out.println("enter userpanel_task getResult");
+        String sql="select * from tasklist where groupId in" +
+                "(select groupId from groupmemberlist where userId=" +userId+ ")";
+        DatabaseHelper db=new DatabaseHelper();
+        ResultSet rs=db.executeQuery(sql);
+        processTask(request,rs);
+        session.setAttribute("exist_result", false);
+        db.close();
         out.print(queryResult);
         session.setAttribute("queryResult",queryResult);
         out.flush();
@@ -106,51 +103,47 @@ public class UserPanel extends HttpServlet {
         String taskId=request.getParameter("task_id");
         String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
         //  查询任务详情
-        sql="select * from task where id=" +taskId;
+        sql="select * from tasklist where id=" +taskId;
         ResultSet rs=db.executeQuery(sql);
         rs.next();
         int grades=rs.getInt("grades");
         String task=rs.getString("context");
         //  查询id
-        groupMemberBuilder.clear();
-        groupMemberBuilder.set("groupId",Integer.parseInt(groupId));
-        groupMemberBuilder.set("userId",Integer.parseInt(userId));
-        sql=groupMemberBuilder.getSelectStmt();
+        GroupMemberTable.clear();
+        GroupMemberTable.set("groupId",Integer.parseInt(groupId));
+        GroupMemberTable.set("userId",Integer.parseInt(userId));
+        sql= GroupMemberTable.getSelectStmt();
         rs=db.executeQuery(sql);
         rs.next();
         int id=rs.getInt("id");
         int init_grades=rs.getInt("grades");
-        String member=rs.getString("user");
         //  更改积分
-        groupMemberBuilder.set("id",id);
-        groupMemberBuilder.set("grades",init_grades+grades);
-        sql=groupMemberBuilder.getUpdateStmt();
+        GroupMemberTable.set("id",id);
+        GroupMemberTable.set("grades",init_grades+grades);
+        sql= GroupMemberTable.getUpdateStmt();
         db.execute(sql);
 
 
         //添加操作记录
-        memberRecordBuilder.clear();
-        memberRecordBuilder.set("groupId",Integer.parseInt(groupId));
-        memberRecordBuilder.set("operatorId",Integer.parseInt(userId));
-        memberRecordBuilder.set("operator",session.getAttribute("username"));
-        memberRecordBuilder.set("memberId",Integer.parseInt(userId));
-        memberRecordBuilder.set("member",member);
-        memberRecordBuilder.set("object","task");
-        memberRecordBuilder.set("type","tag");
-        memberRecordBuilder.set("context",task+"+"+grades);
-        memberRecordBuilder.set("createTime",createTime);
-        sql=memberRecordBuilder.getInsertStmt();
+        MemberRecordTable.clear();
+        MemberRecordTable.set("groupId",Integer.parseInt(groupId));
+        MemberRecordTable.set("operatorId",Integer.parseInt(userId));
+        MemberRecordTable.set("memberId",Integer.parseInt(userId));
+        MemberRecordTable.set("object","task");
+        MemberRecordTable.set("type","tag");
+        MemberRecordTable.set("context",task+"+"+grades);
+        MemberRecordTable.set("createTime",createTime);
+        sql= MemberRecordTable.getInsertStmt();
         db.execute(sql);
 
 
         //添加任务历史记录
-        queryAnotherBuilder.clear();
-        queryAnotherBuilder.set("groupId",Integer.parseInt(groupId));
-        queryAnotherBuilder.set("taskId",Integer.parseInt(taskId));
-        queryAnotherBuilder.set("userId",Integer.parseInt(userId));
-        queryAnotherBuilder.set("user",session.getAttribute("username"));
-        queryAnotherBuilder.set("createTime",createTime);
-        sql=queryAnotherBuilder.getInsertStmt();
+        TaskHistoryTable.clear();
+        TaskHistoryTable.set("groupId",Integer.parseInt(groupId));
+        TaskHistoryTable.set("taskId",Integer.parseInt(taskId));
+        TaskHistoryTable.set("userId",Integer.parseInt(userId));
+        TaskHistoryTable.set("createTime",createTime);
+        sql= TaskHistoryTable.getInsertStmt();
         db.execute(sql);
         db.close();
         System.out.println("exit member_task finish");
@@ -197,11 +190,11 @@ public class UserPanel extends HttpServlet {
             if(task_status!=1){
                 my_status=2;
             }else{
-                queryAnotherBuilder.clear();
-                queryAnotherBuilder.set("groupId",rs.getInt("groupId"));
-                queryAnotherBuilder.set("taskId",rs.getInt("id"));
-                queryAnotherBuilder.set("userId",user_id);
-                finished= db.executeQuery(queryAnotherBuilder.getSelectStmt());
+                TaskHistoryTable.clear();
+                TaskHistoryTable.set("groupId",rs.getInt("groupId"));
+                TaskHistoryTable.set("taskId",rs.getInt("id"));
+                TaskHistoryTable.set("userId",user_id);
+                finished= db.executeQuery(TaskHistoryTable.getSelectStmt());
                 if(!finished.next()){
                     my_status=1;
                 }

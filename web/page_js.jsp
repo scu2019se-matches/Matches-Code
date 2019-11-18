@@ -44,3 +44,25 @@
 <script src="<%=request.getContextPath()%>/js/lib/toastr/toastr.min.js"></script>
 <script src="<%=request.getContextPath()%>/js/lib/sweetalert/sweetalert.min.js"></script>
 <script src="<%=request.getContextPath()%>/js/lib/nestable/jquery.nestable.js"></script>
+
+
+<!--date-->
+<script src="<%=request.getContextPath()%>/js/lib/moment/moment.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+<%--<script src="<%=request.getContextPath()%>/js/lib/bootstrap-datepicker/bootstrap-datepicker.zh-CN.min.js"></script>--%>
+<script src="<%=request.getContextPath()%>/js/lib/bootstrap-datetimepicker/daterangepicker.js"></script>
+<%--<script src="<%=request.getContextPath()%>/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>--%>
+<script src="<%=request.getContextPath()%>/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js"></script>
+<%--<script src="<%=request.getContextPath()%>/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>--%>
+
+
+<%--datatable--%>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/datatables.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+<script src="<%=request.getContextPath()%>/js/lib/dropzone/dropzone.js"></script>

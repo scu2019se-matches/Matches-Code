@@ -70,7 +70,7 @@ function statisticRecord(){
             }
             html+= "        </div>"
             +"       <div class=\"timeline-body\">"
-            +"          <p>"+changeTimeFormat(create_time)+"</p>"
+            +"          <p>"+Time.MinToMinute(create_time)+"</p>"
             +       "</div>"
             +      "</div>"
             +"</li>"
@@ -245,11 +245,6 @@ function subGrades(){
     }
 }
 
-getAllRecord();
 
-function changeTimeFormat(time){
-    // return time;
-    time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
-    time = time.split(':');
-    return time[1]+"月"+time[2]+"日  "+time[3]+":"+time[4];
-}
+
+getAllRecord();

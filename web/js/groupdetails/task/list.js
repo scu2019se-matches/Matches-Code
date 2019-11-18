@@ -5,6 +5,7 @@ var ContextPath=$("#ContextPath").val();
 var GroupId=$("#group_id").val();
 var UserId=$("#user_id").val();
 var initurl=ContextPath+module;
+var lasturl="";
 function Record(){
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
@@ -110,8 +111,8 @@ function Record(){
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var id = $(_this).parent().prev().text();
-            console.log("id"+id);
+            // var id = $(_this).parent().prev().text();
+            // console.log("id"+id);
             deleteRecord(id);
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
@@ -124,18 +125,26 @@ function Record(){
         var tds = $(this).parents("tr").children();
         $.each(tds, function (i, val) {
             var jqob = $(val);
-            if (i != 1 ) {
-                return true;
+            if(i==1){
+                var txt = jqob.text();
+                var put = $("<input type='text'>");
+                put.val(txt);
+                jqob.html(put);
+            } else if (i == 2 ) {
+                var txt = jqob.text();
+                var put = $("<input type='text' class='dateSelect'>");
+                put.val(txt);
+                jqob.html(put);
             }
-            var txt = jqob.text();
-            var put = $("<input type='text'>");
-            put.val(txt);
-            jqob.html(put);
+
         });
         $(this).html("保存");
         $(this).toggleClass("edit-button");
         $(this).toggleClass("save-button");
         event.preventDefault();
+    });
+    $("#example23 tbody").on("click", ".dateSelect", function (event) {
+        DatePicker.DateTimeFromToday(".dateSelect");
     });
     $("#example23 tbody").on("click", ".save-button", function (event) {
         var row = dataTable.row($(this).parents("tr"));
@@ -143,18 +152,16 @@ function Record(){
         var valid_flag=1;
         $.each(tds, function (i, val) {
             var jqob = $(val);
+            var txt = jqob.children("input").val();
             if(i==1){
-                var txt = jqob.children("input").val();
-                // console.log("length"+txt.length);
-                if(txt.length<1){
-                    Dialog.showWarning("组名不能为空哦","提示");
+                if(txt<1||txt>100){
+                    Dialog.showWarning("积分1-100","提示");
                     valid_flag=0;
                 }else{
                     jqob.html(txt);
                     dataTable.cell(jqob).data(txt);
                 }
-            }else if (!jqob.has('button').length) {
-                var txt = jqob.children("input").val();
+            }else{
                 jqob.html(txt);
                 dataTable.cell(jqob).data(txt);
             }
@@ -163,33 +170,32 @@ function Record(){
             return;
         }
         var data = row.data();
-        var id = data[0];
-        var title = data[1];
-        url =initurl+"?action=modify_record&id="+id+"&title="+title;
-        getSelectedRecord(url);
+        var task_id = data[6];
+        var grades = data[1];
+        var end_time = data[2];
+
+        modifyRecord(task_id,grades,end_time);
+        getSelectedRecord(lasturl);
         Dialog.showSuccess("修改成功","操作成功");
     });
 }
 function finishTask(task,grades,task_id){
     var url=ContextPath+module+"?action=finish_task&group_id="+GroupId+"&user_id="+UserId
         +"&task_id="+task_id+"&grades="+grades+"&task="+task;
-    // console.log(url);
     $.post(url, function (jsonObject) {
-        // history.go(-1);
         getAllRecord();
     });
 }
-function modifyRecord(url) {
+function modifyRecord(task_id,grades,end_time){
+    url =initurl+"?action=modify_record&group_id="+GroupId+"&task_id="+task_id
+        +"&grades="+grades+"&end_time="+end_time;
     $.post(url, function (json) {
 
     });
 }
-function deleteRecord(id) {
-    var url=ContextPath+module+"?action=delete_record";
-    if (id !="") {
-        url += "&id=" + id;
-    }
-    // console.log("删除操作url"+url);
+function deleteRecord(task_id) {
+    var url=ContextPath+module+"?action=delete_record&group_id"+GroupId
+    +"&task_id"+task_id;
     $.post(url, function (jsonObject) {
 
     });
@@ -212,11 +218,16 @@ function getAllRecord(){
             var my_status = json[i]["my_status"];
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
-            dataTable.row.add([context, grades,end_time,task_status,my_status,auth,task_id]).draw().node();
+            dataTable.row.add([context, grades,Time.StdToMinute(end_time),task_status,my_status,auth,task_id]).draw().node();
         }
     });
 }
 function getSelectedRecord(url){
+    if(url.length<1){
+        getAllRecord();
+        return;
+    }
+    lasturl=url;
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
     $.post(url, function (json) {
@@ -232,17 +243,15 @@ function getSelectedRecord(url){
             var my_status = json[i]["my_status"];
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
-            dataTable.row.add([context, grades,end_time,task_status,my_status,auth,task_id]).draw().node();
+            dataTable.row.add([context, grades,Time.StdToMinute(end_time),task_status,my_status,auth,task_id]).draw().node();
         }
     });
 }
-
 function addRecord(){
     var form = document.getElementById('newGroup');
     // console.log("group form"+form);
     form.submit();
 }
-
 function statisticRecord(){
     window.location.href="statistic.jsp";
 };
@@ -323,4 +332,9 @@ function toMyDetails(){
 function ReturnBack(){
     history.go(-1);
 }
+
+
+
+
+DatePicker.DateRangeFromToday("#dateRangeSelect");
 Record();

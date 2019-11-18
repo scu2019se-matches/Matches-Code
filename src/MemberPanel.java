@@ -26,20 +26,22 @@ import java.util.Date;
 public class MemberPanel extends HttpServlet {
 
     private static JSONArray queryResult = null;
-    private static QueryBuilder queryBuilder = null;
-    private static QueryBuilder queryAnotherBuilder = null;
-    private static QueryBuilder taskHistoryBuilder = null;
-    private static QueryBuilder groupMemberBuilder = null;
+    private static QueryBuilder MemberCommodityView = null;
+    private static QueryBuilder MemberRecordView = null;
+    private static QueryBuilder MemberRecordTable= null;
+    private static QueryBuilder TaskHistory = null;
+    private static QueryBuilder GroupMemberTable = null;
     static {
         try {
             queryResult = new JSONArray("[]");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        queryBuilder = new QueryBuilder("membercommodity");
-        queryAnotherBuilder = new QueryBuilder("memberrecord");
-        taskHistoryBuilder = new QueryBuilder("taskhistory");
-        groupMemberBuilder = new QueryBuilder("groupmember");
+        MemberCommodityView = new QueryBuilder("membercommoditylist");
+        MemberRecordView = new QueryBuilder("memberrecordlist");
+        MemberRecordTable = new QueryBuilder("memberrecord");
+        TaskHistory = new QueryBuilder("taskhistory");
+        GroupMemberTable = new QueryBuilder("groupmember");
     }
 
     @Override
@@ -91,26 +93,22 @@ public class MemberPanel extends HttpServlet {
 
         String groupId=request.getParameter("group_id");
         String memberId=request.getParameter("member_id");
-        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
-        {
-            System.out.println("getResult exist_result=false or null");
-            queryBuilder.clear();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            System.out.println("enter member_commodity getResult");
+            MemberCommodityView.clear();
+            MemberCommodityView.set("groupId",Integer.parseInt(groupId));
+            MemberCommodityView.set("memberId",Integer.parseInt(memberId));
 
-            queryBuilder.set("groupId",Integer.parseInt(groupId));
-            queryBuilder.set("memberId",Integer.parseInt(memberId));
-
-            String sql=queryBuilder.getSelectStmt();
-            DatabaseHelper db=new DatabaseHelper();
+            String sql= MemberCommodityView.getSelectStmt();
             ResultSet rs=db.executeQuery(sql);
             processResult(request,rs);
-            session.setAttribute("exist_result", false);
-            db.close();
+            out.print(queryResult);
+            session.setAttribute("queryResult",queryResult);
+            out.flush();
+            out.close();
+            System.out.println("exit member_commodity getResult");
         }
-        out.print(queryResult);
-        session.setAttribute("queryResult",queryResult);
-        out.flush();
-        out.close();
-        System.out.println("exit member_commodity getResult");
+
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
 
@@ -125,27 +123,24 @@ public class MemberPanel extends HttpServlet {
 
         String groupId=request.getParameter("group_id");
         String memberId=request.getParameter("member_id");
-        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
-        {
-            System.out.println("getResult exist_result=false or null");
-            queryAnotherBuilder.clear();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            System.out.println("enter member_record getResult");
+            MemberRecordView.clear();
 
-            queryAnotherBuilder.set("groupId",Integer.parseInt(groupId));
-            queryAnotherBuilder.set("memberId",Integer.parseInt(memberId));
-            queryAnotherBuilder.set("orderBy","createTime desc");
+            MemberRecordView.set("groupId",Integer.parseInt(groupId));
+            MemberRecordView.set("memberId",Integer.parseInt(memberId));
+            MemberRecordView.set("orderBy","createTime desc");
 
-            String sql=queryAnotherBuilder.getSelectStmt();
-            DatabaseHelper db=new DatabaseHelper();
+            String sql= MemberRecordView.getSelectStmt();
             ResultSet rs=db.executeQuery(sql);
             processRecord(request,rs);
-            db.close();
-            session.setAttribute("exist_result", false);
+            out.print(queryResult);
+            session.setAttribute("queryResult",queryResult);
+            out.flush();
+            out.close();
+            System.out.println("exit member_record getResult");
         }
-        out.print(queryResult);
-        session.setAttribute("queryResult",queryResult);
-        out.flush();
-        out.close();
-        System.out.println("exit member_record getResult");
+
     }
 
     private void modifyGrades(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
@@ -157,41 +152,40 @@ public class MemberPanel extends HttpServlet {
         String memberId=request.getParameter("member_id");
         String grades=request.getParameter("grades");
         String remarks=request.getParameter("remarks");
-        //查询id
-        DatabaseHelper db=new DatabaseHelper();
-        groupMemberBuilder.clear();
-        groupMemberBuilder.set("groupId",Integer.parseInt(groupId));
-        groupMemberBuilder.set("userId",Integer.parseInt(memberId));
-        String sql=groupMemberBuilder.getSelectStmt();
-        ResultSet rs=db.executeQuery(sql);
-        rs.next();
-        int id=rs.getInt("id");
-        int init_grades=rs.getInt("grades");
-        String member=rs.getString("user");
-        //更改积分
-//        System.out.println("grades:"+grades+"init_grades:"+init_grades);
-        groupMemberBuilder.set("id",id);
-        groupMemberBuilder.set("grades",init_grades+Integer.parseInt(grades));
-        sql=groupMemberBuilder.getUpdateStmt();
-        db.execute(sql);
 
-        //添加记录
-        queryAnotherBuilder.clear();
-        queryAnotherBuilder.set("groupId",Integer.parseInt(groupId));
-        queryAnotherBuilder.set("operatorId",Integer.parseInt(operatorId));
-        queryAnotherBuilder.set("operator",session.getAttribute("username"));
-        queryAnotherBuilder.set("memberId",Integer.parseInt(memberId));
-        queryAnotherBuilder.set("member",member);
-        queryAnotherBuilder.set("object","grades");
-        queryAnotherBuilder.set("type","modify");
-        queryAnotherBuilder.set("context","积分"+grades);
-        queryAnotherBuilder.set("remarks",remarks);
-        queryAnotherBuilder.set("createTime",(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));
-//        System.out.println("sql:"+sql);
-        sql=queryAnotherBuilder.getInsertStmt();
-        db.execute(sql);
-        db.close();
-        System.out.println("exit member_grades modify");
+        GroupMemberTable.clear();
+        GroupMemberTable.set("groupId",Integer.parseInt(groupId));
+        GroupMemberTable.set("userId",Integer.parseInt(memberId));
+        String sql= GroupMemberTable.getSelectStmt();
+        //查询id
+        try(DatabaseHelper db=new DatabaseHelper()){
+            ResultSet rs=db.executeQuery(sql);
+            rs.next();
+            int id=rs.getInt("id");
+            int init_grades=rs.getInt("grades");
+            //更改积分
+//        System.out.println("grades:"+grades+"init_grades:"+init_grades);
+            GroupMemberTable.set("id",id);
+            GroupMemberTable.set("grades",init_grades+Integer.parseInt(grades));
+            sql= GroupMemberTable.getUpdateStmt();
+            db.execute(sql);
+
+            //添加记录
+            MemberRecordTable.clear();
+            MemberRecordTable.set("groupId",Integer.parseInt(groupId));
+            MemberRecordTable.set("operatorId",Integer.parseInt(operatorId));
+            MemberRecordTable.set("memberId",Integer.parseInt(memberId));
+            MemberRecordTable.set("object","grades");
+            MemberRecordTable.set("type","modify");
+            MemberRecordTable.set("context","积分"+grades);
+            MemberRecordTable.set("remarks",remarks);
+            MemberRecordTable.set("createTime",(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));
+            sql= MemberRecordTable.getInsertStmt();
+            db.execute(sql);
+            db.close();
+            System.out.println("exit member_grades modify");
+        }
+
     }
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();
