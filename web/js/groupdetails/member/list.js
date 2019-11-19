@@ -53,7 +53,10 @@ function Record(){
                         if(full[5]==1) {
                             sReturn = sReturn +
                                 "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>"
-                            sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">详情</button>";
+                        }
+                        if(full[6]==1){
+                            sReturn=sReturn+
+                                "<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">详情</button>";
                         }
                         return sReturn;
                     },
@@ -82,7 +85,6 @@ function Record(){
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();
-            Dialog.showSuccess("已删除", "操作成功");
         });
 
     });
@@ -94,7 +96,7 @@ function enterDetails(member_id) {
 function deleteRecord(member_id) {
     var url=ContextPath+module+"?action=delete_record&group_id="+GroupId+"&member_id="+member_id;
     $.post(url, function (jsonObject) {
-
+        Dialog.showSuccess("已删除", "操作成功");
     });
 }
 function getAllRecord(){
@@ -111,8 +113,9 @@ function getAllRecord(){
             var create_time = json[i]["create_time"];
             var grades = json[i]["grades"];
             var commodity = json[i]["commodity"];
-            var auth = json[i]["auth"];
-            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,auth]).draw().node();
+            var delauth = json[i]["delauth"];
+            var enterauth = json[i]["enterauth"];
+            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,delauth,enterauth]).draw().node();
         }
     });
 }
@@ -128,8 +131,9 @@ function getSelectedRecord(url){
             var create_time = json[i]["create_time"];
             var grades = json[i]["grades"];
             var commodity = json[i]["commodity"];
-            var auth = json[i]["auth"];
-            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,auth]).draw().node();
+            var delauth = json[i]["delauth"];
+            var enterauth = json[i]["enterauth"];
+            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,delauth,enterauth]).draw().node();
         }
     });
 }

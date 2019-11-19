@@ -29,6 +29,7 @@ public class GroupTask extends HttpServlet {
     private static JSONArray queryResult = null;
     private static QueryBuilder TaskView = null;
     private static QueryBuilder TaskHistoryTable = null;
+    private static QueryBuilder TaskTable = null;
     private static QueryBuilder MemberRecordTable = null;
     private static QueryBuilder GroupMemberTable = null;
     static {
@@ -38,6 +39,7 @@ public class GroupTask extends HttpServlet {
             e.printStackTrace();
         }
         TaskView = new QueryBuilder("tasklist");
+        TaskTable = new QueryBuilder("task");
         TaskHistoryTable = new QueryBuilder("taskhistory");
         MemberRecordTable = new QueryBuilder("memberrecord");
         GroupMemberTable = new QueryBuilder("groupmember");
@@ -80,7 +82,28 @@ public class GroupTask extends HttpServlet {
         }
     }
     public void addRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        try(DatabaseHelper db = new DatabaseHelper()){
+            String sql="";
+            String groupId=request.getParameter("group_id");
+            String context=request.getParameter("context");
+            String grades=request.getParameter("grades");
+            String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
+            String beginTime=request.getParameter("begin_time");
+            String endTime=request.getParameter("end_time");
+            TaskTable.clear();
+            TaskTable.set("groupId",Integer.parseInt(groupId));
+            TaskTable.set("context",context);
+            TaskTable.set("grades",Integer.parseInt(grades));
+            TaskTable.set("createTime",createTime);
+            TaskTable.set("beginTime",beginTime);
+            TaskTable.set("endTime",endTime);
 
+            sql= TaskTable.getInsertStmt();
+            db.execute(sql);
+            response.sendRedirect("groupdetails/task/list.jsp?group_id="+groupId);
+        }
     }
     private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException, ParseException {
         response.setContentType("application/json; charset=UTF-8");
@@ -114,10 +137,32 @@ public class GroupTask extends HttpServlet {
 
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
-
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        String taskId=request.getParameter("task_id");
+        try(DatabaseHelper db = new DatabaseHelper()){
+            TaskTable.set("id",Integer.parseInt(taskId));
+            String sql= TaskTable.getDeleteStmt();
+            db.execute(sql);
+//            response.sendRedirect("group/list.jsp");
+        }
     }
     private void modifyRecord(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
-
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        String taskId=request.getParameter("task_id");
+        String groupId=request.getParameter("group_id");
+        String grades=request.getParameter("grades");
+        String endTime=request.getParameter("end_time");
+        try(DatabaseHelper db = new DatabaseHelper()){
+            TaskTable.set("id",Integer.parseInt(taskId));
+            TaskTable.set("groupId",Integer.parseInt(groupId));
+            TaskTable.set("grades",Integer.parseInt(grades));
+            TaskTable.set("endTime",endTime);
+            String sql= TaskTable.getUpdateStmt();
+            db.execute(sql);
+//            response.sendRedirect("group/list.jsp");
+        }
     }
     private void getStatistics(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
 
@@ -130,7 +175,7 @@ public class GroupTask extends HttpServlet {
 
         //增加积分
         String groupId=request.getParameter("group_id");
-        String userId=request.getParameter("user_id");
+        String userId=(String)session.getAttribute("id");
         String grades=request.getParameter("grades");
         String taskId=request.getParameter("task_id");
         String task=request.getParameter("task");

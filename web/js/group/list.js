@@ -78,14 +78,14 @@ function Record(){
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
+        // alert(1);
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var id = $(_this).parent().prev().text();
-            // console.log("id"+id);
-            deleteRecord(id);
+            // alert(2);
+            var group_id = $(_this).parent().prev().text();
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();
-            Dialog.showSuccess("已删除", "操作成功");
+            deleteRecord(group_id);
         });
 
     });
@@ -104,28 +104,38 @@ function Record(){
         $(this).html("保存");
         $(this).toggleClass("edit-button");
         $(this).toggleClass("save-button");
-        // event.preventDefault();
+        event.preventDefault();
     });
     $("#example23 tbody").on("click", ".save-button", function (event) {
         var row = dataTable.row($(this).parents("tr"));
         var tds = $(this).parents("tr").children();
+        var flag=1;
         $.each(tds, function (i, val) {
             var jqob = $(val);
             if(i==1){
                 var txt = jqob.children("input").val();
                 if(txt.length<1){
                     Dialog.showWarning("不能为空哦","提示");
+                    flag=0;
                     return;
+                }else{
+                    jqob.html(txt);
+                    dataTable.cell(jqob).data(txt);
                 }
             }
         });
+        if(!flag){
+            return;
+        }
         var data = row.data();
         var id = data[0];
         var title = data[1];
-        url =initurl+"?action=modify_record&group_id="+id+"&title="+title;
-        modifyRecord(url);
-        Dialog.showSuccess("修改成功","操作成功");
-        getSelectedRecord(lasturl);
+        modifyRecord(id,title);
+
+        $(this).html("修改");
+        $(this).toggleClass("edit-button");
+        $(this).toggleClass("save-button");
+        event.preventDefault();
     });
 
 }
@@ -171,13 +181,19 @@ function enterGroup(id,user_id) {
         }
     });
 }
-function modifyRecord(url) {
+function modifyRecord(group_id,title) {
+    var url =initurl+"?action=modify_record&group_id="+group_id+"&title="+title;
+    // alert(url);
     $.post(url, function (json) {
+        Dialog.showSuccess("修改成功","操作成功");
+        // getSelectedRecord(lasturl);
     });
 }
-function deleteRecord(id) {
-    var url=initurl+"?action=delete_record&group_id="+id;
-    $.post(url, function (jsonObject) {});
+function deleteRecord(group_id) {
+    var url=initurl+"?action=delete_record&group_id="+group_id;
+    $.post(url, function (jsonObject) {
+        Dialog.showSuccess("已删除", "操作成功");
+    });
 }
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();

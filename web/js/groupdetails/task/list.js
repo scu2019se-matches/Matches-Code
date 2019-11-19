@@ -117,7 +117,6 @@ function Record(){
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();
-            Dialog.showSuccess("已删除", "操作成功");
         });
 
     });
@@ -127,7 +126,7 @@ function Record(){
             var jqob = $(val);
             if(i==1){
                 var txt = jqob.text();
-                var put = $("<input type='text'>");
+                var put = $("<input type='number'>");
                 put.val(txt);
                 jqob.html(put);
             } else if (i == 2 ) {
@@ -175,13 +174,11 @@ function Record(){
         var end_time = data[2];
 
         modifyRecord(task_id,grades,end_time);
-        getSelectedRecord(lasturl);
-        Dialog.showSuccess("修改成功","操作成功");
     });
 }
 function finishTask(task,grades,task_id){
-    var url=ContextPath+module+"?action=finish_task&group_id="+GroupId+"&user_id="+UserId
-        +"&task_id="+task_id+"&grades="+grades+"&task="+task;
+    var url=ContextPath+module+"?action=finish_task&group_id="+GroupId+
+        "&task_id="+task_id+"&grades="+grades+"&task="+task;
     $.post(url, function (jsonObject) {
         getAllRecord();
     });
@@ -190,14 +187,15 @@ function modifyRecord(task_id,grades,end_time){
     url =initurl+"?action=modify_record&group_id="+GroupId+"&task_id="+task_id
         +"&grades="+grades+"&end_time="+end_time;
     $.post(url, function (json) {
-
+        getSelectedRecord(lasturl);
+        Dialog.showSuccess("修改成功","操作成功");
     });
 }
 function deleteRecord(task_id) {
-    var url=ContextPath+module+"?action=delete_record&group_id"+GroupId
-    +"&task_id"+task_id;
+    var url=ContextPath+module+"?action=delete_record&group_id="+GroupId
+    +"&task_id="+task_id;
     $.post(url, function (jsonObject) {
-
+        Dialog.showSuccess("已删除", "操作成功");
     });
 }
 function getAllRecord(){
@@ -248,8 +246,12 @@ function getSelectedRecord(url){
     });
 }
 function addRecord(){
-    var form = document.getElementById('newGroup');
-    // console.log("group form"+form);
+    var form = document.getElementById('newTask');
+    var daterange=$("#newTask,#dateRangeSelect").val();
+    var date=daterange.split(" to ");
+    $("#newTask,#group_id").val(GroupId);
+    $("#newTask,#begin_time").val(date[0]);
+    $("#newTask,#end_time").val(date[1]);
     form.submit();
 }
 function statisticRecord(){
@@ -329,6 +331,10 @@ function toMyDetails(){
     var url="../memberdetails/list.jsp?group_id="+GroupId+"&member_id="+UserId;
     window.location.href=url;
 }
+function toMemberList(){
+    var url="../member/list.jsp?group_id="+GroupId;
+    window.location.href=url;
+}
 function ReturnBack(){
     history.go(-1);
 }
@@ -336,5 +342,5 @@ function ReturnBack(){
 
 
 
-DatePicker.DateRangeFromToday("#dateRangeSelect");
+DatePicker.DateTimeRangeFromToday("#dateRangeSelect");
 Record();

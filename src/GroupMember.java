@@ -85,7 +85,6 @@ public class GroupMember extends HttpServlet {
 
         GroupMemberTable.clear();
         GroupMemberTable.set("groupId",Integer.parseInt(groupId));
-        GroupMemberTable.set("creatorId",Integer.parseInt(creatorId));
         GroupMemberTable.set("userId",Integer.parseInt(userId));
         GroupMemberTable.set("createTime",createTime);
         GroupMemberTable.set("grades",0);
@@ -129,7 +128,14 @@ public class GroupMember extends HttpServlet {
         }
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
-
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        try(DatabaseHelper db = new DatabaseHelper()){
+            String groupId=request.getParameter("group_id");
+            String memberId=request.getParameter("member_id");
+            String sql="delete from `groupmember` where `group_id`="+groupId+" and member_id="+memberId;
+            db.execute(sql);
+        }
     }
     private void modifyRecord(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
 
@@ -156,10 +162,15 @@ public class GroupMember extends HttpServlet {
             item.put("create_time", rs.getString("createTime"));
             item.put("grades", rs.getInt("grades"));
             item.put("commodity", rs.getInt("commodity"));
-            if(auth>1||rs.getInt("creatorId")==user_id){
-                item.put("auth", 1);
+            if(auth>1&&rs.getInt("creatorId")!=user_id){
+                item.put("delauth", 1);
             }else{
-                item.put("auth", 0);
+                item.put("delauth", 0);
+            }
+            if(auth>1||rs.getInt("creatorId")==user_id){
+                item.put("enterauth", 1);
+            }else{
+                item.put("enterauth", 0);
             }
 //            item.put("user_id", user_id);
             queryResult.put(item);

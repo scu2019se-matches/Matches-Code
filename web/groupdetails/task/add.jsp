@@ -14,7 +14,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form id="newGroup" method="post" action="/GroupManagement?action=add_record">
+                    <form id="newTask" method="post" action="/GroupTask?action=add_record">
+                        <input type="hidden" id="begin_time" name="begin_time">
+                        <input type="hidden" id="end_time" name="end_time">
+                        <input type="hidden" id="group_id" name="group_id">
                         <div class="row">
                             <div class="col-md-12 ">
                                 <div class="form-group">
@@ -26,7 +29,7 @@
                         <div class="row">
                             <div class="col-md-12 ">
                                 <div class="form-group">
-                                    <label class="control-label">密码</label>
+                                    <label class="control-label">积分</label>
                                     <input type="number" id="grades" name="grades" class="form-control">
                                 </div>
                             </div>

@@ -104,11 +104,9 @@ public class GroupManagement extends HttpServlet {
             db.execute(sql);
 
             //组内成员添加组长记录
-            String userId=(String)session.getAttribute("id");
             GroupMemberTable.clear();
             GroupMemberTable.set("groupId",groupId);
-            GroupMemberTable.set("creatorId",Integer.parseInt(creatorId));
-            GroupMemberTable.set("userId",Integer.parseInt(userId));
+            GroupMemberTable.set("userId",Integer.parseInt(creatorId));
             GroupMemberTable.set("createTime",createTime);
             GroupMemberTable.set("grades",0);
 
@@ -163,10 +161,28 @@ public class GroupManagement extends HttpServlet {
         System.out.println("exit group getResult");
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
-
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        try(DatabaseHelper db = new DatabaseHelper()){
+            String groupId=request.getParameter("group_id");
+            GroupTable.set("id",Integer.parseInt(groupId));
+            String sql=GroupTable.getDeleteStmt();
+            db.execute(sql);
+//            response.sendRedirect("group/list.jsp");
+        }
     }
     private void modifyRecord(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
-
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        String groupId=request.getParameter("group_id");
+        String title=request.getParameter("title");
+        try(DatabaseHelper db = new DatabaseHelper()){
+            GroupTable.set("id",Integer.parseInt(groupId));
+            GroupTable.set("title",title);
+            String sql=GroupTable.getUpdateStmt();
+            db.execute(sql);
+//            response.sendRedirect("group/list.jsp");
+        }
     }
     private void getStatistics(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
 
