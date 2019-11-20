@@ -12,7 +12,7 @@
         <div class="card">
             <div class="form-group">
                 <p class="text-muted m-b-15 f-s-12">商品名称</p>
-                <input type="text" id="context" name="context" class="form-control input-focus" placeholder="输入商品名称">
+                <input type="text" id="query_context" name="context" class="form-control input-focus" placeholder="输入商品名称">
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
         <div class="card">
             <div class="form-group">
                 <p class="text-muted m-b-15 f-s-12">分数</p>
-                <input type="text" id="grades" name="grades" class="form-control input-focus" placeholder="输入商品分数">
+                <input type="text" id="query_grades" name="grades" class="form-control input-focus" placeholder="输入商品分数">
             </div>
         </div>
     </div>

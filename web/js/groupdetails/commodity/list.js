@@ -6,8 +6,11 @@ var group_id=$("#group_id").val();
 var user_id=$("#user_id").val();
 var initurl=ContextPath+module;
 function Record(){
+    console.log("group_id = " + group_id);
+    console.log("user_id = " + user_id);
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
+        order: [],
         dom: 'Bfrtip',
         buttons:[
             {
@@ -74,7 +77,7 @@ function Record(){
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var id = $(_this).parent().prev().text();
+            var id = $(_this).parent().prev().prev().prev().text();
             console.log("id"+id);
             deleteRecord(id);
             var table = $('#example23').DataTable();
@@ -88,7 +91,7 @@ function Record(){
         var tds = $(this).parents("tr").children();
         $.each(tds, function (i, val) {
             var jqob = $(val);
-            if (i != 1 ) {
+            if (i != 1 && i != 2 ) {
                 return true;
             }
             var txt = jqob.text();
@@ -105,19 +108,31 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var tds = $(this).parents("tr").children();
         var valid_flag=1;
+        var grades_format = /\d+/;
         $.each(tds, function (i, val) {
             var jqob = $(val);
             if(i==1){
                 var txt = jqob.children("input").val();
                 // console.log("length"+txt.length);
                 if(txt.length<1){
-                    Dialog.showWarning("组名不能为空哦","提示");
+                    Dialog.showWarning("商品名不能为空哦","提示");
                     valid_flag=0;
                 }else{
                     jqob.html(txt);
                     dataTable.cell(jqob).data(txt);
                 }
-            }else if (!jqob.has('button').length) {
+            }
+            else if(i==2){
+                var txt = jqob.children("input").val();
+                if(!grades_format.test(txt)){
+                    Dialog.showWarning("分数格式不正确哦","提示");
+                    valid_flag=0;
+                }else{
+                    jqob.html(txt);
+                    dataTable.cell(jqob).data(txt);
+                }
+            }
+            else if (!jqob.has('button').length) {
                 var txt = jqob.children("input").val();
                 jqob.html(txt);
                 dataTable.cell(jqob).data(txt);
@@ -128,8 +143,12 @@ function Record(){
         }
         var data = row.data();
         var id = data[0];
-        var title = data[1];
-        url =initurl+"?action=modify_record&id="+id+"&title="+title;
+        var context = data[1];
+        var grades = data[2];
+        var url = String.format(
+            "{0}?action={1}&groupId={2}&id={3}&context={4}&grades={5}",
+            initurl, "modifyRecord", group_id, id, context, grades
+        );
         getSelectedRecord(url);
         Dialog.showSuccess("修改成功","操作成功");
     });
@@ -147,24 +166,24 @@ function buyCommodity(commodityId) {
 }
 function modifyRecord(url) {
     $.post(url, function (json) {
-
+        sortRecord();
     });
 }
 function deleteRecord(id) {
-    var url=ContextPath+module+"?action=delete_record";
+    var url=ContextPath+module+"?action=deleteCommodity";
     if (id !="") {
         url += "&id=" + id;
     }
     // console.log("删除操作url"+url);
     $.post(url, function (jsonObject) {
-
+        sortRecord();
     });
 }
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
-    var url = String.format("{0}?action={1}&group_id={2}",
-        initurl, "get_record", group_id);
+    var url = String.format("{0}?action={1}&groupId={2}",
+        initurl, "getRecord", group_id);
     $.post(url, function (json) {
         Data = json;
         console.log(json);
@@ -184,20 +203,25 @@ function getSelectedRecord(url){
         Data = json;
         for (var i = 0; i < json.length; i++) {
             var id = json[i]["id"];
-            var title = json[i]["title"];
-            var creator = json[i]["creator"];
-            var create_time = json[i]["create_time"];
-            var user_number = json[i]["user_number"];
-            var auth = json[i]["auth"];
-            var password = json[i]["password"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth,password]).draw().node();
+            var context = json[i]["context"];
+            var creatorId = json[i]["creatorId"];
+            var grades = json[i]["grades"];
+            dataTable.row.add([id, context, grades,creatorId]).draw().node();
         }
     });
 }
 
 function addRecord(){
     var form = document.getElementById('newCommodity');
-    form.submit();
+    if(form.add_context.value != "" && form.add_grades.value != ""){
+        var url = String.format(
+            "{0}?action={1}&groupId={2}&context={3}&grades={4}",
+            initurl, "addCommodity", group_id, form.add_context.value, form.add_grades.value
+        )
+        $.get(url, function(res){
+            sortRecord();
+        });
+    }
 }
 
 function statisticRecord(){
@@ -215,14 +239,17 @@ function sortRecord(){
     var key2 = $("#key2").val();
     var rule1 = $("#rule1").val();
     var rule2 = $("#rule2").val();
-    var url =initurl+"?action=get_record";
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    if (title != "") {
-        url += "&title=" + title;
+    var url = String.format(
+        "{0}?action={1}&groupId={2}",
+        initurl, "getRecord", group_id
+    );
+    var query_context = $("#query_context").val();
+    var query_grades = $("#query_grades").val();
+    if (query_context != "") {
+        url += "&context=" + query_context;
     }
-    if (creator != "") {
-        url += "&creator=" + creator;
+    if (query_grades != "") {
+        url += "&grades=" + query_grades;
     }
     var tmp="&orderby=";
     var flag=0;
@@ -249,16 +276,21 @@ function sortRecord(){
     url=url+tmp;
     getSelectedRecord(url);
 };
+
 function searchRecord(){
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    var url =initurl+"?action=get_record";
-    if (title != "") {
-        url += "&title=" + title;
-    }
-    if (creator != "") {
-        url += "&creator=" + creator;
-    }
-    getSelectedRecord(url);
+    sortRecord();
+    //var query_context = $("#query_context").val();
+    //var query_grades = $("#query_grades").val();
+    //var url = String.format(
+    //    "{0}?action={1}&groupId={2}",
+    //    initurl, "getRecord", group_id);
+    //if (query_context != "") {
+    //    url += "&context=" + query_context;
+    //}
+    //if (query_grades != "") {
+    //    url += "&grades=" + query_grades;
+    //}
+    //getSelectedRecord(url);
 };
+
 Record();

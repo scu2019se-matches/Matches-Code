@@ -105,7 +105,7 @@ public class AccountAction extends HttpServlet
                 response.sendRedirect("login.jsp");
                 return;
             }
-            session.setAttribute("id", Integer.toString(rs.getInt("id")));
+            session.setAttribute("id", rs.getInt("id"));
             session.setAttribute("username", rs.getString("username"));
             session.setAttribute("email", rs.getString("email"));
             session.setAttribute("auth", rs.getInt("auth"));

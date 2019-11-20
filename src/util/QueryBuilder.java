@@ -226,7 +226,7 @@ public class QueryBuilder{
      * @return SQL查询语句
      */
     public String getSelectStmt(){
-        String sql = String.format("select * from %s %s %s", tableName, getWhereClause(),getOrderClause());
+        String sql = String.format("select * from `%s` %s %s", tableName, getWhereClause(),getOrderClause());
         return sql;
     }
 
@@ -239,6 +239,7 @@ public class QueryBuilder{
         StringBuilder values = new StringBuilder();
         try {
             for(String key : cons.keySet()){
+                if(key.equals("id"))continue;
                 if(keys.length() != 0){
                     keys.append(", ");
                 }
@@ -260,7 +261,7 @@ public class QueryBuilder{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String sql = String.format("insert into %s (%s) values(%s)", tableName, keys.toString(), values.toString());
+        String sql = String.format("insert into `%s` (%s) values(%s)", tableName, keys.toString(), values.toString());
         return sql;
     }
 
@@ -276,6 +277,7 @@ public class QueryBuilder{
         StringBuilder s = new StringBuilder();
         try {
             for(String key : cons.keySet()){
+                if(key.equals("id"))continue;
                 if(s.length() != 0){
                     s.append(", ");
                 }
@@ -293,7 +295,7 @@ public class QueryBuilder{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String sql = String.format("update %s set %s where `id`=%d", tableName, s.toString(), (int)cons.get("id"));
+        String sql = String.format("update `%s` set %s where `id`=%d", tableName, s.toString(), (int)cons.get("id"));
         return sql;
     }
 
@@ -304,7 +306,7 @@ public class QueryBuilder{
      */
     public String getDeleteStmt(){
         assert(cons.containsKey("id"));
-        String sql = String.format("delete from %s where `id`=%d", tableName, (int)cons.get("id"));
+        String sql = String.format("delete from `%s` where `id`=%d", tableName, (int)cons.get("id"));
         return sql;
     }
 

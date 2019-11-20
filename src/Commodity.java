@@ -46,11 +46,14 @@ public class Commodity extends HttpServlet {
         {
             switch(action)
             {
-                case "get_record":
+                case "getRecord":
                     getRecord(request, response);
                     break;
                 case "addCommodity":
                     addCommodity(request, response);
+                    break;
+                case "modifyRecord":
+                    modifyRecord(request, response);
                     break;
                 case "deleteCommodity":
                     deleteCommodity(request, response);
@@ -74,13 +77,13 @@ public class Commodity extends HttpServlet {
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
 
-        String groupId=request.getParameter("group_id");
+        String groupId=request.getParameter("groupId");
         String grades=request.getParameter("grades");
         String context=request.getParameter("context");
         String orderBy=request.getParameter("orderby");
-//        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
-//        {
-//            System.out.println("getResult exist_result=false or null");
+        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
+        {
+            System.out.println("getResult exist_result=false or null");
             queryBuilder.clear();
 
             queryBuilder.set("groupId",Integer.parseInt(groupId));
@@ -96,7 +99,7 @@ public class Commodity extends HttpServlet {
                 processResult(request,rs);
             }
             session.setAttribute("exist_result", false);
-//        }
+        }
         out.print(queryResult);
         session.setAttribute("queryResult",queryResult);
         out.flush();
@@ -115,13 +118,42 @@ public class Commodity extends HttpServlet {
         int grades = Integer.parseInt(request.getParameter("grades"));
         queryBuilder.clear();
         queryBuilder.set("groupId", groupId);
-        queryBuilder.set("userId", userId);
+        queryBuilder.set("creatorId", userId);
         queryBuilder.set("context", context);
         queryBuilder.set("grades", grades);
         String sql = queryBuilder.getInsertStmt();
         try(DatabaseHelper db = new DatabaseHelper()){
             db.execute(sql);
         }
+        JSONObject res = new JSONObject();
+        res.put("errno", 0);
+        out.print(res);
+        out.flush();
+        out.close();
+    }
+
+    private void modifyRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        int commodityId = Integer.parseInt(request.getParameter("id"));
+        String context = request.getParameter("context");
+        int grades = Integer.parseInt(request.getParameter("grades"));
+        queryBuilder.clear();
+        queryBuilder.set("id", commodityId);
+        queryBuilder.set("context", context);
+        queryBuilder.set("grades", grades);
+        String sql = queryBuilder.getUpdateStmt();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            db.execute(sql);
+        }
+        JSONObject res = new JSONObject();
+        res.put("errno", 0);
+        out.print(res);
+        out.flush();
+        out.close();
     }
 
     private void deleteCommodity(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
@@ -129,13 +161,18 @@ public class Commodity extends HttpServlet {
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
 
-        int commodityId = Integer.parseInt(request.getParameter("commodityId"));
+        int commodityId = Integer.parseInt(request.getParameter("id"));
         queryBuilder.clear();
         queryBuilder.set("id", commodityId);
         String sql = queryBuilder.getDeleteStmt();
         try(DatabaseHelper db = new DatabaseHelper()){
             db.execute(sql);
         }
+        JSONObject res = new JSONObject();
+        res.put("errno", 0);
+        out.print(res);
+        out.flush();
+        out.close();
     }
 
     private void buyCommodity(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
@@ -161,8 +198,8 @@ public class Commodity extends HttpServlet {
                         rs.getInt("newgrades"), memberId);
                 db.execute(sql);
                 sql = String.format(
-                        "insert into membercommidity (memberId, commodityId) values(%d, %d)",
-                        memberId, commodityId, 1);
+                        "insert into membercommodity (groupId, memberId, commodityId) values(%d, %d, %d)",
+                        groupId, userId, commodityId);
                 db.execute(sql);
                 result.put("errno", 0);
             }else{
