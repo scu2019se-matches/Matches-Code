@@ -27,6 +27,16 @@
             color:black;
         }
     </style>
+    <style>
+        body {
+            background-image: url("images/wallpaper/7.png");
+            /*background-position: center center;*/
+            background-attachment: fixed;
+            background-size: cover;
+            /*background-size:100% 100%;*/
+        }
+
+    </style>
 </head>
 
 <body class="header-fix fix-sidebar">

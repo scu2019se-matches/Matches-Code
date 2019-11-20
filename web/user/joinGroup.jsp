@@ -31,7 +31,7 @@
     <%@include file="../page_header.jsp"%>
     <%@include file="../page_sidebar_menu.jsp"%>
     <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
-    <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
+    <input type="hidden" id="userId" name="userId" value="<%=session.getAttribute("id")%>" />
 
     <!-- Page wrapper  -->
     <div class="page-wrapper">

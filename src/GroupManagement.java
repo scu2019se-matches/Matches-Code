@@ -122,6 +122,7 @@ public class GroupManagement extends HttpServlet {
 
 
         String id=request.getParameter("group_id");
+        String creatorId=request.getParameter("creator_id");
         String password=request.getParameter("password");
         String title=request.getParameter("title");
         String creator=request.getParameter("creator");
@@ -135,7 +136,9 @@ public class GroupManagement extends HttpServlet {
         if(password!=null){
             GroupView.set("password",MD5Util.MD5(password));
         }
-
+        if(creatorId!=null){
+            GroupView.set("creatorId",Integer.parseInt(creatorId));
+        }
         GroupView.set("title",title,1);
         GroupView.set("creator",creator,1);
         GroupView.set("orderBy",orderBy);
@@ -165,6 +168,7 @@ public class GroupManagement extends HttpServlet {
         request.setCharacterEncoding("utf-8");	//设置编码
         try(DatabaseHelper db = new DatabaseHelper()){
             String groupId=request.getParameter("group_id");
+            GroupTable.clear();
             GroupTable.set("id",Integer.parseInt(groupId));
             String sql=GroupTable.getDeleteStmt();
             db.execute(sql);
@@ -177,6 +181,7 @@ public class GroupManagement extends HttpServlet {
         String groupId=request.getParameter("group_id");
         String title=request.getParameter("title");
         try(DatabaseHelper db = new DatabaseHelper()){
+            GroupTable.clear();
             GroupTable.set("id",Integer.parseInt(groupId));
             GroupTable.set("title",title);
             String sql=GroupTable.getUpdateStmt();

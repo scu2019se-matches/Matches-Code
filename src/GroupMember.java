@@ -133,7 +133,7 @@ public class GroupMember extends HttpServlet {
         try(DatabaseHelper db = new DatabaseHelper()){
             String groupId=request.getParameter("group_id");
             String memberId=request.getParameter("member_id");
-            String sql="delete from `groupmember` where `group_id`="+groupId+" and member_id="+memberId;
+            String sql="delete from `groupmember` where `groupId`="+groupId+" and userId="+memberId;
             db.execute(sql);
         }
     }
@@ -162,12 +162,12 @@ public class GroupMember extends HttpServlet {
             item.put("create_time", rs.getString("createTime"));
             item.put("grades", rs.getInt("grades"));
             item.put("commodity", rs.getInt("commodity"));
-            if(auth>1&&rs.getInt("creatorId")!=user_id){
+            if(auth>1&&rs.getInt("creatorId")!=rs.getInt("userId")){
                 item.put("delauth", 1);
             }else{
                 item.put("delauth", 0);
             }
-            if(auth>1||rs.getInt("creatorId")==user_id){
+            if(auth>1||rs.getInt("userId")==user_id){
                 item.put("enterauth", 1);
             }else{
                 item.put("enterauth", 0);

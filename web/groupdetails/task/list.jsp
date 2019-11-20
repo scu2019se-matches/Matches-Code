@@ -33,6 +33,7 @@
     <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
     <input type="hidden" id="group_id" name="group_id" value="<%=request.getParameter("group_id")%>" />
     <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
+    <input type="hidden" id="auth" name="auth" value="<%=session.getAttribute("auth")%>" />
     <!-- Page wrapper  -->
     <div class="page-wrapper">
         <!-- Bread crumb -->

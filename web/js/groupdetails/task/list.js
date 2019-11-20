@@ -5,6 +5,8 @@ var ContextPath=$("#ContextPath").val();
 var GroupId=$("#group_id").val();
 var UserId=$("#user_id").val();
 var initurl=ContextPath+module;
+var CreatorId="";
+var Auth=$("#auth").val();
 var lasturl="";
 function Record(){
     $.fn.dataTable.ext.errMode = "none";
@@ -111,9 +113,9 @@ function Record(){
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            // var id = $(_this).parent().prev().text();
-            // console.log("id"+id);
-            deleteRecord(id);
+            var row = dataTable.row($(_this).parents("tr"));
+            var data = row.data();
+            deleteRecord(data[6]);
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();
@@ -207,6 +209,7 @@ function getAllRecord(){
         // console.log(json);
         for (var i = 0; i < json.length; i++) {
             var task_id = json[i]["id"];
+            var creator_id = json[i]["creator_id"];
             var context = json[i]["context"];
             var grades = json[i]["grades"];
             var create_time = json[i]["create_time"];
@@ -217,6 +220,10 @@ function getAllRecord(){
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
             dataTable.row.add([context, grades,Time.StdToMinute(end_time),task_status,my_status,auth,task_id]).draw().node();
+
+            if(CreatorId==null){
+                CreatorId=creator_id;
+            }
         }
     });
 }
@@ -232,6 +239,7 @@ function getSelectedRecord(url){
         Data = json;
         for (var i = 0; i < json.length; i++) {
             var task_id = json[i]["id"];
+            var creator_id = json[i]["creator_id"];
             var context = json[i]["context"];
             var grades = json[i]["grades"];
             var create_time = json[i]["create_time"];
@@ -242,12 +250,34 @@ function getSelectedRecord(url){
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
             dataTable.row.add([context, grades,Time.StdToMinute(end_time),task_status,my_status,auth,task_id]).draw().node();
+
+            if(CreatorId==null){
+                CreatorId=creator_id;
+            }
         }
     });
 }
 function addRecord(){
+    if(Auth<=1&&CreatorId!=UserId){
+        Dialog.showError("你无权进行此操作","错误");
+        getAllRecord();
+        return;
+    }
+    console.log($("#newTask,#grades").val());
+    if($("#newTask,#context").val()==null||$("#newTask,#context").val()==""){
+        Dialog.showWarning("内容不能为空","提示");
+        return;
+    }else if($("#newTask,#grades").val()==null||$("#newTask,#grades").val()==""){
+        Dialog.showWarning("需要设置积分","提示");
+        return;
+    }
+
     var form = document.getElementById('newTask');
     var daterange=$("#newTask,#dateRangeSelect").val();
+    if(daterange==null||daterange==""){
+        Dialog.showWarning("需要设置时间范围","提示");
+        return;
+    }
     var date=daterange.split(" to ");
     $("#newTask,#group_id").val(GroupId);
     $("#newTask,#begin_time").val(date[0]);

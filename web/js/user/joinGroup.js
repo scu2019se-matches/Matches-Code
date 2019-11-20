@@ -3,7 +3,6 @@ var module="/GroupManagement";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
-var UserId=$("#user_id");
 var lasturl="";
 
 
@@ -77,13 +76,15 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        enterGroup(id);
+        var user_id=$("#userId").val();
+        enterGroup(id,user_id);
     });
     $('#example23 tbody').on('click', '.look-button', function (event) {
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        lookGroup(id);
+        var user_id=$("#userId").val();
+        lookGroup(id,user_id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
@@ -151,11 +152,11 @@ function Record(){
     });
 
 }
-function lookGroup(id) {
+function lookGroup(id,user_id) {
     window.location.href="../groupdetails/member/list.jsp?group_id="+id;
 }
-function enterGroup(id) {
-    url =ContextPath+"/GroupMember?action=get_record&group_id="+id+"&user_id="+UserId;
+function enterGroup(id,user_id) {
+    url =ContextPath+"/GroupMember?action=get_record&group_id="+id+"&user_id="+user_id;
     $.post(url, function (json) {
         if(json.length<1){
             swal({

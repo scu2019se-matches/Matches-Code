@@ -74,7 +74,7 @@
                             </div>
                             <div class="media-body media-text-right">
                                 <h2 class="color-white text-white" id="grades" name="grades">
-                                    12
+                                    ?
                                 </h2>
                                 <p class="m-b-0 text-white">积分</p>
                             </div>
@@ -89,7 +89,7 @@
                             </div>
                             <div class="media-body media-text-right">
                                 <h2 class="color-white text-white" id="commodity" name="commodity">
-                                    278
+                                    ?
                                 </h2>
                                 <p class="m-b-0 text-white">物品数</p>
                             </div>
@@ -122,18 +122,6 @@
                 </div>
             </div>
             <div class="card">
-                <%--<div class="card-title">--%>
-                    <%--<label class="control-label">日期选择</label>--%>
-                    <%--<div class="row">--%>
-                        <%--<div class="col-md-6">--%>
-                            <%--<input type="text" id="dateRange" class="form-control input-focus">--%>
-                        <%--</div>--%>
-                        <%--<div class="col-md-6">--%>
-                        <%--</div>--%>
-
-                    <%--</div>--%>
-                <%--</div>--%>
-
                 <div class="card-title">
                     <h4>个人记录</h4>
                 </div>

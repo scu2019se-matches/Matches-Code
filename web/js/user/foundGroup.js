@@ -3,7 +3,7 @@ var module="/GroupManagement";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
-var UserId=$("#user_id");
+var UserId=$("#user_id").val();
 var lasturl="";
 
 
@@ -58,9 +58,6 @@ function Record(){
                                 "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>"
                         }
                         sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">加入</button>";
-                        if(full[5]==1){
-                            sReturn=sReturn+"<button type=\"button\" class=\"look-button btn btn-arrow-link btn-sm btn-rounded m-b-10 m-l-5\">旁观</button>";
-                        }
                         return sReturn;
                     },
             },
@@ -77,13 +74,15 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        enterGroup(id);
+        var user_id=$("#userId").val();
+        enterGroup(id,user_id);
     });
     $('#example23 tbody').on('click', '.look-button', function (event) {
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        lookGroup(id);
+        var user_id=$("#userId").val();
+        lookGroup(id,user_id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
@@ -151,50 +150,8 @@ function Record(){
     });
 
 }
-function lookGroup(id) {
+function enterGroup(id,user_id) {
     window.location.href="../groupdetails/member/list.jsp?group_id="+id;
-}
-function enterGroup(id) {
-    url =ContextPath+"/GroupMember?action=get_record&group_id="+id+"&user_id="+UserId;
-    $.post(url, function (json) {
-        if(json.length<1){
-            swal({
-                title: "输入密码",
-                text: "你还不是该组成员",
-                type: "input",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                confirmButtonText: "确定",
-                cancelButtonText: "放弃",
-                animation: "slide-from-top",
-                inputPlaceholder: "输入区"
-            },function (inputValue) {
-                url=initurl+"?action=get_record&group_id="+id+"&password="+inputValue;
-                $.post(url, function (json1) {
-                    console.log(json1);
-                    if(json1.length<1){
-                        swal.showInputError("密码错误");
-                    }else{
-                        var creator_id = json1[0]["creator_id"];
-                        url=ContextPath+"/GroupMember?action=add_record&creator_id="+creator_id+"&group_id="+id;
-
-                        $.post(url, function (json2) {
-                            swal({
-                                title : "密码正确",
-                                text : "你已成功加入该分组！",
-                                type : "success",
-                            }, function() {
-                                window.location.href="../groupdetails/member/list.jsp?group_id="+id;
-                            });
-                        })
-                    }
-                });
-            }
-            );
-        }else{
-            window.location.href="../groupdetails/member/list.jsp?group_id="+id;
-        }
-    });
 }
 function modifyRecord(group_id,title) {
     var url =initurl+"?action=modify_record&group_id="+group_id+"&title="+title;
@@ -214,7 +171,8 @@ function deleteRecord(group_id) {
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
-    var url=initurl+"?action=get_record";
+    var url=initurl+"?action=get_record&creator_id="+UserId;
+    // alert(url);
     $.post(url, function (json) {
         Data = json;
         // console.log(json);
@@ -230,33 +188,6 @@ function getAllRecord(){
         }
     });
 }
-function getSelectedRecord(url){
-    if(url.length<1){
-        getAllRecord();
-        return;
-    }
-    lasturl=url;
-    var dataTable = $('#example23').DataTable();
-    dataTable.clear().draw(); //清除表格数据
-    $.post(url, function (json) {
-        Data = json;
-        for (var i = 0; i < json.length; i++) {
-            var id = json[i]["id"];
-            var title = json[i]["title"];
-            var creator = json[i]["creator"];
-            var create_time = json[i]["create_time"];
-            var user_number = json[i]["user_number"];
-            var auth = json[i]["auth"];
-            var password = json[i]["password"];
-            dataTable.row.add([id, title, creator,Time.StdToMinute(create_time),user_number,auth,password]).draw().node();
-        }
-    });
-}
-function addRecord(){
-    var form = document.getElementById('newGroup');
-    // console.log("group form"+form);
-    form.submit();
-}
 function statisticRecord(){
     window.location.href="statistic.jsp";
 };
@@ -267,56 +198,5 @@ function expordExcel(){
     $(".dt-buttons .buttons-excel").click();
 };
 
-function sortRecord(){
-    var key1 = $("#key1").val();
-    var key2 = $("#key2").val();
-    var rule1 = $("#rule1").val();
-    var rule2 = $("#rule2").val();
-    var url =initurl+"?action=get_record";
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    if (title != "") {
-        url += "&title=" + title;
-    }
-    if (creator != "") {
-        url += "&creator=" + creator;
-    }
-    var tmp="&orderby=";
-    var flag=0;
-    if (key1 != "") {
-        if(flag){
-            tmp += " ," + key1;
-            tmp += " " + rule1;
-        }else{
-            tmp += " " + key1;
-            tmp += " " + rule1;
-            flag=1;
-        }
-    }
-    if (key2 != "") {
-        if(flag){
-            tmp += " ," + key2;
-            tmp += " " + rule2;
-        }else{
-            tmp += " " + key2;
-            tmp += " " + rule2;
-            flag=1;
-        }
-    }
-    url=url+tmp;
-    getSelectedRecord(url);
-};
-function searchRecord(){
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    var url =initurl+"?action=get_record";
-    if (title != "") {
-        url += "&title=" + title;
-    }
-    if (creator != "") {
-        url += "&creator=" + creator;
-    }
-    getSelectedRecord(url);
-};
 
 Record();

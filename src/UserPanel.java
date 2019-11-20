@@ -78,7 +78,8 @@ public class UserPanel extends HttpServlet {
         String userId=request.getParameter("user_id");
         System.out.println("enter userpanel_task getResult");
         String sql="select * from tasklist where groupId in" +
-                "(select groupId from groupmemberlist where userId=" +userId+ ")";
+                "(select groupId from groupmemberlist where userId=" +userId+ ") "+
+                "order by createTime desc";
         DatabaseHelper db=new DatabaseHelper();
         ResultSet rs=db.executeQuery(sql);
         processTask(request,rs);

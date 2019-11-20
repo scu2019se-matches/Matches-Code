@@ -79,9 +79,11 @@ function Record(){
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var member_id = $(_this).parent().prev().text();
-            deleteRecord(member_id);
-            // console.log("id"+member_id);
+            // var member_id = $(_this).parent().prev().text();
+            var row = dataTable.row($(_this).parents("tr"));
+            var data = row.data();
+            // console.log(data);
+            deleteRecord(data[0]);
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();

@@ -45,8 +45,18 @@
                                     <!-- Message -->
                                     <a href="#">
                                         <div class="notification-contnet">
-                                            <h5>某用户</h5>
-                                            <span class="mail-desc">回复了你</span>
+                                            <div class="row">
+                                                <h3 class="mail-desc">老王回复了你</h3>
+                                            </div>
+                                            今天晚上一起做项目吗
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="notification-contnet">
+                                            <div class="row">
+                                                <h3 class="mail-desc">XX评论了你</h3>
+                                            </div>
+                                            这个活动策划的挺好
                                         </div>
                                     </a>
                                 </div>
@@ -63,20 +73,6 @@
                         <ul class="dropdown-user">
                             <li role="separator" class="divider"></li>
                             <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 个人信息</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 每日任务</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 关注的活动</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 发布的活动</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 发布的评论</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 收到的回复</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 加入的分组</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="<%=request.getContextPath()%>/userinfo/index.jsp"> 创建的分组</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="<%=request.getContextPath()%>/AccountAction?action=logout"> 退出登录</a></li>
                         </ul>
