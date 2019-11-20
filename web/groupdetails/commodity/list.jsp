@@ -22,15 +22,17 @@
     <title>活动与任务平台 | 小组成员</title>
     <link href="<%=request.getContextPath()%>/css/lib/dropzone/dropzone.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <%@include file="../page_css.jsp"%>
+    <%@include file="../../page_css.jsp"%>
 </head>
 
 <body class="header-fix fix-sidebar">
 <!-- Main wrapper  -->
 <div id="main-wrapper">
-    <%@include file="../page_header.jsp"%>
-    <%@include file="../page_sidebar_menu.jsp"%>
+    <%@include file="../../page_header.jsp"%>
+    <%@include file="../../page_sidebar_menu.jsp"%>
     <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
+    <input type="hidden" id="group_id" name="group_id" value="<%=request.getParameter("group_id")%>" />
+    <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
 
     <!-- Page wrapper  -->
     <div class="page-wrapper">
@@ -40,7 +42,7 @@
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">活动与任务平台</a></li>
-                    <li class="breadcrumb-item active">小组成员</li>
+                    <li class="breadcrumb-item active">小组商城</li>
                 </ol>
             </div>
         </div>
@@ -52,11 +54,9 @@
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">创建</span></a> </li>
+                        <li class="nav-item" id="navAddCommodity"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">添加商品</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">排序</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="getAllRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">显示所有</span></a> </li>
-
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                                 <span class="hidden-sm-up"></span> <span class="hidden-xs-down">更多</span>
@@ -87,27 +87,23 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">小组成员列表</h4>
-                    <h6 class="card-subtitle">这是所有小组成员</h6>
+                    <h4 class="card-title">小组商品列表</h4>
+                    <h6 class="card-subtitle">这是所有小组商品</h6>
                     <div class="table-responsive m-t-40">
                         <table id="example23" class="display nowrap table table-hover table-bordered" cellspacing="2px" width="100%">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>昵称</th>
-                                <th>创建者</th>
-                                <th>创建时间</th>
-                                <th>组员数</th>
+                                <th>商品名称</th>
+                                <th>分数</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tfoot>
                             <tr>
                                 <th>ID</th>
-                                <th>昵称</th>
-                                <th>创建者</th>
-                                <th>创建时间</th>
-                                <th>组员数</th>
+                                <th>商品名称</th>
+                                <th>分数</th>
                                 <th>操作</th>
                             </tr>
                             </tfoot>
@@ -122,14 +118,14 @@
 
         <!-- End PAge Content -->
         <!-- End Container fluid  -->
-        <%@include file="../page_footer.jsp"%>
+        <%@include file="../../page_footer.jsp"%>
     </div>
     <!-- End Page wrapper  -->
 </div>
 <!-- End Wrapper -->
-<%@include file="../page_js.jsp"%>
-<%@include file="../js/mobileclass.jsp"%>
-<script src="../js/tabview.js"></script>
+<%@include file="../../page_js.jsp"%>
+<%@include file="../../js/mobileclass.jsp"%>
+<script src="../../js/tabview.js"></script>
 
 
 <script src="<%=request.getContextPath()%>/js/lib/datatables/datatables.min.js"></script>
@@ -143,8 +139,7 @@
 <script src="<%=request.getContextPath()%>/js/lib/dropzone/dropzone.js"></script>
 
 
-<script src="<%=request.getContextPath()%>/js/groupmember/list.js"></script>
-<%--<script src="<%=request.getContextPath()%>/js/lib/atatables/datatables-init.js"></script>--%>
+<script src="<%=request.getContextPath()%>/js/groupdetails/commodity/list.js"></script>
 
 </body>
 

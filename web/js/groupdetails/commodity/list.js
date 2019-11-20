@@ -1,11 +1,16 @@
 var Data=[];
-var module="/GroupMember";
+var module="/Commodity";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
+var group_id=$("#group_id").val();
+var user_id=$("#user_id").val();
 var initurl=ContextPath+module;
 function Record(){
+    console.log("group_id = " + group_id);
+    console.log("user_id = " + user_id);
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
+        order: [],
         dom: 'Bfrtip',
         buttons:[
             {
@@ -29,7 +34,7 @@ function Record(){
             },
             "sProcessing":   "处理中...",
             "sLengthMenu":   "_MENU_ 组/页",
-            "sZeroRecords":  "<span'>没有找到对应的组！</span>",
+            "sZeroRecords":  "<span'>没有找到对应的商品！</span>",
             "sInfo":         "显示第 _START_ 至 _END_ 个组，共 _TOTAL_ 个",
             "sInfoEmpty":    "显示第 0 至 0 个组，共 0 个",
             "sInfoFiltered": "(由 _MAX_ 个组过滤)",
@@ -44,25 +49,22 @@ function Record(){
         },
         "columnDefs": [
             {
-                "targets":5,
+                "targets": 3,
+                "orderable": false,
                 "mRender":
                     function(data, type, full) {
-                        sReturn=""
-                        if(full[5]==1) {
+                        sReturn = ""
+                        if(full[3] == user_id) {
                             sReturn = sReturn +
                                 "<button type=\"button\" class=\"edit-button btn btn-success btn-sm btn-rounded m-b-10 m-l-5\">修改</button>" +
                                 "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>"
                         }
-                        sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">进入</button>";
+                        sReturn = sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">兑换</button>";
                         return sReturn;
                     },
-            },
-            {
-                "targets":[1,2,5],
-                "orderable": false,
-            },
+            }
         ],
-        "aLengthMenu": [[10,15,20,25,40,50,-1],[10,15,20,25,40,50,"所有小组"]],
+        "aLengthMenu": [[10,15,20,25,40,50,-1],[10,15,20,25,40,50,"所有商品"]],
     });
     getAllRecord();
 
@@ -70,14 +72,12 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
-        // var user_id="<%=session.getAttribute("id")%>";
-        var user_id=3;
-        enterGroup(id,user_id);
+        buyCommodity(id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var id = $(_this).parent().prev().text();
+            var id = $(_this).parent().prev().prev().prev().text();
             console.log("id"+id);
             deleteRecord(id);
             var table = $('#example23').DataTable();
@@ -91,7 +91,7 @@ function Record(){
         var tds = $(this).parents("tr").children();
         $.each(tds, function (i, val) {
             var jqob = $(val);
-            if (i != 1 ) {
+            if (i != 1 && i != 2 ) {
                 return true;
             }
             var txt = jqob.text();
@@ -108,19 +108,31 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var tds = $(this).parents("tr").children();
         var valid_flag=1;
+        var grades_format = /\d+/;
         $.each(tds, function (i, val) {
             var jqob = $(val);
             if(i==1){
                 var txt = jqob.children("input").val();
                 // console.log("length"+txt.length);
                 if(txt.length<1){
-                    Dialog.showWarning("组名不能为空哦","提示");
+                    Dialog.showWarning("商品名不能为空哦","提示");
                     valid_flag=0;
                 }else{
                     jqob.html(txt);
                     dataTable.cell(jqob).data(txt);
                 }
-            }else if (!jqob.has('button').length) {
+            }
+            else if(i==2){
+                var txt = jqob.children("input").val();
+                if(!grades_format.test(txt)){
+                    Dialog.showWarning("分数格式不正确哦","提示");
+                    valid_flag=0;
+                }else{
+                    jqob.html(txt);
+                    dataTable.cell(jqob).data(txt);
+                }
+            }
+            else if (!jqob.has('button').length) {
                 var txt = jqob.children("input").val();
                 jqob.html(txt);
                 dataTable.cell(jqob).data(txt);
@@ -131,77 +143,56 @@ function Record(){
         }
         var data = row.data();
         var id = data[0];
-        var title = data[1];
-        url =initurl+"?action=modify_record&id="+id+"&title="+title;
+        var context = data[1];
+        var grades = data[2];
+        var url = String.format(
+            "{0}?action={1}&groupId={2}&id={3}&context={4}&grades={5}",
+            initurl, "modifyRecord", group_id, id, context, grades
+        );
         getSelectedRecord(url);
         Dialog.showSuccess("修改成功","操作成功");
     });
 }
-function enterGroup(id,user_id) {
-    url =ContextPath+"GroupMember?action=get_record&id="+id+"userId="+user_id;
+function buyCommodity(commodityId) {
+    var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
+        ContextPath, module, "buyCommodity", commodityId, group_id);
     $.post(url, function (json) {
-        if(json.length()<1){
-            swal({
-                    title: "输入密码",
-                    text: "你还不是该组成员",
-                    type: "input",
-                    showCancelButton: true,
-                    closeOnConfirm: true,
-                    confirmButtonText: "确定",
-                    cancelButtonText: "放弃",
-                    animation: "slide-from-top",
-                    inputPlaceholder: "输入区"
-                },function (inputValue) {
-                    url=initurl+"action=get_record&id="+id+"&password="+password;
-                    $.post(url, function (json) {
-                        if(json.length()<1){
-                            swal.showInputError("密码错误");
-                        }else{
-                            url=ContextPath+"GroupMember?action=add_record&user_id="+user_id+"group_id="+id;
-                            $.post(url, function (json) {
-                                swal("密码正确", "你已成功加入该分组");
-                                window.location.href="../GroupMember/list.jsp?gourpId="+id;
-                            })
-                        }
-                    });
-                }
-            );
+        if(json.errno != 0){
+            Dialog.showWarning(json.msg, "");
         }else{
-            window.location.href=ContextPath+"GroupMember/list.jsp?gourpId="+id;
+            Dialog.showSuccess("兑换成功", "");
         }
     });
 }
 function modifyRecord(url) {
     $.post(url, function (json) {
-
+        sortRecord();
     });
 }
 function deleteRecord(id) {
-    var url=ContextPath+module+"?action=delete_record";
+    var url=ContextPath+module+"?action=deleteCommodity";
     if (id !="") {
         url += "&id=" + id;
     }
     // console.log("删除操作url"+url);
     $.post(url, function (jsonObject) {
-
+        sortRecord();
     });
 }
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
-    var url=initurl+"?action=get_record";
+    var url = String.format("{0}?action={1}&groupId={2}",
+        initurl, "getRecord", group_id);
     $.post(url, function (json) {
         Data = json;
-        // console.log(json);
+        console.log(json);
         for (var i = 0; i < json.length; i++) {
             var id = json[i]["id"];
-            var title = json[i]["title"];
-            var creator = json[i]["creator"];
-            var create_time = json[i]["create_time"];
-            var user_number = json[i]["user_number"];
-            var auth = json[i]["auth"];
-            // var user_id = json[i]["user_id"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth]).draw().node();
+            var title = json[i]["context"];
+            var grades = json[i]["grades"];
+            var creatorId = json[i]["creatorId"];
+            dataTable.row.add([id, title, grades, creatorId]).draw().node();
         }
     });
 }
@@ -212,21 +203,25 @@ function getSelectedRecord(url){
         Data = json;
         for (var i = 0; i < json.length; i++) {
             var id = json[i]["id"];
-            var title = json[i]["title"];
-            var creator = json[i]["creator"];
-            var create_time = json[i]["create_time"];
-            var user_number = json[i]["user_number"];
-            var auth = json[i]["auth"];
-            var password = json[i]["password"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth,password]).draw().node();
+            var context = json[i]["context"];
+            var creatorId = json[i]["creatorId"];
+            var grades = json[i]["grades"];
+            dataTable.row.add([id, context, grades,creatorId]).draw().node();
         }
     });
 }
 
 function addRecord(){
-    var form = document.getElementById('newGroup');
-    // console.log("group form"+form);
-    form.submit();
+    var form = document.getElementById('newCommodity');
+    if(form.add_context.value != "" && form.add_grades.value != ""){
+        var url = String.format(
+            "{0}?action={1}&groupId={2}&context={3}&grades={4}",
+            initurl, "addCommodity", group_id, form.add_context.value, form.add_grades.value
+        )
+        $.get(url, function(res){
+            sortRecord();
+        });
+    }
 }
 
 function statisticRecord(){
@@ -244,14 +239,17 @@ function sortRecord(){
     var key2 = $("#key2").val();
     var rule1 = $("#rule1").val();
     var rule2 = $("#rule2").val();
-    var url =initurl+"?action=get_record";
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    if (title != "") {
-        url += "&title=" + title;
+    var url = String.format(
+        "{0}?action={1}&groupId={2}",
+        initurl, "getRecord", group_id
+    );
+    var query_context = $("#query_context").val();
+    var query_grades = $("#query_grades").val();
+    if (query_context != "") {
+        url += "&context=" + query_context;
     }
-    if (creator != "") {
-        url += "&creator=" + creator;
+    if (query_grades != "") {
+        url += "&grades=" + query_grades;
     }
     var tmp="&orderby=";
     var flag=0;
@@ -278,16 +276,21 @@ function sortRecord(){
     url=url+tmp;
     getSelectedRecord(url);
 };
+
 function searchRecord(){
-    var title = $("#title").val();
-    var creator = $("#creator").val();
-    var url =initurl+"?action=get_record";
-    if (title != "") {
-        url += "&title=" + title;
-    }
-    if (creator != "") {
-        url += "&creator=" + creator;
-    }
-    getSelectedRecord(url);
+    sortRecord();
+    //var query_context = $("#query_context").val();
+    //var query_grades = $("#query_grades").val();
+    //var url = String.format(
+    //    "{0}?action={1}&groupId={2}",
+    //    initurl, "getRecord", group_id);
+    //if (query_context != "") {
+    //    url += "&context=" + query_context;
+    //}
+    //if (query_grades != "") {
+    //    url += "&grades=" + query_grades;
+    //}
+    //getSelectedRecord(url);
 };
+
 Record();

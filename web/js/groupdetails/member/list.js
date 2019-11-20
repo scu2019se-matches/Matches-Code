@@ -209,7 +209,8 @@ function searchRecord(){
 Record();
 
 function commodityRecord(){
-
+    var group_id=$("#group_id").val();
+    window.location.href="../commodity/list.jsp?group_id="+group_id;
 }
 function taskRecord(){
     var group_id=$("#group_id").val();
