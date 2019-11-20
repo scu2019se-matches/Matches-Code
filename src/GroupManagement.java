@@ -84,7 +84,7 @@ public class GroupManagement extends HttpServlet {
             //增加组
             String title=request.getParameter("title");
             String password=request.getParameter("password");
-            String creatorId=(String)session.getAttribute("id");
+            String creatorId=session.getAttribute("id").toString();
             String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
 
             ResultSet rs = db.executeQuery("select max(id) from `group`");

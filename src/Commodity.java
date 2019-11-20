@@ -61,6 +61,9 @@ public class Commodity extends HttpServlet {
                 case "buyCommodity":
                     buyCommodity(request, response);
                     break;
+                case "getOwner":
+                    getOwner(request, response);
+                    break;
                 default:
                     System.out.println("Commodity: invalid action: "+action);
                     break;
@@ -170,6 +173,30 @@ public class Commodity extends HttpServlet {
         }
         JSONObject res = new JSONObject();
         res.put("errno", 0);
+        out.print(res);
+        out.flush();
+        out.close();
+    }
+
+    private void getOwner(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        QueryBuilder queryBuilder = new QueryBuilder("group");
+        queryBuilder.set("id", groupId);
+        String sql = queryBuilder.getSelectStmt();
+        JSONObject res = new JSONObject();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs = db.executeQuery(sql);
+            if(rs.next()){
+                res.put("errno", 0);
+                res.put("owner", rs.getInt("creatorId"));
+            }else{
+                res.put("errno", 1);
+            }
+        }
         out.print(res);
         out.flush();
         out.close();

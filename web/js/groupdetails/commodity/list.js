@@ -8,6 +8,13 @@ var initurl=ContextPath+module;
 function Record(){
     console.log("group_id = " + group_id);
     console.log("user_id = " + user_id);
+
+    $.post(String.format("{0}?action={1}&groupId={2}",initurl,"getOwner",group_id),function(res){
+        if(res.errno == 0 && res.owner == user_id){
+            $('#navAddCommodity').css('visibility','visible');
+        }
+    });
+
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
         order: [],
@@ -149,8 +156,10 @@ function Record(){
             "{0}?action={1}&groupId={2}&id={3}&context={4}&grades={5}",
             initurl, "modifyRecord", group_id, id, context, grades
         );
-        getSelectedRecord(url);
-        Dialog.showSuccess("修改成功","操作成功");
+        $.post(url, function(res){
+            Dialog.showSuccess("修改成功","操作成功");
+            sortRecord();
+        });
     });
 }
 function buyCommodity(commodityId) {
@@ -219,6 +228,7 @@ function addRecord(){
             initurl, "addCommodity", group_id, form.add_context.value, form.add_grades.value
         )
         $.get(url, function(res){
+            Dialog.showSuccess("添加成功", "");
             sortRecord();
         });
     }
