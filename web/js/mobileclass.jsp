@@ -199,6 +199,7 @@ var Dialog = function() {
                     cancelButtonText: "放弃",
                     closeOnConfirm: true
                 }
+            ,fnCallback
         );
     };
     var showText = function(sText, sTitle, fnCallback) {
@@ -238,4 +239,196 @@ var Dialog = function() {
         showPrompt:showPrompt
     };
 }();
+var Time=function(){
+    var MinToMinute=function(time){
+        time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
+        time = time.split(':');
+        return time[1]+"月"+time[2]+"日  "+time[3]+":"+time[4];
+    };
+    var MinToHour=function(time){
+        time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
+        time = time.split(':');
+        return time[1]+"月"+time[2]+"日"+time[3]+"时";
+    };
+    var MinToDay=function(time){
+        time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
+        time = time.split(':');
+        return time[1]+"月"+time[2]+"日";
+    };
+    var StdToMinute=function(time){
+        time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
+        time = time.split(':');
+        return time[0]+"-"+time[1]+"-"+time[2]+" "+time[3]+":"+time[4];
+    };
+    var StdToDay=function(time){
+        time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
+        time = time.split(':');
+        return time[0]+"-"+time[1]+"-"+time[2];
+    };
+    return{
+        MinToMinute:MinToMinute,
+        MinToHour:MinToHour,
+        MinToDay:MinToDay,
+        StdToMinute:StdToMinute,
+        StdToDay:StdToDay,
+    };
+}();
+var DatePicker=function(){
+    var DateRangeFromToday=function (target){
+        var locale = {
+            "applyLabel": "确定",
+            "cancelLabel": "取消",
+            "fromLabel": "起始时间",
+            "toLabel": "结束时间",
+            "customRangeLabel": "自定义",
+            "weekLabel": "W",
+            "daysOfWeek": ["日", "一", "二", "三", "四", "五", "六"],
+            "monthNames": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            "firstDay": 1
+        };
+        $(target).daterangepicker({
+            "locale": locale,
+            "separator":" to ",
+            "opens":"left",
+            "format":"YYYY-MM-DD",
+            "ranges" : {
+                '一周': [ moment(),moment().add('days', 7)],
+                '本月': [moment(),moment().endOf("month")],
+            },
+            startDate: moment(),
+            endDate: moment().add(3,'days'),
+            minDate:moment(),
+            maxDate: moment().add(90,'days'),
+        });
+    }
+    var DateTimeRangeFromToday=function (target){
+        var locale = {
+            "applyLabel": "确定",
+            "cancelLabel": "取消",
+            "fromLabel": "起始时间",
+            "toLabel": "结束时间",
+            "customRangeLabel": "自定义",
+            "weekLabel": "W",
+            "daysOfWeek": ["日", "一", "二", "三", "四", "五", "六"],
+            "monthNames": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            "firstDay": 1
+        };
+        $(target).daterangepicker({
+            "separator":" to ",
+            "locale": locale,
+            "format":"YYYY-MM-DD HH:MM",
+            "ranges" : {
+                '一周': [ moment(),moment().add('days', 7)],
+                '本月': [moment(),moment().endOf("month")],
+            },
+            startDate: moment(),
+            endDate: moment().add(3,'days'),
+            minDate:moment(),
+            maxDate: moment().add(90,'days'),
+            "opens":"left",
+            "timePicker":true,
+            "timePickerIncrement" : 1,
+            "timePicker12Hour":false,
+        });
+    }
+    var DateRangeToToday=function (target){
+        var locale = {
+            "applyLabel": "确定",
+            "cancelLabel": "取消",
+            "fromLabel": "起始时间",
+            "toLabel": "结束时间",
+            "customRangeLabel": "自定义",
+            "weekLabel": "W",
+            "daysOfWeek": ["日", "一", "二", "三", "四", "五", "六"],
+            "monthNames": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            "firstDay": 1
+        };
+        $(target).daterangepicker({
+            "locale": locale,
+            "separator":" to ",
+            "opens":"left",
+            "format":"YYYY-MM-DD",
+            "ranges" : {
+                '今日': [moment().startOf('day'), moment()],
+                '昨日': [moment().subtract('days', 1).startOf('day'), moment().subtract('days', 1).endOf('day')],
+                '最近7日': [moment().subtract('days', 6), moment()],
+                '最近30日': [moment().subtract('days', 29), moment()],
+                '本月': [moment().startOf("month"),moment().endOf("month")],
+                '上个月': [moment().subtract(1,"month").startOf("month"),moment().subtract(1,"month").endOf("month")]
+            },
+            startDate: moment().subtract(3,'days'),
+            endDate: moment(),
+            maxDate:moment(),
+            minDate: moment().subtract(90,'days'),
+        });
+    }
+    var DateTimeRangeToToday=function (target){
+        var locale = {
+            "applyLabel": "确定",
+            "cancelLabel": "取消",
+            "fromLabel": "起始时间",
+            "toLabel": "结束时间",
+            "customRangeLabel": "自定义",
+            "weekLabel": "W",
+            "daysOfWeek": ["日", "一", "二", "三", "四", "五", "六"],
+            "monthNames": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            "firstDay": 1
+        };
+        $(target).daterangepicker({
+            "locale": locale,
+            "separator":" to ",
+            "opens":"left",
+            "format":"YYYY-MM-DD HH:MM",
+            "ranges" : {
+                '今日': [moment().startOf('day'), moment()],
+                '昨日': [moment().subtract('days', 1).startOf('day'), moment().subtract('days', 1).endOf('day')],
+                '最近7日': [moment().subtract('days', 6), moment()],
+                '最近30日': [moment().subtract('days', 29), moment()],
+                '本月': [moment().startOf("month"),moment().endOf("month")],
+                '上个月': [moment().subtract(1,"month").startOf("month"),moment().subtract(1,"month").endOf("month")]
+            },
+            startDate: moment().subtract(3,'days'),
+            endDate: moment(),
+            maxDate:moment(),
+            minDate: moment().subtract(90,'days'),
+            "timePicker":true,
+            "timePickerIncrement" : 1,
+            "timePicker12Hour":false,
+        });
+    }
+    var DateTimeFromToday=function (target) {
+        $(target).datetimepicker({
+            opens : 'right', //日期选择框的弹出位置,
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true,   //选择后自动关闭当前时间控件
+            startDate:new Date(),
+            todayBtn:'linked',
+            language: 'cn',  //修改默认为cn
+            todayHighlight: true,
+            forceParse:true,
+        });
+    }
+    var DateTimeToToday=function (target) {
+        $(target).datetimepicker({
+            opens : 'right', //日期选择框的弹出位置,
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true,   //选择后自动关闭当前时间控件
+            endDate:new Date(),
+            todayBtn:'linked',
+            language: 'cn',  //修改默认为cn
+            todayHighlight: true,
+            forceParse:true,
+        });
+    }
+    return{
+        DateRangeFromToday:DateRangeFromToday,
+        DateTimeRangeFromToday:DateTimeRangeFromToday,
+        DateRangeToToday:DateRangeToToday,
+        DateTimeRangeToToday:DateTimeRangeToToday,
+        DateTimeFromToday:DateTimeFromToday,
+        DateTimeToToday:DateTimeToToday,
+    };
+}();
+
+
 </script>

@@ -30,7 +30,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
-    <title>移动互动课堂 | 登录</title>
+    <title>活动与任务平台 | 登录</title>
     <!-- Custom CSS -->
 
     <link href="css/style.css" rel="stylesheet">

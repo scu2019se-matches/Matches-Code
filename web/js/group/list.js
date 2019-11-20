@@ -3,6 +3,9 @@ var module="/GroupManagement";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
+var lasturl="";
+
+
 function Record(){
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
@@ -75,14 +78,14 @@ function Record(){
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
+        // alert(1);
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var id = $(_this).parent().prev().text();
-            console.log("id"+id);
-            deleteRecord(id);
+            // alert(2);
+            var group_id = $(_this).parent().prev().text();
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();
-            Dialog.showSuccess("已删除", "操作成功");
+            deleteRecord(group_id);
         });
 
     });
@@ -94,7 +97,7 @@ function Record(){
                 return true;
             }
             var txt = jqob.text();
-            var put = $("<input type='text'>");
+            var put = $("<input type=\"text\">");
             put.val(txt);
             jqob.html(put);
         });
@@ -106,35 +109,35 @@ function Record(){
     $("#example23 tbody").on("click", ".save-button", function (event) {
         var row = dataTable.row($(this).parents("tr"));
         var tds = $(this).parents("tr").children();
-        var valid_flag=1;
+        var flag=1;
         $.each(tds, function (i, val) {
             var jqob = $(val);
             if(i==1){
                 var txt = jqob.children("input").val();
-                // console.log("length"+txt.length);
                 if(txt.length<1){
-                    Dialog.showWarning("组名不能为空哦","提示");
-                    valid_flag=0;
+                    Dialog.showWarning("不能为空哦","提示");
+                    flag=0;
+                    return;
                 }else{
                     jqob.html(txt);
                     dataTable.cell(jqob).data(txt);
                 }
-            }else if (!jqob.has('button').length) {
-                var txt = jqob.children("input").val();
-                jqob.html(txt);
-                dataTable.cell(jqob).data(txt);
             }
         });
-        if(!valid_flag){
+        if(!flag){
             return;
         }
         var data = row.data();
         var id = data[0];
         var title = data[1];
-        url =initurl+"?action=modify_record&id="+id+"&title="+title;
-        getSelectedRecord(url);
-        Dialog.showSuccess("修改成功","操作成功");
+        modifyRecord(id,title);
+
+        $(this).html("修改");
+        $(this).toggleClass("edit-button");
+        $(this).toggleClass("save-button");
+        event.preventDefault();
     });
+
 }
 function enterGroup(id,user_id) {
     url =ContextPath+"/GroupMember?action=get_record&group_id="+id+"&user_id="+user_id;
@@ -178,19 +181,18 @@ function enterGroup(id,user_id) {
         }
     });
 }
-function modifyRecord(url) {
+function modifyRecord(group_id,title) {
+    var url =initurl+"?action=modify_record&group_id="+group_id+"&title="+title;
+    // alert(url);
     $.post(url, function (json) {
-
+        Dialog.showSuccess("修改成功","操作成功");
+        // getSelectedRecord(lasturl);
     });
 }
-function deleteRecord(id) {
-    var url=ContextPath+module+"?action=delete_record";
-    if (id !="") {
-        url += "&id=" + id;
-    }
-    // console.log("删除操作url"+url);
+function deleteRecord(group_id) {
+    var url=initurl+"?action=delete_record&group_id="+group_id;
     $.post(url, function (jsonObject) {
-
+        Dialog.showSuccess("已删除", "操作成功");
     });
 }
 function getAllRecord(){
@@ -208,11 +210,16 @@ function getAllRecord(){
             var user_number = json[i]["user_number"];
             var auth = json[i]["auth"];
             // var user_id = json[i]["user_id"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth]).draw().node();
+            dataTable.row.add([id, title, creator,Time.StdToMinute(create_time),user_number,auth]).draw().node();
         }
     });
 }
 function getSelectedRecord(url){
+    if(url.length<1){
+        getAllRecord();
+        return;
+    }
+    lasturl=url;
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
     $.post(url, function (json) {
@@ -225,17 +232,15 @@ function getSelectedRecord(url){
             var user_number = json[i]["user_number"];
             var auth = json[i]["auth"];
             var password = json[i]["password"];
-            dataTable.row.add([id, title, creator,create_time,user_number,auth,password]).draw().node();
+            dataTable.row.add([id, title, creator,Time.StdToMinute(create_time),user_number,auth,password]).draw().node();
         }
     });
 }
-
 function addRecord(){
     var form = document.getElementById('newGroup');
     // console.log("group form"+form);
     form.submit();
 }
-
 function statisticRecord(){
     window.location.href="statistic.jsp";
 };
@@ -297,4 +302,5 @@ function searchRecord(){
     }
     getSelectedRecord(url);
 };
+
 Record();

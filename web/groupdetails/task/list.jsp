@@ -52,10 +52,13 @@
                 <div class="card-body">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">发布</span></a> </li>
+                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">排序</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="getAllRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">显示所有</span></a> </li>
+                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="toMyDetails()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">我的统计</span></a> </li>
+                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="toMemberList()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">组员列表</span></a> </li>
+                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="ReturnBack()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">返回</span></a> </li>
 
 
                         <li class="nav-item dropdown">
@@ -89,7 +92,6 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">小组任务列表</h4>
-                    <h6 class="card-subtitle">这是发布的任务</h6>
                     <div class="table-responsive m-t-40">
                         <table id="example23" class="display nowrap table table-hover table-bordered" cellspacing="2px" width="100%">
                             <thead>
@@ -129,19 +131,6 @@
 <%@include file="../../page_js.jsp"%>
 <%@include file="../../js/mobileclass.jsp"%>
 <script src="<%=request.getContextPath()%>/js/tabview.js"></script>
-
-
-<script src="<%=request.getContextPath()%>/js/lib/datatables/datatables.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/datatables/cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/lib/dropzone/dropzone.js"></script>
-
-
 <script src="<%=request.getContextPath()%>/js/groupdetails/task/list.js"></script>
 <%--<script src="<%=request.getContextPath()%>/js/lib/atatables/datatables-init.js"></script>--%>
 

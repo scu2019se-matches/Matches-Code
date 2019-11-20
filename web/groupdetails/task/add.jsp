@@ -14,20 +14,31 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form id="newGroup" method="post" action="/GroupManagement?action=add_record">
+                    <form id="newTask" method="post" action="/GroupTask?action=add_record">
+                        <input type="hidden" id="begin_time" name="begin_time">
+                        <input type="hidden" id="end_time" name="end_time">
+                        <input type="hidden" id="group_id" name="group_id">
                         <div class="row">
                             <div class="col-md-12 ">
                                 <div class="form-group">
-                                    <label>昵称</label>
-                                    <input type="text" id="title" name="title" class="form-control" required>
+                                    <label>描述</label>
+                                    <input type="text" id="context" name="context" class="form-control" required>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 ">
                                 <div class="form-group">
-                                    <label class="control-label">密码</label>
-                                    <input type="text" id="password" name="password" class="form-control">
+                                    <label class="control-label">积分</label>
+                                    <input type="number" id="grades" name="grades" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 ">
+                                <div class="form-group">
+                                    <label class="control-label">任务范围</label>
+                                    <input type="text" id="dateRangeSelect" name="dateRangeSelect" class="form-control">
                                 </div>
                             </div>
                         </div>

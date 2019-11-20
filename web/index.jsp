@@ -28,6 +28,9 @@
     <div id="main-wrapper">
         <%@include file="page_header.jsp"%>
         <%@include file="page_sidebar_menu.jsp"%>
+        <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
+        <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
+        <input type="hidden" id="auth" name="auth" value="<%=session.getAttribute("auth")%>" />
         <!-- Page wrapper  -->
         <div class="page-wrapper">
             <!-- Bread crumb -->
@@ -101,7 +104,55 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>任务</h4>
+                            </div>
+                            <div class="todo-list">
+                                <div class="tdl-holder">
+                                    <div class="tdl-content">
+                                        <ul id="task_list_todo">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>关注的活动</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>名称</th>
+                                            <th>发布者</th>
+                                            <th>组织</th>
+                                            <th>举办时间</th>
+                                            <th>状态</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                            </td>
+                                            <td>Lew Shawon</td>
+                                            <td><span>Dell-985</span></td>
+                                            <td><span>456 pcs</span></td>
+                                            <td><span class="badge badge-success">已结束</span></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <!-- End PAge Content -->
             </div>
             <!-- End Container fluid  -->
@@ -116,9 +167,11 @@
 </body>
 
 </html>
+
 <script type="text/javascript">
     jQuery(document).ready(function() {
         MobileClass.init();
         Page.init();
     });
 </script>
+<script src="<%=request.getContextPath()%>/js/userpanel.js"></script>

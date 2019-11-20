@@ -3,6 +3,8 @@ var module="/GroupMember";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
+var GroupId=$("#group_id").val();
+var UserId=$("#user_id").val();
 function Record(){
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
@@ -51,7 +53,10 @@ function Record(){
                         if(full[5]==1) {
                             sReturn = sReturn +
                                 "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>"
-                            sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">详情</button>";
+                        }
+                        if(full[6]==1){
+                            sReturn=sReturn+
+                                "<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">详情</button>";
                         }
                         return sReturn;
                     },
@@ -66,47 +71,38 @@ function Record(){
     getAllRecord();
 
     $('#example23 tbody').on('click', '.enter-button', function (event) {
-        var group_id = $("#group_id").val();
-        var user_id = $("#id").val();
-        enterDetails(group_id,user_id);
+        var row = dataTable.row($(this).parents("tr"));
+        var data = row.data();
+        var member_id = data[0];
+        enterDetails(member_id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;
         Dialog.showComfirm("确定要删除吗？", "警告", function(){
-            var id = $(_this).parent().prev().text();
-            console.log("id"+id);
-            deleteRecord(id);
+            var member_id = $(_this).parent().prev().text();
+            deleteRecord(member_id);
+            // console.log("id"+member_id);
             var table = $('#example23').DataTable();
             table.row($(_this).parents('tr')).remove().draw();
             event.preventDefault();
-            Dialog.showSuccess("已删除", "操作成功");
         });
 
     });
-
 }
-function enterDeatails(group_id,user_id) {
-
+function enterDetails(member_id) {
+    var url="../memberdetails/list.jsp?group_id="+GroupId+"&member_id="+member_id;
+    window.location.href=url;
 }
-function modifyRecord(url) {
-    $.post(url, function (json) {
-
-    });
-}
-function deleteRecord(id) {
-    var url=ContextPath+module+"?action=delete_record";
-    if (id !="") {
-        url += "&id=" + id;
-    }
-    // console.log("删除操作url"+url);
+function deleteRecord(member_id) {
+    var url=ContextPath+module+"?action=delete_record&group_id="+GroupId+"&member_id="+member_id;
     $.post(url, function (jsonObject) {
-
+        Dialog.showSuccess("已删除", "操作成功");
     });
 }
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
-    var url=initurl+"?action=get_record";
+    var url=initurl+"?action=get_record&group_id="+GroupId;
     $.post(url, function (json) {
         Data = json;
         // console.log(json);
@@ -117,8 +113,9 @@ function getAllRecord(){
             var create_time = json[i]["create_time"];
             var grades = json[i]["grades"];
             var commodity = json[i]["commodity"];
-            var auth = json[i]["auth"];
-            dataTable.row.add([user_id, user,create_time,grades,commodity,auth]).draw().node();
+            var delauth = json[i]["delauth"];
+            var enterauth = json[i]["enterauth"];
+            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,delauth,enterauth]).draw().node();
         }
     });
 }
@@ -134,8 +131,9 @@ function getSelectedRecord(url){
             var create_time = json[i]["create_time"];
             var grades = json[i]["grades"];
             var commodity = json[i]["commodity"];
-            var auth = json[i]["auth"];
-            dataTable.row.add([user_id, user,create_time,grades,commodity,auth]).draw().node();
+            var delauth = json[i]["delauth"];
+            var enterauth = json[i]["enterauth"];
+            dataTable.row.add([user_id, user,Time.MinToHour(create_time),grades,commodity,delauth,enterauth]).draw().node();
         }
     });
 }
@@ -158,7 +156,7 @@ function sortRecord(){
     var rule1 = $("#rule1").val();
     var rule2 = $("#rule2").val();
     var rule3 = $("#rule3").val();
-    var url =initurl+"?action=get_record";
+    var url =initurl+"?action=get_record&group_id="+GroupId;
     var user = $("#user").val();
     if (user != "") {
         url += "&user=" + title;
@@ -201,7 +199,7 @@ function sortRecord(){
 };
 function searchRecord(){
     var user = $("#user").val();
-    var url =initurl+"?action=get_record";
+    var url =initurl+"?action=get_record&group_id="+GroupId;
     if (user != "") {
         url += "&user=" + user;
     }
@@ -218,3 +216,8 @@ function taskRecord(){
     var group_id=$("#group_id").val();
     window.location.href="../task/list.jsp?group_id="+group_id;
 }
+function toMyDetails(){
+    var url="../memberdetails/list.jsp?group_id="+GroupId+"&member_id="+UserId;
+    window.location.href=url;
+}
+

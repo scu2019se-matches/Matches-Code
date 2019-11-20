@@ -18,7 +18,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
-    <title>移动互动课堂 | 注册</title>
+    <title>活动与任务平台 | 注册</title>
     <!-- Custom CSS -->
 
     <link href="css/style.css" rel="stylesheet">

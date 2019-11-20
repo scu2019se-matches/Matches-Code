@@ -6,7 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import util.DatabaseHelper;
-import util.MD5Util;
 import util.QueryBuilder;
 
 import javax.servlet.ServletException;
@@ -28,16 +27,22 @@ import java.util.Date;
 public class GroupTask extends HttpServlet {
 
     private static JSONArray queryResult = null;
-    private static QueryBuilder queryBuilder = null;
-    private static QueryBuilder queryAnotherBuilder = null;
+    private static QueryBuilder TaskView = null;
+    private static QueryBuilder TaskHistoryTable = null;
+    private static QueryBuilder TaskTable = null;
+    private static QueryBuilder MemberRecordTable = null;
+    private static QueryBuilder GroupMemberTable = null;
     static {
         try {
             queryResult = new JSONArray("[]");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        queryBuilder = new QueryBuilder("task");
-        queryAnotherBuilder = new QueryBuilder("taskhistory");
+        TaskView = new QueryBuilder("tasklist");
+        TaskTable = new QueryBuilder("task");
+        TaskHistoryTable = new QueryBuilder("taskhistory");
+        MemberRecordTable = new QueryBuilder("memberrecord");
+        GroupMemberTable = new QueryBuilder("groupmember");
     }
 
     @Override
@@ -63,7 +68,9 @@ public class GroupTask extends HttpServlet {
                 case "getStatistics":
                     getStatistics(request, response);
                     break;
-
+                case "finish_task":
+                    finishTask(request, response);
+                    break;
                 default:
                     System.out.println("group: invalid action: "+action);
                     break;
@@ -77,29 +84,26 @@ public class GroupTask extends HttpServlet {
     public void addRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession();
         request.setCharacterEncoding("utf-8");	//设置编码
-        DatabaseHelper db = new DatabaseHelper();
-        String sql="";
+        try(DatabaseHelper db = new DatabaseHelper()){
+            String sql="";
+            String groupId=request.getParameter("group_id");
+            String context=request.getParameter("context");
+            String grades=request.getParameter("grades");
+            String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
+            String beginTime=request.getParameter("begin_time");
+            String endTime=request.getParameter("end_time");
+            TaskTable.clear();
+            TaskTable.set("groupId",Integer.parseInt(groupId));
+            TaskTable.set("context",context);
+            TaskTable.set("grades",Integer.parseInt(grades));
+            TaskTable.set("createTime",createTime);
+            TaskTable.set("beginTime",beginTime);
+            TaskTable.set("endTime",endTime);
 
-        //增加组
-        String title=request.getParameter("title");
-        String password=request.getParameter("password");
-        String creatorId=(String)session.getAttribute("id");
-        String creator=(String)session.getAttribute("username");
-        String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
-
-        ResultSet rs = db.executeQuery("select max(id) from `group`");
-        rs.next();
-        int groupId=1;
-
-        sql=queryBuilder.getInsertStmt();
-        db.execute(sql);
-
-
-
-        sql=queryAnotherBuilder.getInsertStmt();
-        db = new DatabaseHelper();
-        db.execute(sql);
-        response.sendRedirect("group/list.jsp");
+            sql= TaskTable.getInsertStmt();
+            db.execute(sql);
+            response.sendRedirect("groupdetails/task/list.jsp?group_id="+groupId);
+        }
     }
     private void getRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException, ParseException {
         response.setContentType("application/json; charset=UTF-8");
@@ -110,38 +114,113 @@ public class GroupTask extends HttpServlet {
         String grades=request.getParameter("grades");
         String context=request.getParameter("context");
         String orderBy=request.getParameter("orderby");
-        if(session.getAttribute("exist_result")==null || !(boolean)session.getAttribute("exist_result"))
-        {
-            System.out.println("getResult exist_result=false or null");
-            queryBuilder.clear();
+        System.out.println("enter group_task getResult");
+        TaskView.clear();
+        TaskView.set("groupId",Integer.parseInt(groupId));
+        if(grades!=null){
+            TaskView.set("grades",Integer.parseInt(grades));
+        }
+        TaskView.set("context",context,1);
+        TaskView.set("orderBy",orderBy);
 
-            queryBuilder.set("groupId",groupId);
-            if(grades!=null){
-                queryBuilder.set("grades",Integer.parseInt(grades));
-            }
-            queryBuilder.set("context",context,1);
-            queryBuilder.set("orderBy",orderBy);
-
-            String sql=queryBuilder.getSelectStmt();
-            DatabaseHelper db=new DatabaseHelper();
+        String sql= TaskView.getSelectStmt();
+        try(DatabaseHelper db = new DatabaseHelper()){
             ResultSet rs=db.executeQuery(sql);
             processResult(request,rs);
-            session.setAttribute("exist_result", false);
+            db.close();
+            out.print(queryResult);
+            session.setAttribute("queryResult",queryResult);
+            out.flush();
+            out.close();
+            System.out.println("exit group_task getResult");
         }
-        out.print(queryResult);
-        session.setAttribute("queryResult",queryResult);
-        out.flush();
-        out.close();
-        System.out.println("exit group_task getResult");
+
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
-
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        String taskId=request.getParameter("task_id");
+        try(DatabaseHelper db = new DatabaseHelper()){
+            TaskTable.set("id",Integer.parseInt(taskId));
+            String sql= TaskTable.getDeleteStmt();
+            db.execute(sql);
+//            response.sendRedirect("group/list.jsp");
+        }
     }
     private void modifyRecord(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
-
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        String taskId=request.getParameter("task_id");
+        String groupId=request.getParameter("group_id");
+        String grades=request.getParameter("grades");
+        String endTime=request.getParameter("end_time");
+        try(DatabaseHelper db = new DatabaseHelper()){
+            TaskTable.set("id",Integer.parseInt(taskId));
+            TaskTable.set("groupId",Integer.parseInt(groupId));
+            TaskTable.set("grades",Integer.parseInt(grades));
+            TaskTable.set("endTime",endTime);
+            String sql= TaskTable.getUpdateStmt();
+            db.execute(sql);
+//            response.sendRedirect("group/list.jsp");
+        }
     }
     private void getStatistics(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
 
+    }
+    private void finishTask(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+
+        String sql="";
+
+        //增加积分
+        String groupId=request.getParameter("group_id");
+        String userId=(String)session.getAttribute("id");
+        String grades=request.getParameter("grades");
+        String taskId=request.getParameter("task_id");
+        String task=request.getParameter("task");
+        String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
+        //查询id
+        GroupMemberTable.clear();
+        GroupMemberTable.set("groupId",Integer.parseInt(groupId));
+        GroupMemberTable.set("userId",Integer.parseInt(userId));
+        sql= GroupMemberTable.getSelectStmt();
+
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs=db.executeQuery(sql);
+            rs.next();
+            int id=rs.getInt("id");
+            int init_grades=rs.getInt("grades");
+            //更改积分
+            GroupMemberTable.set("id",id);
+            GroupMemberTable.set("grades",init_grades+Integer.parseInt(grades));
+            sql= GroupMemberTable.getUpdateStmt();
+            db.execute(sql);
+
+
+            //添加操作记录
+            MemberRecordTable.clear();
+            MemberRecordTable.set("groupId",Integer.parseInt(groupId));
+            MemberRecordTable.set("operatorId",Integer.parseInt(userId));
+            MemberRecordTable.set("memberId",Integer.parseInt(userId));
+            MemberRecordTable.set("object","task");
+            MemberRecordTable.set("type","tag");
+            MemberRecordTable.set("context",task+"+"+grades);
+            MemberRecordTable.set("createTime",createTime);
+            sql= MemberRecordTable.getInsertStmt();
+            db.execute(sql);
+
+
+            //添加任务历史记录
+            TaskHistoryTable.clear();
+            TaskHistoryTable.set("groupId",Integer.parseInt(groupId));
+            TaskHistoryTable.set("taskId",Integer.parseInt(taskId));
+            TaskHistoryTable.set("userId",Integer.parseInt(userId));
+            TaskHistoryTable.set("createTime",createTime);
+            sql= TaskHistoryTable.getInsertStmt();
+            db.execute(sql);
+        }
+        System.out.println("exit member_task finish");
     }
 
 
@@ -183,13 +262,13 @@ public class GroupTask extends HttpServlet {
             if(task_status!=1){
                 my_status=2;
             }else{
-                queryAnotherBuilder.clear();
-                queryAnotherBuilder.set("groupId",rs.getInt("groupId"));
-                queryAnotherBuilder.set("taskId",rs.getInt("id"));
-                queryAnotherBuilder.set("userId",user_id);
-                finished= db.executeQuery(queryAnotherBuilder.getSelectStmt());
+                TaskHistoryTable.clear();
+                TaskHistoryTable.set("groupId",rs.getInt("groupId"));
+                TaskHistoryTable.set("taskId",rs.getInt("id"));
+                TaskHistoryTable.set("userId",user_id);
+                finished= db.executeQuery(TaskHistoryTable.getSelectStmt());
 //                finished.next();
-                System.out.println("finished:"+finished);
+//                System.out.println("finished:"+finished);
                 if(!finished.next()){
                     my_status=1;
                 }
@@ -197,7 +276,7 @@ public class GroupTask extends HttpServlet {
             }
             item.put("task_status", task_status);
             item.put("my_status", my_status);
-            System.out.println("my_status:"+my_status);
+//            System.out.println("my_status:"+my_status);
 //            item.put("user_id", user_id);
             queryResult.put(item);
         }
