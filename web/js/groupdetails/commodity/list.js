@@ -167,8 +167,9 @@ function getAllRecord(){
         initurl, "get_record", group_id);
     $.post(url, function (json) {
         Data = json;
+        console.log(json);
         for (var i = 0; i < json.length; i++) {
-            var id = json[i]["commodityId"];
+            var id = json[i]["id"];
             var title = json[i]["context"];
             var grades = json[i]["grades"];
             var creatorId = json[i]["creatorId"];
@@ -195,8 +196,7 @@ function getSelectedRecord(url){
 }
 
 function addRecord(){
-    var form = document.getElementById('newGroup');
-    // console.log("group form"+form);
+    var form = document.getElementById('newCommodity');
     form.submit();
 }
 

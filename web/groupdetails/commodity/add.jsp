@@ -8,26 +8,27 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!-- Start Page Content -->
-<button type="button" onclick="addRecord()" class="btn btn-primary m-b-10 m-l-5">创建</button>
+<button type="button" onclick="addCommodity()" class="btn btn-primary m-b-10 m-l-5">添加商品</button>
 <%--<form  role="form" id="page_form" name="page_form" action="add_record">--%>
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form id="newGroup" method="post" action="/GroupManagement?action=add_record">
+                    <form id="newCommodity" method="post" action="Commodity">
+                        <input type="hidden" name="action" value="addCommodity">
                         <div class="row">
                             <div class="col-md-12 ">
                                 <div class="form-group">
-                                    <label>昵称</label>
-                                    <input type="text" id="title" name="title" class="form-control" required>
+                                    <label>商品名称</label>
+                                    <input type="text" id="context" name="title" class="form-control" required>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 ">
                                 <div class="form-group">
-                                    <label class="control-label">密码</label>
-                                    <input type="text" id="password" name="password" class="form-control">
+                                    <label class="control-label">商品积分</label>
+                                    <input type="text" id="grades" name="password" class="form-control">
                                 </div>
                             </div>
                         </div>
