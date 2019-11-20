@@ -8,7 +8,7 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    if(session.getAttribute("id") == null || ((String)session.getAttribute("id")).length() == 0 || session.getAttribute("check") == null)
+    if(session.getAttribute("id") == null || session.getAttribute("check") == null)
     {
 %>
         <script type="text/javascript">

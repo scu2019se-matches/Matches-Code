@@ -11,16 +11,16 @@
     <div class="col-lg-6">
         <div class="card">
             <div class="form-group">
-                <p class="text-muted m-b-15 f-s-12">小组昵称</p>
-                <input type="text" id="title" name="title" class="form-control input-focus" placeholder="输入小组昵称">
+                <p class="text-muted m-b-15 f-s-12">商品名称</p>
+                <input type="text" id="query_context" name="context" class="form-control input-focus" placeholder="输入商品名称">
             </div>
         </div>
     </div>
     <div class="col-lg-6">
         <div class="card">
             <div class="form-group">
-                <p class="text-muted m-b-15 f-s-12">创建者</p>
-                <input type="text" id="creator" name="creator" class="form-control input-focus" placeholder="输入小组创建者">
+                <p class="text-muted m-b-15 f-s-12">分数</p>
+                <input type="text" id="query_grades" name="grades" class="form-control input-focus" placeholder="输入商品分数">
             </div>
         </div>
     </div>
