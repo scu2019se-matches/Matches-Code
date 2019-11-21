@@ -19,7 +19,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="<%=request.getContextPath()%>/image/png" sizes="16x16" href="<%=request.getContextPath()%>/images/favicon.png">
-    <title>活动与任务平台 | 分组管理</title>
+    <title>活动与任务平台 | 加入的小组</title>
 
     <!-- Custom CSS -->
     <%@include file="../page_css.jsp"%>
@@ -41,54 +41,12 @@
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">活动与任务平台</a></li>
-                    <li class="breadcrumb-item active">分组管理</li>
+                    <li class="breadcrumb-item active">加入的小组</li>
                 </ol>
             </div>
         </div>
         <!-- End Bread crumb -->
         <!-- Container fluid  -->
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">创建</span></a> </li>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">排序</span></a> </li>
-                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="getAllRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">显示所有</span></a> </li>
-
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                <span class="hidden-sm-up"></span> <span class="hidden-xs-down">更多</span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <span class="dropdown-item" onclick="printRecord()" role="tab">打印</span>
-                                <span class="dropdown-item" onclick="expordExcel()" role="tab">导出Excel</span>
-                                <span class="dropdown-item" onclick="statisticRecord()" role="tab">日志记录</span>
-                            </div>
-                        </li>
-                    </ul>
-                    <div id="tab-content" class="tab-content tabcontent-border p-20" style="display: none;">
-                        <div role="tabpanel" class="tab-pane active" id="tab-query">
-                            <%@include file="query.jsp"%>
-                        </div>
-                        <div class="tab-pane" id="tab-add" role="tabpanel">
-                            <%@include file="add.jsp"%>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="tab-sort">
-                            <%@include file="sort.jsp"%>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <%--<div class="col-md-12 ">--%>
-            <%--<div class="card">--%>
-                <%--<label class="control-label">日期</label>--%>
-                <%--<input type="text" class="form-control dateRange">--%>
-            <%--</div>--%>
         <%--</div>--%>
         <div class="col-md-12">
             <div class="card">
@@ -135,7 +93,7 @@
 <%@include file="../page_js.jsp"%>
 <%@include file="../js/mobileclass.jsp"%>
 <script src="<%=request.getContextPath()%>/js/tabview.js"></script>
-<script src="<%=request.getContextPath()%>/js/group/list.js"></script>
+<script src="<%=request.getContextPath()%>/js/user/joinGroup.js"></script>
 <%--<script src="<%=request.getContextPath()%>/js/lib/atatables/datatables-init.js"></script>--%>
 
 </body>

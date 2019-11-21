@@ -79,8 +79,7 @@ public class GroupMember extends HttpServlet {
         request.setCharacterEncoding("utf-8");	//设置编码
 
         String groupId=request.getParameter("group_id");
-        String creatorId=request.getParameter("creator_id");
-        String userId=(String)session.getAttribute("id");
+        String userId=session.getAttribute("id").toString();
         String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
 
         GroupMemberTable.clear();
@@ -113,8 +112,8 @@ public class GroupMember extends HttpServlet {
         if(groupId!=null){
             GroupMemberView.set("groupId",Integer.parseInt(groupId));
         }
-        GroupMemberView.set("user",request.getParameter("user"),1);
-        GroupMemberView.set("orderBy",request.getParameter("orderby"));
+        GroupMemberView.set("user",user,1);
+        GroupMemberView.set("orderBy",orderBy);
 
         String sql= GroupMemberView.getSelectStmt();
         try(DatabaseHelper db = new DatabaseHelper()){

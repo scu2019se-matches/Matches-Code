@@ -87,8 +87,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">小组商品列表</h4>
-                    <h6 class="card-subtitle">这是所有小组商品</h6>
+                    <h4 class="card-title">商城</h4>
                     <div class="table-responsive m-t-40">
                         <table id="example23" class="display nowrap table table-hover table-bordered" cellspacing="2px" width="100%">
                             <thead>

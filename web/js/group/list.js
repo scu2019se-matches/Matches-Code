@@ -3,7 +3,7 @@ var module="/GroupManagement";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var initurl=ContextPath+module;
-var UserId=$("#user_id");
+var UserId=$("#user_id").val();
 var lasturl="";
 
 

@@ -175,7 +175,7 @@ public class GroupTask extends HttpServlet {
 
         //增加积分
         String groupId=request.getParameter("group_id");
-        String userId=(String)session.getAttribute("id");
+        String userId=session.getAttribute("id").toString();
         String grades=request.getParameter("grades");
         String taskId=request.getParameter("task_id");
         String task=request.getParameter("task");

@@ -64,7 +64,9 @@ public class GroupManagement extends HttpServlet {
                 case "getStatistics":
                     getStatistics(request, response);
                     break;
-
+                case "get_mygroup":
+                    getMyGroup(request, response);
+                    break;
                 default:
                     System.out.println("group: invalid action: "+action);
                     break;
@@ -84,7 +86,7 @@ public class GroupManagement extends HttpServlet {
             //增加组
             String title=request.getParameter("title");
             String password=request.getParameter("password");
-            String creatorId=(String)session.getAttribute("id");
+            String creatorId=session.getAttribute("id").toString();
             String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
 
             ResultSet rs = db.executeQuery("select max(id) from `group`");
@@ -145,6 +147,31 @@ public class GroupManagement extends HttpServlet {
 
         String sql= GroupView.getSelectStmt();
 
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs=db.executeQuery(sql);
+            processResult(request,rs);
+        }
+
+        for(int i=0;i<queryResult.length();i++)
+        {
+            System.out.printf("queryResult[%d] id=%d title=%s creatorId=%d \n",i,
+                    queryResult.getJSONObject(i).getInt("id"),
+                    queryResult.getJSONObject(i).getString("title"),
+                    queryResult.getJSONObject(i).getInt("creator_id"));
+        }
+        out.print(queryResult);
+        session.setAttribute("queryResult",queryResult);
+        out.flush();
+        out.close();
+        System.out.println("exit group getResult");
+    }
+    private void getMyGroup(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+        int userId=Integer.parseInt(session.getAttribute("id").toString());
+        String sql="SELECT * from `grouplist` where id in ("
+                +" SELECT groupId from `groupmember` WHERE userId="+userId+")";
         try(DatabaseHelper db = new DatabaseHelper()){
             ResultSet rs=db.executeQuery(sql);
             processResult(request,rs);
