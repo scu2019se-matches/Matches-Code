@@ -61,6 +61,9 @@ public class Commodity extends HttpServlet {
                 case "buyCommodity":
                     buyCommodity(request, response);
                     break;
+                case "sellCommodity":
+                    sellCommodity(request, response);
+                    break;
                 case "getOwner":
                     getOwner(request, response);
                     break;
@@ -213,13 +216,14 @@ public class Commodity extends HttpServlet {
         JSONObject result = new JSONObject();
         try(DatabaseHelper db = new DatabaseHelper()){
             String sql = String.format(
-                    "select groupmember.grades-commodity.grades newgrades, groupmember.id memberId" +
+                    "select groupmember.grades-commodity.grades newgrades, groupmember.id memberId, `commodity`.`context` `context`" +
                     " from commodity join groupmember" +
                     " where groupmember.userId=%d and groupmember.groupId=%d and commodity.id=%d",
                     userId, groupId, commodityId);
             ResultSet rs = db.executeQuery(sql);
             if(rs.next() && rs.getInt("newgrades") >= 0){
                 int memberId =  rs.getInt("memberId");
+                String commmodityName = rs.getString("context");
                 sql = String.format(
                         "update `groupmember` set `grades`=%d where `id`=%d",
                         rs.getInt("newgrades"), memberId);
@@ -227,6 +231,16 @@ public class Commodity extends HttpServlet {
                 sql = String.format(
                         "insert into membercommodity (groupId, memberId, commodityId) values(%d, %d, %d)",
                         groupId, userId, commodityId);
+                db.execute(sql);
+                QueryBuilder queryBuilder = new QueryBuilder("memberrecord");
+                queryBuilder.set("groupId", groupId);
+                queryBuilder.set("operatorId", userId);
+                queryBuilder.set("memberId", userId);
+                queryBuilder.set("object", "commodity");
+                queryBuilder.set("type", "buy");
+                queryBuilder.set("context", commmodityName);
+                queryBuilder.set("createTime", (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));
+                sql = queryBuilder.getInsertStmt();
                 db.execute(sql);
                 result.put("errno", 0);
             }else{
@@ -240,6 +254,56 @@ public class Commodity extends HttpServlet {
         System.out.println("exit group_task getResult");
     }
 
+    private void sellCommodity(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+
+        int commodityId = Integer.parseInt(request.getParameter("commodityId"));
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        int userId = (int)session.getAttribute("id");
+        JSONObject result = new JSONObject();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            String sql = String.format(
+                    "select groupmember.grades+commodity.grades newgrades, groupmember.id memberId, `commodity`.`context` `context`" +
+                            " from commodity join groupmember" +
+                            " where groupmember.userId=%d and groupmember.groupId=%d and commodity.id=%d",
+                    userId, groupId, commodityId);
+            ResultSet rs = db.executeQuery(sql);
+            rs.next();
+            int memberId =  rs.getInt("memberId");
+            String commodityName = rs.getString("context");
+            sql = String.format(
+                    "update `groupmember` set `grades`=%d where `id`=%d",
+                    rs.getInt("newgrades"), memberId);
+            db.execute(sql);
+            sql = String.format(
+                    "select `id` from `membercommodity` where `commodityId`=%d and `memberId`=%d",
+                    commodityId, userId
+            );
+            rs = db.executeQuery(sql);
+            rs.next();
+            sql = String.format(
+                    "delete from `membercommodity` where `id`=%d",
+                    rs.getInt(1));
+            db.execute(sql);
+            QueryBuilder queryBuilder = new QueryBuilder("memberrecord");
+            queryBuilder.set("groupId", groupId);
+            queryBuilder.set("operatorId", userId);
+            queryBuilder.set("memberId", userId);
+            queryBuilder.set("object", "commodity");
+            queryBuilder.set("type", "sell");
+            queryBuilder.set("context", commodityName);
+            queryBuilder.set("createTime", (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));
+            sql = queryBuilder.getInsertStmt();
+            db.execute(sql);
+            result.put("errno", 0);
+        }
+        out.print(result);
+        out.flush();
+        out.close();
+        System.out.println("exit group_task getResult");
+    }
 
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         queryResult = new JSONArray("[]");

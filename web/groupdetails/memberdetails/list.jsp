@@ -112,7 +112,6 @@
                                 <th>名称</th>
                                 <th>价格</th>
                                 <th>数量</th>
-                                <th>使用</th>
                             </tr>
                             </thead>
                             <tbody id="commodity_table">

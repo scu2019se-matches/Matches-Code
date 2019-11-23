@@ -162,7 +162,7 @@ function Record(){
         });
     });
 }
-function buyCommodity(commodityId) {
+function buyCommodity(sender, commodityId) {
     var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
         ContextPath, module, "buyCommodity", commodityId, group_id);
     $.post(url, function (json) {
@@ -286,6 +286,10 @@ function sortRecord(){
     url=url+tmp;
     getSelectedRecord(url);
 };
+
+function goback(){
+    sendRedirect('../member/list.jsp', {'group_id':group_id});
+}
 
 function searchRecord(){
     sortRecord();

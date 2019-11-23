@@ -447,7 +447,7 @@
                 "autoWidth": true,
                 "columnDefs": [
                     {
-                        "targets":0,
+                        "targets":4,
                         "data": null,
                         "orderable": false,
                         "mRender":
@@ -459,8 +459,13 @@
                                 },
                     },
                     {
+                        "targets":0,
+                        "data": "id",
+                        "orderable": false
+                    },
+                    {
                         "targets":1,
-                        "data": "guid",
+                        "data": "email",
                         "orderable": false
                     },
                     {
@@ -470,38 +475,13 @@
                     },
                     {
                         "targets":3,
-                        "data": "email",
-                        "orderable": false
-                    },
-                    {
-                        "targets":4,
-                        "data": "authorization",
+                        "data": "auth",
                         "orderable":false,
                         "mRender":function(data,type,full){
                             var res="null";
-                            if((data & 8) > 0)res="开发者";
-                            else if((data & 4) > 0)res="管理员";
-                            else if((data & 2) > 0)res="教师";
-                            else if((data & 1) > 0)res="学生";
+                            if((data & 2) > 0)res="管理员";
+                            else if((data & 1) > 0)res="普通用户";
                             return res;
-                        }
-                    },
-                    {
-                        "targets":5,
-                        "data": "create_time",
-                        "orderable": false,
-                        "mRender":function(data,type,full){
-                            if(data==null)return '(null)';
-                            else return data;
-                        }
-                    },
-                    {
-                        "targets":6,
-                        "data": "modify_time",
-                        "orderable": false,
-                        "mRender":function(data,type,full){
-                            if(data==null)return '(null)';
-                            else return data;
                         }
                     },
                 ],
@@ -550,16 +530,12 @@
                 var put=null;
                 if(i==4){
                     put=$("<select style='width: 100px;' class='form-control'>"
-                          +"  <option value='1'>学生</option>"
-                          +"  <option value='2'>教师</option>"
-                          +"  <option value='4'>管理员</option>"
-                          +"  <option value='8'>开发者</option>"
+                          +"  <option value='1'>普通用户</option>"
+                          +"  <option value='2'>管理员</option>"
                           +"</select>");
                     var val="null";
-                    if(jqob.text()=='学生')val="1";
-                    else if(jqob.text()=='教师')val="2";
-                    else if(jqob.text()=='管理员')val="4";
-                    else if(jqob.text()=='开发者')val="8";
+                    if(jqob.text()=='普通用户')val="1";
+                    else if(jqob.text()=='管理员')val="2";
                     put.val(val);
                 }else{
                     put=$("<input type='text'>");
@@ -583,13 +559,12 @@
             var row = dt.row(that.parents("tr"));
             var tr = that.parents("tr");
             var param = {
-                "guid": row.data()['guid'],
-                "create_time": row.data()['create_time'],
-                "modify_time": row.data()['modify_time'],
+                "id": row.data()['id'],
+                "auth": row.data()['auth'],
             };
-            param["username"] = tr.children().eq(2).children("input").val();
-            param["email"] = tr.children().eq(3).children("input").val();
-            param["authorization"] = parseInt(tr.children().eq(4).children("select").val());
+//            param["username"] = tr.children().eq(2).children("input").val();
+//            param["email"] = tr.children().eq(3).children("input").val();
+            param["auth"] = parseInt(tr.children().eq(4).children("select").val());
             console.log(param);
             var url = "<%=request.getContextPath()%>/AuthorizationAction?action=update";
             $.post(url, param, function(res){

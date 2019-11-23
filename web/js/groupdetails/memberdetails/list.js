@@ -105,15 +105,15 @@ function getCommodity(){
             +"<td>"+grades+"</td>"
             +"<td>"
             if(auth==1){
-                html+="<button type='button' class='btn btn-success btn-xs' onclick='sellCommdity("+commodity_id+")'><i class='ti-minus'></i></button>"
+                html+="<button type='button' class='btn btn-success btn-xs' onclick='sellCommdity(this,"+commodity_id+")'><i class='ti-minus'></i></button>"
             }
             html+="<span class='badge'>"+count+"</span>"
             if(auth==1){
-                html+="<button type='button' class='btn btn-success btn-xs' onclick='buyCommdity("+commodity_id+")'><i class='ti-plus'></i></button>"
+                html+="<button type='button' class='btn btn-success btn-xs' onclick='buyCommdity(this,"+commodity_id+")'><i class='ti-plus'></i></button>"
                 +"</td>"
-                +"<td class='color-primary'>"
-                +"<button type='button' class='btn btn-info btn-xs'><i class='ti-close'></i></button>"
-                +"</td>"
+                //+"<td class='color-primary'>"
+                //+"<button type='button' class='btn btn-info btn-xs'><i class='ti-close'></i></button>"
+                //+"</td>"
                 +"</tr>"
             }else{
                 html+="</td>"
@@ -127,11 +127,43 @@ function getCommodity(){
         document.getElementById("commodity_table").innerHTML=html;
     });
 }
-function buyCommdity(commodityId){
-    
+function buyCommdity(sender, commodityId){
+    console.log(commodityId);
+    var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
+        ContextPath, "/Commodity", "buyCommodity", commodityId, GroupId);
+    console.log(url);
+    $.post(url, function (json) {
+        if(json.errno != 0){
+            Dialog.showWarning(json.msg, "");
+        }else{
+            Dialog.showSuccess("兑换成功", "");
+            var span = $(sender).prev();
+            var h2Commodity = $('#commodity');
+            span.text(parseInt(span.text())+1);
+            h2Commodity.text(parseInt(h2Commodity.text())+1);
+        }
+    });
 }
-function sellCommdity(commodityId) {
-    
+function sellCommdity(sender, commodityId) {
+    console.log(commodityId);
+    var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
+        ContextPath, "/Commodity", "sellCommodity", commodityId, GroupId);
+    console.log(url);
+    $.post(url, function (json) {
+        if(json.errno != 0){
+            Dialog.showWarning(json.msg, "");
+        }else{
+            Dialog.showSuccess("售出成功", "");
+            var span = $(sender).next();
+            var h2Commodity = $('#commodity');
+            span.text(parseInt(span.text())-1);
+            h2Commodity.text(parseInt(h2Commodity.text())-1);
+            if(span.text()=='0'){
+                var tr = $(span).parent().parent();
+                tr.remove();
+            }
+        }
+    });
 }
 function useCommdity(commodityId){
 
