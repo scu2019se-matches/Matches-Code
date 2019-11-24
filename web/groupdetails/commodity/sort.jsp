@@ -13,6 +13,7 @@
         <div class="form-group">
             <label class="control-label">字段选择</label>
             <select id="key1" class="form-control">
+                <option value="id" selected="selected">ID</option>
                 <option value="context" selected="selected">商品名称</option>
                 <option value="grades" >商品分数</option>
             </select>
@@ -20,6 +21,7 @@
         <div class="form-group">
             <select id="key2" class="form-control">
                 <option value="" selected="selected">请选择</option>
+                <option value="id" selected="selected">ID</option>
                 <option value="context" selected="selected">商品名称</option>
                 <option value="grades" >商品分数</option>
             </select>

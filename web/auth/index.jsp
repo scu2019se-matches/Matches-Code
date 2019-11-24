@@ -89,13 +89,11 @@
                         <table id="myDataTable" class="display nowrap table table-hover table-bordered" cellspacing="2px" width="100%">
                             <thead>
                             <tr>
-                                <th>操作</th>
-                                <th>GUID</th>
-                                <th>用户名</th>
+                                <th>ID</th>
                                 <th>邮箱</th>
+                                <th>用户名</th>
                                 <th>权限</th>
-                                <th>创建时间</th>
-                                <th>修改时间</th>
+                                <th>操作</th>
                             </tr>
                             </thead>
 
