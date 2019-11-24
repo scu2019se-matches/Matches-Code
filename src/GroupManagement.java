@@ -99,6 +99,12 @@ public class GroupManagement extends HttpServlet {
             sql= GroupTable.getInsertStmt();
             db.execute(sql);
 
+
+            ResultSet rs = db.executeQuery("select max(id) from `group`");
+            int groupId=1;
+            if(rs.next()){
+                groupId = rs.getInt(1);
+            }
             //组内成员添加组长记录
             ResultSet rs = db.executeQuery("select max(id) from `group`");
             int groupId=1;
