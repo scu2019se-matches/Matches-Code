@@ -89,14 +89,8 @@ public class GroupManagement extends HttpServlet {
             String creatorId=session.getAttribute("id").toString();
             String createTime=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date());
 
-            ResultSet rs = db.executeQuery("select max(id) from `group`");
-            int groupId=1;
-            if(rs.next()){
-                groupId = rs.getInt(1)+1;
-            }
 
             GroupTable.clear();
-            GroupTable.set("id",groupId);
             GroupTable.set("title",new String(title.getBytes("iso-8859-1"),"utf-8"));
             GroupTable.set("password",MD5Util.MD5(password));
             GroupTable.set("creatorId",Integer.parseInt(creatorId));
@@ -106,6 +100,12 @@ public class GroupManagement extends HttpServlet {
             db.execute(sql);
 
             //组内成员添加组长记录
+            ResultSet rs = db.executeQuery("select max(id) from `group`");
+            int groupId=1;
+            if(rs.next()){
+                groupId = rs.getInt(1);
+            }
+
             GroupMemberTable.clear();
             GroupMemberTable.set("groupId",groupId);
             GroupMemberTable.set("userId",Integer.parseInt(creatorId));
