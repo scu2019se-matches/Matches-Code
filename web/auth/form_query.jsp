@@ -12,22 +12,12 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group row">
-                    <label class="control-label text-right col-md-3">GUID</label>
+                    <label class="control-label text-right col-md-3">ID</label>
                     <div class="col-md-9">
-                        <input name="guid" type="text" class="form-control" placeholder="GUID">
+                        <input name="id" type="text" class="form-control" placeholder="ID">
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">用户名</label>
-                    <div class="col-md-9">
-                        <input name="username" type="text" class="form-control" placeholder="User Name">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-6">
                 <div class="form-group row">
                     <label class="control-label text-right col-md-3">邮箱</label>
@@ -36,51 +26,30 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="control-label text-right col-md-3">用户名</label>
+                    <div class="col-md-9">
+                        <input name="username" type="text" class="form-control" placeholder="User Name">
+                    </div>
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="form-group row">
                     <label class="control-label text-right col-md-3">权限</label>
                     <div class="col-md-9">
-                        <select name="authorization" class="form-control">
-                            <option value='0'>-- 选择权限 --</option>
-                            <option value='1'>学生</option>
-                            <option value='2'>教师</option>
-                            <option value='4'>管理员</option>
-                            <option value='8'>开发者</option>
+                        <select name="auth" class="form-control">
+                            <option value='-1'>-- 选择权限 --</option>
+                            <option value='1'>普通用户</option>
+                            <option value='3'>管理员</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="form-group row">
-                <label class="control-label text-right col-md-2">创建时间</label>
-                <div class="input-group input-large date-picker input-daterange col-md-9" data-date-format="mm/dd/yyyy">
-                    <span class="input-group-addon">从</span>
-                    <input name="create_time_from" type="text" class="form-control datetime-picker">
-                    <span class="input-group-addon">到</span>
-                    <input name="create_time_to" type="text" class="form-control datetime-picker">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="form-group row">
-                <label class="control-label text-right col-md-2">修改时间</label>
-                <div class="input-group input-large date-picker input-daterange col-md-9" data-date-format="mm/dd/yyyy">
-                    <span class="input-group-addon">从</span>
-                    <input name="modify_time_from" type="text" class="form-control datetime-picker">
-                    <span class="input-group-addon">到</span>
-                    <input name="modify_time_to" type="text" class="form-control datetime-picker">
-                </div>
-            </div>
-        </div>
-    </div>
-
     <hr>
     <div class="form-actions">
         <div class="row">

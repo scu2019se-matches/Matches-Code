@@ -51,7 +51,7 @@
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"><i class="fa fa-search"></i></span> <span class="hidden-xs-down">查询</span></a> </li>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"><i class="fa fa-plus"></i></span> <span class="hidden-xs-down">添加</span></a> </li>
+                        <%--<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"><i class="fa fa-plus"></i></span> <span class="hidden-xs-down">添加</span></a> </li>--%>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"><i class="fa fa-sort-alpha-asc"></i></span> <span class="hidden-xs-down">排序</span></a> </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -70,9 +70,9 @@
                         <div role="tabpanel" class="tab-pane active" id="tab-query">
                             <%@include file="form_query.jsp"%>
                         </div>
-                        <div class="tab-pane" id="tab-add" role="tabpanel">
-                            <%@include file="form_add.jsp"%>
-                        </div>
+                        <%--<div class="tab-pane" id="tab-add" role="tabpanel">--%>
+                            <%--<%@include file="form_add.jsp"%>--%>
+                        <%--</div>--%>
                         <div role="tabpanel" class="tab-pane" id="tab-sort">
                             <%@include file="form_sort.jsp"%>
                         </div>
