@@ -28,7 +28,7 @@ function statisticRecord(){
     $.post(url, function (json) {
         // Data = json;
         // console.log(json);
-        var html="<ul class=\"timeline\" >";
+        var html="<ul class='timeline' >";
         for (var i = 0; i < json.length; i++) {
             var id = json[i]["id"];
             var operator_id = json[i]["operator_id"];
@@ -42,34 +42,34 @@ function statisticRecord(){
             var create_time = json[i]["create_time"];
             html+= "<li>"
             if(object=="task"){
-               html+="    <div class=\"timeline-badge success\"><i class=\"fa fa-check-circle-o\"></i></div>"
+               html+="    <div class='timeline-badge success'><i class='fa fa-check-circle-o'></i></div>"
             }else if(object=="grades"){
-                html+="    <div class=\"timeline-badge warning\"><i class=\"fa fa-sun-o\"></i></div>"
+                html+="    <div class='timeline-badge warning'><i class='fa fa-sun-o'></i></div>"
             }else if(type=="buy"){
-                html+="    <div class=\"timeline-badge warning\"><i class=\"fa fa-sun-o\"></i></div>"
+                html+="    <div class='timeline-badge warning'><i class='fa fa-sun-o'></i></div>"
             }else if(type=="sell"){
-                html+="    <div class=\"timeline-badge danger\"><i class=\"fa fa-times-circle-o\"></i></div>"
+                html+="    <div class='timeline-badge danger'><i class='fa fa-times-circle-o'></i></div>"
             }else if(type="use"){
-                html+="    <div class=\"timeline-badge primary\"><i class=\"fa fa-smile-o\"></i></div>"
+                html+="    <div class='timeline-badge primary'><i class='fa fa-smile-o'></i></div>"
             }
-            html+= "    <div class=\"timeline-panel\">"
-            +"        <div class=\"timeline-heading\">"
+            html+= "    <div class='timeline-panel'>"
+            +"        <div class='timeline-heading'>"
             if(object=="task"){
-                html+="          <h5 class=\"timeline-title\">"+operator+"完成了任务 "+context+"</h5>"
+                html+="          <h5 class='timeline-title'>"+operator+"完成了任务 "+context+"</h5>"
             }else if(object=="grades"){
-                html+="          <h5 class=\"timeline-title\">"+operator+"改动了积分 "+context+"</h5>"
+                html+="          <h5 class='timeline-title'>"+operator+"改动了积分 "+context+"</h5>"
                 if(remarks){
-                    html+="<p class=\"badge badge-success\">"+"备注:"+remarks+"</p>"
+                    html+="<p class='badge badge-success'>"+"备注:"+remarks+"</p>"
                 }
             }else if(type=="buy"){
-                html+="          <h5 class=\"timeline-title\">"+operator+"购买了物品 "+context+"</h5>"
+                html+="          <h5 class='timeline-title'>"+operator+"购买了物品 "+context+"</h5>"
             }else if(type=="sell"){
-                html+="          <h5 class=\"timeline-title\">"+operator+"售出了物品 "+context+"</h5>"
+                html+="          <h5 class='timeline-title'>"+operator+"售出了物品 "+context+"</h5>"
             }else if(type="use"){
-                html+="          <h5 class=\"timeline-title\">"+operator+"使用了物品 "+context+"</h5>"
+                html+="          <h5 class='timeline-title'>"+operator+"使用了物品 "+context+"</h5>"
             }
             html+= "        </div>"
-            +"       <div class=\"timeline-body\">"
+            +"       <div class='timeline-body'>"
             +"          <p>"+Time.MinToMinute(create_time)+"</p>"
             +       "</div>"
             +      "</div>"
@@ -87,8 +87,6 @@ function getCommodity(){
     var url=initurl+"?action=get_record&group_id="+GroupId+"&member_id="+MemberId;
     // alert(url);
     $.post(url, function (json) {
-        // Data = json;
-        // console.log(json);
         var html="";
         for (var i = 0; i < json.length; i++) {
             if(json[i]==null)continue;
@@ -99,42 +97,75 @@ function getCommodity(){
             var grades = json[i]["grades"];
             var count = json[i]["count"];
             var auth = json[i]["auth"];
+            console.log(id);
             html+=
             "<tr>"
-            +"<th scope=\"row\">"+commodity_id+"</th>"
+            +"<th scope='row'>"+commodity_id+"</th>"
             +"<td>"+commodity+"</td>"
             +"<td>"+grades+"</td>"
             +"<td>"
             if(auth==1){
-                html+="<button type=\"button\" class=\"btn btn-success btn-xs\"><i class=\"ti-minus\"></i></button>"
+                html+="<button type='button' class='btn btn-success btn-xs' onclick='sellCommdity(this,"+commodity_id+")'><i class='ti-minus'></i></button>"
             }
-            html+="<span class=\"badge\">"+count+"</span>"
+            html+="<span class='badge'>"+count+"</span>"
             if(auth==1){
-                html+="<button type=\"button\" class=\"btn btn-success btn-xs\"><i class=\"ti-plus\"></i></button>"
+                html+="<button type='button' class='btn btn-success btn-xs' onclick='buyCommdity(this,"+commodity_id+")'><i class='ti-plus'></i></button>"
                 +"</td>"
-                +"<td class=\"color-primary\">"
-                +"<button type=\"button\" class=\"btn btn-info btn-xs\"><i class=\"ti-close\"></i></button>"
-                +"</td>"
+                //+"<td class='color-primary'>"
+                //+"<button type='button' class='btn btn-info btn-xs'><i class='ti-close'></i></button>"
+                //+"</td>"
                 +"</tr>"
             }else{
                 html+="</td>"
-                    +"<td><p class=\"badge badge-warning\">无此权限</p></td>";
+                    +"<td><p class='badge badge-warning'>无此权限</p></td>";
             }
         }
         if(json.length==0){
             html="<tr>"
-            +"<th scope=\"row\">还没有任何物品哦</th>"
+            +"<th scope='row'>还没有任何物品哦</th>"
         }
         document.getElementById("commodity_table").innerHTML=html;
     });
 }
-function buyCommdity(){
-    
+function buyCommdity(sender, commodityId){
+    console.log(commodityId);
+    var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
+        ContextPath, "/Commodity", "buyCommodity", commodityId, GroupId);
+    console.log(url);
+    $.post(url, function (json) {
+        if(json.errno != 0){
+            Dialog.showWarning(json.msg, "");
+        }else{
+            Dialog.showSuccess("兑换成功", "");
+            var span = $(sender).prev();
+            var h2Commodity = $('#commodity');
+            span.text(parseInt(span.text())+1);
+            h2Commodity.text(parseInt(h2Commodity.text())+1);
+        }
+    });
 }
-function sellCommdity() {
-    
+function sellCommdity(sender, commodityId) {
+    console.log(commodityId);
+    var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
+        ContextPath, "/Commodity", "sellCommodity", commodityId, GroupId);
+    console.log(url);
+    $.post(url, function (json) {
+        if(json.errno != 0){
+            Dialog.showWarning(json.msg, "");
+        }else{
+            Dialog.showSuccess("售出成功", "");
+            var span = $(sender).next();
+            var h2Commodity = $('#commodity');
+            span.text(parseInt(span.text())-1);
+            h2Commodity.text(parseInt(h2Commodity.text())-1);
+            if(span.text()=='0'){
+                var tr = $(span).parent().parent();
+                tr.remove();
+            }
+        }
+    });
 }
-function useCommdity(){
+function useCommdity(commodityId){
 
 }
 
