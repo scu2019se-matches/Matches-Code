@@ -12,8 +12,16 @@ function Record(){
         buttons:[
             {
                 extend: 'excel',
-                title: 'groupmemberinfo',
+                title: '任务小组组员',
                 className: 'buttons-excel hidden',
+                exportOptions: {
+                    columns: [ 0,1,2,3,4 ]
+                }
+            },
+            {
+                extend: 'print',
+                title: '任务小组组员',
+                className: 'buttons-print hidden',
                 exportOptions: {
                     columns: [ 0,1,2,3,4 ]
                 }
@@ -141,11 +149,8 @@ function getSelectedRecord(url){
 }
 
 
-function statisticRecord(){
-    window.location.href="statistic.jsp";
-};
 function printRecord(){
-    window.location.href="print.jsp";
+    $(".dt-buttons .buttons-print").click();
 };
 function expordExcel(){
     $(".dt-buttons .buttons-excel").click();
