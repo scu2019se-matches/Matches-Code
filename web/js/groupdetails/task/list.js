@@ -145,7 +145,7 @@ function Record(){
         event.preventDefault();
     });
     $("#example23 tbody").on("click", ".dateSelect", function (event) {
-        DatePicker.DateTimeFromToday(".dateSelect");
+        DatePicker.DateTime(".dateSelect");
     });
     $("#example23 tbody").on("click", ".save-button", function (event) {
         var row = dataTable.row($(this).parents("tr"));
@@ -263,7 +263,7 @@ function addRecord(){
         getAllRecord();
         return;
     }
-    console.log($("#newTask,#grades").val());
+    // console.log($("#newTask,#grades").val());
     if($("#newTask,#context").val()==null||$("#newTask,#context").val()==""){
         Dialog.showWarning("内容不能为空","提示");
         return;

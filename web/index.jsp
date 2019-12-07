@@ -64,7 +64,7 @@
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <div class="card">
-                            <a href="<%=request.getContextPath()%>/questionnaire/publish/questionnaire_list.jsp"></a>
+                            <a href="<%=request.getContextPath()%>/activity/list.jsp"></a>
                             <div class="stat-widget-five">
                                 <div class="stat-icon">
                                     <i class="ti-file bg-success"></i>

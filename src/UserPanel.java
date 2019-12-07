@@ -173,8 +173,8 @@ public class UserPanel extends HttpServlet {
             item.put("context", rs.getString("context"));
             item.put("grades", rs.getInt("grades"));
             item.put("create_time", rs.getString("createTime"));
-            item.put("begin_time", rs.getString("beginTime"));
-            item.put("end_time", rs.getString("endTime"));
+            item.put("begin_time", rs.getString("BeginTime"));
+            item.put("end_time", rs.getString("EndTime"));
             if(auth>1||rs.getInt("creatorId")==user_id){
                 item.put("auth", 1);
             }else{
@@ -182,9 +182,9 @@ public class UserPanel extends HttpServlet {
             }
             //任务状态:0未开始,1进行中,2已结束
             int task_status=0,my_status=0;
-            if(dateFormat.parse(rs.getString("endTime")).compareTo(dateFormat.parse(queryTime))<0){
+            if(dateFormat.parse(rs.getString("EndTime")).compareTo(dateFormat.parse(queryTime))<0){
                 task_status=2;
-            }else if(dateFormat.parse(rs.getString("beginTime")).compareTo(dateFormat.parse(queryTime))<0){
+            }else if(dateFormat.parse(rs.getString("BeginTime")).compareTo(dateFormat.parse(queryTime))<0){
                 task_status=1;
             }
             //我的完成状态:0已完成,不可点击,1可点击,2不可操作

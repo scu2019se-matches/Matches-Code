@@ -316,7 +316,7 @@ var DatePicker=function(){
         $(target).daterangepicker({
             "separator":" to ",
             "locale": locale,
-            "format":"YYYY-MM-DD HH:MM",
+            "format":"YYYY-MM-DD HH:mm",
             "ranges" : {
                 '一周': [ moment(),moment().add('days', 7)],
                 '本月': [moment(),moment().endOf("month")],
@@ -378,7 +378,7 @@ var DatePicker=function(){
             "locale": locale,
             "separator":" to ",
             "opens":"left",
-            "format":"YYYY-MM-DD HH:MM",
+            "format":"YYYY-MM-DD HH:mm",
             "ranges" : {
                 '今日': [moment().startOf('day'), moment()],
                 '昨日': [moment().subtract('days', 1).startOf('day'), moment().subtract('days', 1).endOf('day')],
@@ -420,6 +420,18 @@ var DatePicker=function(){
             forceParse:true,
         });
     }
+    var DateTime=function (target) {
+        $(target).datetimepicker({
+            opens : 'right', //日期选择框的弹出位置,
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true,   //选择后自动关闭当前时间控件
+            todayBtn:'linked',
+            language: 'cn',  //修改默认为cn
+            todayHighlight: true,
+            forceParse:true,
+            isVisible:false,
+        });
+    }
     return{
         DateRangeFromToday:DateRangeFromToday,
         DateTimeRangeFromToday:DateTimeRangeFromToday,
@@ -427,6 +439,7 @@ var DatePicker=function(){
         DateTimeRangeToToday:DateTimeRangeToToday,
         DateTimeFromToday:DateTimeFromToday,
         DateTimeToToday:DateTimeToToday,
+        DateTime:DateTime,
     };
 }();
 

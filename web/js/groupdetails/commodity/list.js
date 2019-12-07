@@ -79,6 +79,7 @@ function Record(){
         var row = dataTable.row($(this).parents("tr"));
         var data = row.data();
         var id = data[0];
+        // console.log(data);
         buyCommodity(id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
@@ -165,6 +166,7 @@ function Record(){
 function buyCommodity(sender, commodityId) {
     var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
         ContextPath, module, "buyCommodity", commodityId, group_id);
+    alert(url);
     $.post(url, function (json) {
         if(json.errno != 0){
             Dialog.showWarning(json.msg, "");
