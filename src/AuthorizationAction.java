@@ -54,9 +54,9 @@ public class AuthorizationAction extends HttpServlet
                 case "clearQuery":
                     ClearQuery();
                     break;
-//                case "clearSort":
-//                    ClearSort();
-//                    break;
+                case "clearSort":
+                    ClearSort();
+                    break;
                 default:
                     throw new Exception("AuthorizationAction: 未知的请求类型");
             }
@@ -86,10 +86,14 @@ public class AuthorizationAction extends HttpServlet
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         queryBuilder.clear();
-        queryBuilder.set("id", request.getParameter("id"));
+        if(request.getParameter("id").length()>0) {
+            queryBuilder.set("id", Integer.parseInt(request.getParameter("id")));
+        }
         queryBuilder.set("username", request.getParameter("username"));
         queryBuilder.set("email", request.getParameter("email"));
-        queryBuilder.set("auth", request.getParameter("auth"));
+        if(request.getParameter("auth").length()>0){
+            queryBuilder.set("auth", Integer.parseInt(request.getParameter("auth")));
+        }
         String sql=queryBuilder.getSelectStmt();
         try(DatabaseHelper db = new DatabaseHelper()){
             ResultSet rs=db.executeQuery(sql);
@@ -107,7 +111,7 @@ public class AuthorizationAction extends HttpServlet
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         QueryBuilder q=new QueryBuilder(queryBuilder.getTableName());
-        q.set("id", request.getParameter("id"));
+        q.set("id", Integer.parseInt(request.getParameter("id")));
         String sql=q.getDeleteStmt();
         try(DatabaseHelper db=new DatabaseHelper()) {
             db.execute(sql);
@@ -188,10 +192,10 @@ public class AuthorizationAction extends HttpServlet
         queryBuilder.clear();
     }
 
-//    private void ClearSort(){
-//        System.out.println("enter AuthorizationAction.ClearSort");
-//        queryBuilder.setSortBy(null);
-//    }
+    private void ClearSort(){
+        System.out.println("enter AuthorizationAction.ClearSort");
+        queryBuilder.set("orderBy", "");
+    }
 
     private void processResult(ResultSet rs) throws JSONException, SQLException {
         result = new JSONArray("[]");

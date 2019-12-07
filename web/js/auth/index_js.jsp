@@ -103,29 +103,13 @@
 
         var btnSubmit_onclick = function(){
             if(!$('#form-query').valid())return;
-            url = "<%=request.getContextPath()%>/AuthorizationAction?action=query";
+            var url = "<%=request.getContextPath()%>/AuthorizationAction?action=query";
             var form=document.getElementById("form-query");
-            var t1=form.create_time_from.value;
-            var t2=form.create_time_to.value;
-            var t3=form.modify_time_from.value;
-            var t4=form.modify_time_to.value;
-            if(t1.length>0 && t2.length>0 && t1>t2 || t3.length>0 && t4.length>0 && t3>t4){
-                Dialog.showWarning("开始日期不能大于结束日期", "警告");
-                return;
-            }
-            if(((t1.length>0)^(t2.length>0))>0 || ((t3.length>0)^(t4.length>0))>0){
-                Dialog.showWarning("开始日期和结束日期必须同时填写", "警告");
-                return;
-            }
             var param = {
-                "guid": form.guid.value,
+                "id": form.id.value,
                 "username": form.username.value,
                 "email": form.email.value,
-                "authorization": form.authorization.value,
-                "create_time_from": form.create_time_from.value,
-                "create_time_to": form.create_time_to.value,
-                "modify_time_from": form.modify_time_from.value,
-                "modify_time_to": form.modify_time_to.value,
+                "auth": form.auth.value
             };
             $.post(url, param, function(res){
                 console.log("userinfo query callback");
@@ -262,12 +246,10 @@
     var FormSort = function(){
 
         var choice = [
-            ['guid','GUID'],
+            ['id','ID'],
+            ['email','邮箱'],
             ['username','用户名'],
-            ['fullname','姓名'],
-            ['authorization','权限'],
-            ['create_time','创建时间'],
-            ['modify_time','修改时间'],
+            ['auth','权限']
         ];
 
         var addEventListener = function(){
@@ -505,12 +487,12 @@
         var delete_button_onclick = function(evt){
             var node=$(evt.target).parents('tr');
             var table=$('#myDataTable').DataTable();
-            var id = table.row(node).data()['guid'];
+            var id = table.row(node).data()['id'];
             console.log("delete_button_onClick", id);
             Dialog.showComfirm("确定要删除这条记录吗？", "警告", function(){
                 url="<%=request.getContextPath()%>/AuthorizationAction?action=delete";
                 param={
-                    "guid": id
+                    "id": id
                 };
                 $.post(url, param, function(res){
                     console.log(res);
@@ -525,11 +507,11 @@
             var that = $(evt.target);
             var tds = that.parents("tr").children();
             $.each(tds, function (i, val) {
-                if(!(2<=i && i<=4))return true;
+                if(!(3<=i && i<=3))return true;
                 var jqob = $(val);
                 var put=null;
-                if(i==4){
-                    put=$("<select style='width: 100px;' class='form-control'>"
+                if(i==3){
+                    put=$("<select style='width: 100px;' class='form-control' style='width:200px'>"
                           +"  <option value='1'>普通用户</option>"
                           +"  <option value='2'>管理员</option>"
                           +"</select>");
@@ -560,11 +542,11 @@
             var tr = that.parents("tr");
             var param = {
                 "id": row.data()['id'],
-                "auth": row.data()['auth'],
+                "email": row.data()['email'],
+                "username": row.data()['username'],
+                "auth": row.data()['auth']
             };
-//            param["username"] = tr.children().eq(2).children("input").val();
-//            param["email"] = tr.children().eq(3).children("input").val();
-            param["auth"] = parseInt(tr.children().eq(4).children("select").val());
+            param["auth"] = parseInt(tr.children().eq(3).children("select").val());
             console.log(param);
             var url = "<%=request.getContextPath()%>/AuthorizationAction?action=update";
             $.post(url, param, function(res){
