@@ -366,13 +366,13 @@
             $.fn.dataTable.ext.errMode = 'none';
             var dataTable=$('#myDataTable').DataTable({
                 dom: 'Bfrtip',
-                buttons:[
+                uttons:[
                     {
                         extend: 'print',
                         className: 'buttons-print hidden',
-                        messageTop: '移动互动课堂 用户权限',
+                        messageTop: '用户权限',
                         exportOptions: {
-                            columns: [ 1,2,3,4,5,6 ]
+                            columns: [ 0,1,2,3 ]
                         }
                     },
                     {
@@ -380,7 +380,7 @@
                         title: 'authorization_export',
                         className: 'buttons-excel hidden',
                         exportOptions: {
-                            columns: [ 1,2,3,4,5,6 ]
+                            columns: [ 0,1,2,3 ]
                         }
                     },
                     {
@@ -388,7 +388,7 @@
                         title: 'authorization_export',
                         className: 'buttons-csv hidden',
                         exportOptions: {
-                            columns: [ 1,2,3,4,5,6 ]
+                            columns: [ 0,1,2,3 ]
                         }
                     },
                     {
@@ -397,7 +397,7 @@
                         bom: true,
                         className: 'buttons-pdf hidden',
                         exportOptions: {
-                            columns: [ 1,2,3,4,5,6 ]
+                            columns: [ 0,1,2,3 ]
                         }
                     }
                 ],

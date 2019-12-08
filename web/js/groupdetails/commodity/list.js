@@ -21,13 +21,38 @@ function Record(){
         dom: 'Bfrtip',
         buttons:[
             {
-                extend: 'excel',
-                title: 'groupinfo',
-                className: 'buttons-excel hidden',
+                extend: 'print',
+                className: 'buttons-print hidden',
+                messageTop: '商品列表',
                 exportOptions: {
-                    columns: [ 0,1,2,3,4 ]
+                    columns: [ 0,1,2 ]
                 }
             },
+            {
+                extend: 'excel',
+                title: 'authorization_export',
+                className: 'buttons-excel hidden',
+                exportOptions: {
+                    columns: [ 0,1,2 ]
+                }
+            },
+            {
+                extend: 'csv',
+                title: 'authorization_export',
+                className: 'buttons-csv hidden',
+                exportOptions: {
+                    columns: [ 0,1,2 ]
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'authorization_export',
+                bom: true,
+                className: 'buttons-pdf hidden',
+                exportOptions: {
+                    columns: [ 0,1,2 ]
+                }
+            }
         ],
         fixedHeader: true,
         fixedColumns: {
@@ -238,7 +263,7 @@ function statisticRecord(){
     window.location.href="statistic.jsp";
 };
 function printRecord(){
-    window.location.href="print.jsp";
+    $(".dt-buttons .buttons-print").click();
 };
 function expordExcel(){
     $(".dt-buttons .buttons-excel").click();
