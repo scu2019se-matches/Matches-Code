@@ -71,6 +71,9 @@ public class GroupTask extends HttpServlet {
                 case "finish_task":
                     finishTask(request, response);
                     break;
+                case "getValid":
+                    getValid(request, response);
+                    break;
                 default:
                     System.out.println("group: invalid action: "+action);
                     break;
@@ -94,7 +97,7 @@ public class GroupTask extends HttpServlet {
             String endTime=request.getParameter("end_time");
             TaskTable.clear();
             TaskTable.set("groupId",Integer.parseInt(groupId));
-            TaskTable.set("context",context);
+            TaskTable.set("context",new String(context.getBytes("iso-8859-1"),"utf-8"));
             TaskTable.set("grades",Integer.parseInt(grades));
             TaskTable.set("createTime",createTime);
             TaskTable.set("beginTime",beginTime);
@@ -223,7 +226,40 @@ public class GroupTask extends HttpServlet {
         System.out.println("exit member_task finish");
     }
 
-
+    private void getValid(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        int userId=Integer.parseInt(session.getAttribute("id").toString());
+        GroupMemberTable.clear();
+        GroupMemberTable.set("groupId",groupId);
+        GroupMemberTable.set("userId",userId);
+        String sql = GroupMemberTable.getSelectStmt();
+        JSONObject res = new JSONObject();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs =db.executeQuery("SELECT creatorId from `group` WHERE id="+groupId);
+            if(rs.next()){
+                res.put("creator_id",rs.getInt("creatorId"));
+            }
+            rs = db.executeQuery(sql);
+            if(rs.next()){
+                res.put("errno", 0);
+            }else{
+                res.put("errno", 1);
+            }
+            sql="SELECT auth from `user` WHERE id="+userId;
+            rs = db.executeQuery(sql);
+            if(rs.next()){
+                res.put("auth", rs.getInt("auth"));
+            }else{
+                res.put("auth", 0);
+            }
+        }
+        out.print(res);
+        out.flush();
+        out.close();
+    }
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();
         int user_id=Integer.parseInt(session.getAttribute("id").toString());

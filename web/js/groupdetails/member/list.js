@@ -6,14 +6,35 @@ var initurl=ContextPath+module;
 var GroupId=$("#group_id").val();
 var UserId=$("#user_id").val();
 function Record(){
+    $.post(String.format("{0}?action={1}&groupId={2}",initurl,"getValid",GroupId),function(res){
+        console.log(res);
+        if(res.errno == 1){
+            if(res.auth<2){
+                history.go(-1);
+            }else{
+                LookFlag=1;
+            }
+        }else{
+            $('#MyDetails').css('display','inline');
+        }
+
+    });
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
         dom: 'Bfrtip',
         buttons:[
             {
                 extend: 'excel',
-                title: 'groupmemberinfo',
+                title: '任务小组组员',
                 className: 'buttons-excel hidden',
+                exportOptions: {
+                    columns: [ 0,1,2,3,4 ]
+                }
+            },
+            {
+                extend: 'print',
+                title: '任务小组组员',
+                className: 'buttons-print hidden',
                 exportOptions: {
                     columns: [ 0,1,2,3,4 ]
                 }
@@ -141,11 +162,8 @@ function getSelectedRecord(url){
 }
 
 
-function statisticRecord(){
-    window.location.href="statistic.jsp";
-};
 function printRecord(){
-    window.location.href="print.jsp";
+    $(".dt-buttons .buttons-print").click();
 };
 function expordExcel(){
     $(".dt-buttons .buttons-excel").click();

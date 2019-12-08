@@ -82,7 +82,7 @@ function Record(){
         var data = row.data();
         var id = data[0];
         var user_id=$("#userId").val();
-        lookGroup(id,user_id);
+        modifyAct(id,user_id);
     });
     $('#example23 tbody').on('click', '.delete-button', function (event) {
         var _this=this;

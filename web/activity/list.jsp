@@ -19,19 +19,18 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="<%=request.getContextPath()%>/image/png" sizes="16x16" href="<%=request.getContextPath()%>/images/favicon.png">
-    <title>活动与任务平台 | 小组成员</title>
-    <link href="<%=request.getContextPath()%>/css/lib/dropzone/dropzone.css" rel="stylesheet">
+    <title>活动与任务平台 | 活动管理</title>
+
     <!-- Custom CSS -->
-    <%@include file="../../page_css.jsp"%>
+    <%@include file="../page_css.jsp"%>
 </head>
 
 <body class="header-fix fix-sidebar">
 <!-- Main wrapper  -->
 <div id="main-wrapper">
-    <%@include file="../../page_header.jsp"%>
-    <%@include file="../../page_sidebar_menu.jsp"%>
+    <%@include file="../page_header.jsp"%>
+    <%@include file="../page_sidebar_menu.jsp"%>
     <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
-    <input type="hidden" id="group_id" name="group_id" value="<%=request.getParameter("group_id")%>" />
     <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
 
     <!-- Page wrapper  -->
@@ -42,7 +41,7 @@
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">活动与任务平台</a></li>
-                    <li class="breadcrumb-item active">小组成员</li>
+                    <li class="breadcrumb-item active">活动管理</li>
                 </ol>
             </div>
         </div>
@@ -53,13 +52,7 @@
                 <div class="card-body">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>
-                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="commodityRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">商城</span></a> </li>
-                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="taskRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">任务</span></a> </li>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">排序</span></a> </li>
-                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="getAllRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">显示所有</span></a> </li>
-                        <li id="MyDetails" style="display: none"> <a class="nav-link" data-toggle="tab" href="#" onclick="toMyDetails()"  role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">我的统计</span></a> </li>
-
+                        <li> <a class="nav-link" data-toggle="tab" onclick="addRecord()" href="#" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">发布</span></a> </li>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -71,42 +64,35 @@
                             </div>
                         </li>
                     </ul>
-                    <div id="tab-content" class="tab-content tabcontent-border p-20" style="display: none;">
-                        <div role="tabpanel" class="tab-pane active" id="tab-query">
-                            <%@include file="query.jsp"%>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="tab-sort">
-                            <%@include file="sort.jsp"%>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
-
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">小组成员列表</h4>
+                    <h4 class="card-title">活动列表</h4>
                     <div class="table-responsive m-t-40">
                         <table id="example23" class="display nowrap table table-hover table-bordered" cellspacing="2px" width="100%">
                             <thead>
                             <tr>
-                                <th>组员ID</th>
+                                <th>ID</th>
                                 <th>昵称</th>
-                                <th>加入时间</th>
-                                <th>现有积分</th>
-                                <th>物品数</th>
+                                <th>发布者</th>
+                                <th>发布时间</th>
+                                <th>标签</th>
+                                <th>状态</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tfoot>
                             <tr>
-                                <th>组员ID</th>
+                                <th>ID</th>
                                 <th>昵称</th>
-                                <th>加入时间</th>
-                                <th>现有积分</th>
-                                <th>物品数</th>
+                                <th>发布者</th>
+                                <th>发布时间</th>
+                                <th>标签</th>
+                                <th>状态</th>
                                 <th>操作</th>
                             </tr>
                             </tfoot>
@@ -121,15 +107,16 @@
 
         <!-- End PAge Content -->
         <!-- End Container fluid  -->
-        <%@include file="../../page_footer.jsp"%>
+        <%@include file="../page_footer.jsp"%>
     </div>
     <!-- End Page wrapper  -->
 </div>
 <!-- End Wrapper -->
-<%@include file="../../page_js.jsp"%>
-<%@include file="../../js/mobileclass.jsp"%>
+<%@include file="../page_js.jsp"%>
+<%@include file="../js/mobileclass.jsp"%>
 <script src="<%=request.getContextPath()%>/js/tabview.js"></script>
-<script src="<%=request.getContextPath()%>/js/groupdetails/member/list.js"></script>
+<script src="<%=request.getContextPath()%>/js/activity/list.js"></script>
+<%--<script src="<%=request.getContextPath()%>/js/lib/atatables/datatables-init.js"></script>--%>
 
 </body>
 
