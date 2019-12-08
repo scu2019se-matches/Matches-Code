@@ -38,7 +38,7 @@
             <div class="col-md-5 align-self-center"></div>
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/index.jsp">移动互动课堂</a></li>
+                    <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/index.jsp">活动与任务平台</a></li>
                     <li class="breadcrumb-item active">权限管理</li>
                 </ol>
             </div>
