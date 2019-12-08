@@ -71,6 +71,9 @@ public class GroupTask extends HttpServlet {
                 case "finish_task":
                     finishTask(request, response);
                     break;
+                case "getValid":
+                    getValid(request, response);
+                    break;
                 default:
                     System.out.println("group: invalid action: "+action);
                     break;
@@ -94,11 +97,11 @@ public class GroupTask extends HttpServlet {
             String endTime=request.getParameter("end_time");
             TaskTable.clear();
             TaskTable.set("groupId",Integer.parseInt(groupId));
-            TaskTable.set("context",context);
+            TaskTable.set("context",new String(context.getBytes("iso-8859-1"),"utf-8"));
             TaskTable.set("grades",Integer.parseInt(grades));
             TaskTable.set("createTime",createTime);
-            TaskTable.set("BeginTime",beginTime);
-            TaskTable.set("EndTime",endTime);
+            TaskTable.set("beginTime",beginTime);
+            TaskTable.set("endTime",endTime);
 
             sql= TaskTable.getInsertStmt();
             db.execute(sql);
@@ -158,7 +161,7 @@ public class GroupTask extends HttpServlet {
             TaskTable.set("id",Integer.parseInt(taskId));
             TaskTable.set("groupId",Integer.parseInt(groupId));
             TaskTable.set("grades",Integer.parseInt(grades));
-            TaskTable.set("EndTime",endTime);
+            TaskTable.set("endTime",endTime);
             String sql= TaskTable.getUpdateStmt();
             db.execute(sql);
 //            response.sendRedirect("group/list.jsp");
@@ -223,7 +226,40 @@ public class GroupTask extends HttpServlet {
         System.out.println("exit member_task finish");
     }
 
-
+    private void getValid(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        int userId=Integer.parseInt(session.getAttribute("id").toString());
+        GroupMemberTable.clear();
+        GroupMemberTable.set("groupId",groupId);
+        GroupMemberTable.set("userId",userId);
+        String sql = GroupMemberTable.getSelectStmt();
+        JSONObject res = new JSONObject();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs =db.executeQuery("SELECT creatorId from `group` WHERE id="+groupId);
+            if(rs.next()){
+                res.put("creator_id",rs.getInt("creatorId"));
+            }
+            rs = db.executeQuery(sql);
+            if(rs.next()){
+                res.put("errno", 0);
+            }else{
+                res.put("errno", 1);
+            }
+            sql="SELECT auth from `user` WHERE id="+userId;
+            rs = db.executeQuery(sql);
+            if(rs.next()){
+                res.put("auth", rs.getInt("auth"));
+            }else{
+                res.put("auth", 0);
+            }
+        }
+        out.print(res);
+        out.flush();
+        out.close();
+    }
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();
         int user_id=Integer.parseInt(session.getAttribute("id").toString());
@@ -244,8 +280,8 @@ public class GroupTask extends HttpServlet {
             item.put("context", rs.getString("context"));
             item.put("grades", rs.getInt("grades"));
             item.put("create_time", rs.getString("createTime"));
-            item.put("begin_time", rs.getString("BeginTime"));
-            item.put("end_time", rs.getString("EndTime"));
+            item.put("begin_time", rs.getString("beginTime"));
+            item.put("end_time", rs.getString("endTime"));
             if(auth>1||rs.getInt("creatorId")==user_id){
                 item.put("auth", 1);
             }else{
@@ -253,9 +289,9 @@ public class GroupTask extends HttpServlet {
             }
             //任务状态:0未开始,1进行中,2已结束
             int task_status=0,my_status=0;
-            if(dateFormat.parse(rs.getString("EndTime")).compareTo(dateFormat.parse(queryTime))<0){
+            if(dateFormat.parse(rs.getString("endTime")).compareTo(dateFormat.parse(queryTime))<0){
                 task_status=2;
-            }else if(dateFormat.parse(rs.getString("BeginTime")).compareTo(dateFormat.parse(queryTime))<0){
+            }else if(dateFormat.parse(rs.getString("beginTime")).compareTo(dateFormat.parse(queryTime))<0){
                 task_status=1;
             }
             //我的完成状态:0已完成,不可点击,1可点击,2不可操作

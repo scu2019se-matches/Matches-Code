@@ -104,7 +104,10 @@ function Record(){
                         }
                         if(full[6]==0){
                             sReturn=sReturn+"<button type=\"button\" class=\"follow-button btn btn-arrow-link btn-sm btn-rounded m-b-10 m-l-5\">关注</button>";
+                        }else{
+                            sReturn=sReturn+"<button type=\"button\" class=\"unfollow-button btn btn-arrow-link btn-sm btn-rounded m-b-10 m-l-5\">取消关注</button>";
                         }
+
                         sReturn=sReturn+"<button type=\"button\" class=\"enter-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">详情</button>";
                         return sReturn;
                     },
@@ -129,6 +132,12 @@ function Record(){
         var data = row.data();
         var id = data[0];
         followAct(id);
+    });
+    $('#example23 tbody').on('click', '.unfollow-button', function (event) {
+        var row = dataTable.row($(this).parents("tr"));
+        var data = row.data();
+        var id = data[0];
+        unfollowAct(id);
     });
     $('#example23 tbody').on('click', '.modify-button', function (event) {
         var row = dataTable.row($(this).parents("tr"));
@@ -160,6 +169,13 @@ function followAct(id) {
     url =initurl+"?action=focus_record&activity_id="+id;
     $.post(url, function (json) {
         Dialog.showSuccess("关注成功","操作成功");
+        getAllRecord();
+    });
+}
+function unfollowAct(id) {
+    url =initurl+"?action=unfocus_record&activity_id="+id;
+    $.post(url, function (json) {
+        Dialog.showSuccess("取消关注成功","操作成功");
         getAllRecord();
     });
 }

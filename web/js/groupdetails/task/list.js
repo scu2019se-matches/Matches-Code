@@ -8,7 +8,22 @@ var initurl=ContextPath+module;
 var CreatorId="";
 var Auth=$("#auth").val();
 var lasturl="";
+var LookFlag=0;
 function Record(){
+    $.post(String.format("{0}?action={1}&groupId={2}",initurl,"getValid",GroupId),function(res){
+        console.log(res);
+        if(res.errno == 1){
+            if(res.auth<2&&res.creatorId!=UserId){
+                history.go(-1);
+            }else{
+                LookFlag=1;
+            }
+        }else{
+            $('#MyDetails').css('display','inline');
+            $('#Addrecord').css('display','inline');
+        }
+    });
+
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
         dom: 'Bfrtip',
@@ -65,7 +80,7 @@ function Record(){
                                 '<span class="badge badge-danger">'+
                                 "已结束"+'</span>';
                         }
-                        if(full[4]==2){
+                        if(full[4]==2||LookFlag==1){
                             sReturn+=
                                 '<span class="badge badge-danger m-l-5">'+
                                 "不可操作"+'</span>';
@@ -90,7 +105,7 @@ function Record(){
                                 "<button type=\"button\" class=\"edit-button btn btn-success btn-sm btn-rounded m-b-10 m-l-5\">修改</button>" +
                                 "<button type=\"button\" class=\"delete-button btn btn-info btn-sm btn-rounded m-b-10 m-l-5\">删除</button>";
                         }
-                        if(full[4]==1){
+                        if(full[4]==1&&LookFlag!=1){
                             sReturn=sReturn+"<button type=\"button\" class=\"finish-button btn btn-primary btn-sm btn-rounded m-b-10 m-l-5\">标记完成</button>";
                         }
                         return sReturn;
@@ -258,30 +273,25 @@ function getSelectedRecord(url){
     });
 }
 function addRecord(){
-    if(Auth<=1&&CreatorId!=UserId){
-        Dialog.showError("你无权进行此操作","错误");
-        getAllRecord();
-        return;
-    }
-    // console.log($("#newTask,#grades").val());
-    if($("#newTask,#context").val()==null||$("#newTask,#context").val()==""){
+    // console.log($("#newTask #grades").val());
+    if($("#newTask #context").val()==null||$("#newTask #context").val()==""){
         Dialog.showWarning("内容不能为空","提示");
         return;
-    }else if($("#newTask,#grades").val()==null||$("#newTask,#grades").val()==""){
+    }else if($("#newTask #grades").val()==null||$("#newTask #grades").val()==""){
         Dialog.showWarning("需要设置积分","提示");
         return;
     }
 
     var form = document.getElementById('newTask');
-    var daterange=$("#newTask,#dateRangeSelect").val();
+    var daterange=$("#newTask #dateRangeSelect").val();
     if(daterange==null||daterange==""){
         Dialog.showWarning("需要设置时间范围","提示");
         return;
     }
     var date=daterange.split(" to ");
-    $("#newTask,#group_id").val(GroupId);
-    $("#newTask,#begin_time").val(date[0]);
-    $("#newTask,#end_time").val(date[1]);
+    $("#newTask #group_id").val(GroupId);
+    $("#newTask #begin_time").val(date[0]);
+    $("#newTask #end_time").val(date[1]);
     form.submit();
 }
 function statisticRecord(){

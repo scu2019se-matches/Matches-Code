@@ -6,6 +6,19 @@ var initurl=ContextPath+module;
 var GroupId=$("#group_id").val();
 var UserId=$("#user_id").val();
 function Record(){
+    $.post(String.format("{0}?action={1}&groupId={2}",initurl,"getValid",GroupId),function(res){
+        console.log(res);
+        if(res.errno == 1){
+            if(res.auth<2){
+                history.go(-1);
+            }else{
+                LookFlag=1;
+            }
+        }else{
+            $('#MyDetails').css('display','inline');
+        }
+
+    });
     $.fn.dataTable.ext.errMode = "none";
     var dataTable=$('#example23').DataTable({
         dom: 'Bfrtip',

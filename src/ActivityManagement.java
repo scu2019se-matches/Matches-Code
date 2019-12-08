@@ -73,6 +73,9 @@ public class ActivityManagement extends HttpServlet {
                 case "focus_record":
                     focusAct(request, response);
                     break;
+                case "unfocus_record":
+                    unfocusAct(request, response);
+                    break;
                 default:
                     System.out.println("activity: invalid action: "+action);
                     break;
@@ -86,7 +89,27 @@ public class ActivityManagement extends HttpServlet {
     public void addRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession();
         request.setCharacterEncoding("utf-8");	//设置编码
+        String userId=session.getAttribute("id").toString();
+        String headline=request.getParameter("headline");
+        String site=request.getParameter("site");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String createTime=dateFormat.format(new Date());
+        String beginTime=request.getParameter("begin_time");
+        String endTime=request.getParameter("end_time");
+        String tag=request.getParameter("tag");
+        String description=request.getParameter("description");
         try(DatabaseHelper db = new DatabaseHelper()){
+            ActivityTable.clear();
+            ActivityTable.set("publisherId",Integer.parseInt(userId));
+            ActivityTable.set("site",new String(site.getBytes("iso-8859-1"),"utf-8"));
+            ActivityTable.set("headline",new String(headline.getBytes("iso-8859-1"),"utf-8"));
+            ActivityTable.set("createTime",createTime);
+            ActivityTable.set("beginTime",beginTime);
+            ActivityTable.set("endTime",endTime);
+            ActivityTable.set("tag",new String(tag.getBytes("iso-8859-1"),"utf-8"));
+            ActivityTable.set("description",new String(description.getBytes("iso-8859-1"),"utf-8"));
+            String sql=ActivityTable.getInsertStmt();
+            db.execute(sql);
             response.sendRedirect("activity/list.jsp");
         }
     }
@@ -116,9 +139,8 @@ public class ActivityManagement extends HttpServlet {
         System.out.println("exit activity getResult");
     }
     private void focusAct(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
-        response.setContentType("application/json; charset=UTF-8");
-        PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
         int userId=Integer.parseInt(session.getAttribute("id").toString());
         int activityId=Integer.parseInt(request.getParameter("activity_id"));
         FocusTable.clear();
@@ -126,6 +148,16 @@ public class ActivityManagement extends HttpServlet {
         FocusTable.set("focusActivity",activityId);
         try(DatabaseHelper db = new DatabaseHelper()){
             db.execute(FocusTable.getInsertStmt());
+        }
+    }
+    private void unfocusAct(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
+        HttpSession session = request.getSession();
+        request.setCharacterEncoding("utf-8");	//设置编码
+        int userId=Integer.parseInt(session.getAttribute("id").toString());
+        int activityId=Integer.parseInt(request.getParameter("activity_id"));
+        try(DatabaseHelper db = new DatabaseHelper()){
+            String sql="DELETE from `focus` WHERE focusUser="+userId+" and focusActivity="+activityId;
+            db.execute(sql);
         }
     }
     private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException, SQLException {
@@ -185,8 +217,8 @@ public class ActivityManagement extends HttpServlet {
             item.put("create_time", rs.getString("createTime"));
             item.put("site", rs.getString("site"));
             item.put("publisher", rs.getString("publisher"));
-            item.put("begin_time", rs.getString("BeginTime"));
-            item.put("end_time", rs.getString("EndTime"));
+            item.put("begin_time", rs.getString("beginTime"));
+            item.put("end_time", rs.getString("endTime"));
             item.put("tag", rs.getString("tag"));
             item.put("imageUrl", rs.getString("imageUrl"));
             item.put("description", rs.getString("description"));
@@ -198,9 +230,9 @@ public class ActivityManagement extends HttpServlet {
 
             //活动状态:0未开始,1进行中,2已结束
             int act_status=0,focus_status=1;
-            if(dateFormat.parse(rs.getString("EndTime")).compareTo(dateFormat.parse(queryTime))<0){
+            if(dateFormat.parse(rs.getString("endTime")).compareTo(dateFormat.parse(queryTime))<0){
                 act_status=2;
-            }else if(dateFormat.parse(rs.getString("BeginTime")).compareTo(dateFormat.parse(queryTime))<0){
+            }else if(dateFormat.parse(rs.getString("beginTime")).compareTo(dateFormat.parse(queryTime))<0){
                 act_status=1;
             }
 

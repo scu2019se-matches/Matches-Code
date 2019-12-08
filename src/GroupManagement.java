@@ -92,7 +92,7 @@ public class GroupManagement extends HttpServlet {
 
             GroupTable.clear();
             GroupTable.set("title",new String(title.getBytes("iso-8859-1"),"utf-8"));
-            GroupTable.set("password",MD5Util.MD5(password));
+            GroupTable.set("password",MD5Util.MD5(new String(password.getBytes("iso-8859-1"),"utf-8")));
             GroupTable.set("creatorId",Integer.parseInt(creatorId));
             GroupTable.set("createTime",createTime);
 
@@ -136,7 +136,7 @@ public class GroupManagement extends HttpServlet {
             GroupView.set("id",Integer.parseInt(id));
         }
         if(password!=null){
-            GroupView.set("password",MD5Util.MD5(password));
+            GroupView.set("password",MD5Util.MD5(new String(password.getBytes("iso-8859-1"),"utf-8")));
         }
         if(creatorId!=null){
             GroupView.set("creatorId",Integer.parseInt(creatorId));
@@ -210,7 +210,7 @@ public class GroupManagement extends HttpServlet {
         try(DatabaseHelper db = new DatabaseHelper()){
             GroupTable.clear();
             GroupTable.set("id",Integer.parseInt(groupId));
-            GroupTable.set("title",title);
+            GroupTable.set("title",new String(title.getBytes("iso-8859-1"),"utf-8"));
             String sql=GroupTable.getUpdateStmt();
             db.execute(sql);
 //            response.sendRedirect("group/list.jsp");
