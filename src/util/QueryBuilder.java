@@ -95,13 +95,21 @@ public class QueryBuilder{
         if(value=="null"||value==null||value.equals(null)||value.equals("null")){
             return;
         }
+
         if(key=="orderBy"){
             orderString=value.toString();
             return;
         }else if(!tableConfig.has(key)){
             throw new InvalidParameterException(String.format("列名\"%s\"不存在", key));
         }
-
+        if(value instanceof String && ((String)value).length()==0)
+        {
+            return;
+        }
+        if(value instanceof Integer && (int)value==-1)
+        {
+            return;
+        }
         try {
             switch ((DataType)tableConfig.get(key)){
                 case Integer:
@@ -126,6 +134,14 @@ public class QueryBuilder{
 
     public void set(String key, Object value,int ks){
         if(value=="null"||value==null||value.equals(null)||value.equals("null")){
+            return;
+        }
+        if(value instanceof String && ((String)value).length()==0)
+        {
+            return;
+        }
+        if(value instanceof Integer && (int)value==-1)
+        {
             return;
         }
         if(key=="orderBy"){
@@ -215,7 +231,7 @@ public class QueryBuilder{
      * @return SQL的order by子句
      */
     public String getOrderClause(){
-        if(orderString==null||orderString=="null"){
+        if(orderString==null||orderString=="null" || orderString.length()==0){
             return "";
         }
         return " order by "+orderString;
