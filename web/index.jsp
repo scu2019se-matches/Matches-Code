@@ -64,7 +64,7 @@
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <div class="card">
-                            <a href="<%=request.getContextPath()%>/questionnaire/publish/questionnaire_list.jsp"></a>
+                            <a href="<%=request.getContextPath()%>/activity/list.jsp"></a>
                             <div class="stat-widget-five">
                                 <div class="stat-icon">
                                     <i class="ti-file bg-success"></i>
@@ -131,20 +131,13 @@
                                         <tr>
                                             <th>名称</th>
                                             <th>发布者</th>
-                                            <th>组织</th>
+                                            <th>标签</th>
                                             <th>举办时间</th>
                                             <th>状态</th>
                                         </tr>
                                         </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>
-                                            </td>
-                                            <td>Lew Shawon</td>
-                                            <td><span>Dell-985</span></td>
-                                            <td><span>456 pcs</span></td>
-                                            <td><span class="badge badge-success">已结束</span></td>
-                                        </tr>
+                                        <tbody id="focus_act">
+
                                         </tbody>
                                     </table>
                                 </div>

@@ -53,11 +53,11 @@
                 <div class="card-body">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>
-                        <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">发布</span></a> </li>
+                        <li class="nav-item" id="Addrecord" style="display: none"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">发布</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">排序</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="getAllRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">显示所有</span></a> </li>
-                        <li> <a class="nav-link" data-toggle="tab" href="#" onclick="toMyDetails()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">我的统计</span></a> </li>
+                        <li id="MyDetails" style="display: none"> <a class="nav-link" data-toggle="tab" href="#" onclick="toMyDetails()" role="tab" ><span class="hidden-sm-up"></span> <span class="hidden-xs-down">我的统计</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="toMemberList()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">组员列表</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="ReturnBack()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">返回</span></a> </li>
 

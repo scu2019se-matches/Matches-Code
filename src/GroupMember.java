@@ -63,7 +63,9 @@ public class GroupMember extends HttpServlet {
                 case "getStatistics":
                     getStatistics(request, response);
                     break;
-
+                case "getValid":
+                    getValid(request, response);
+                    break;
                 default:
                     System.out.println("group: invalid action: "+action);
                     break;
@@ -142,7 +144,36 @@ public class GroupMember extends HttpServlet {
     private void getStatistics(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException {
 
     }
-
+    private void getValid(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        int userId=Integer.parseInt(session.getAttribute("id").toString());
+        GroupMemberTable.clear();
+        GroupMemberTable.set("groupId",groupId);
+        GroupMemberTable.set("userId",userId);
+        String sql = GroupMemberTable.getSelectStmt();
+        JSONObject res = new JSONObject();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs = db.executeQuery(sql);
+            if(rs.next()){
+                res.put("errno", 0);
+            }else{
+                res.put("errno", 1);
+            }
+            sql="SELECT auth from `user` WHERE id="+userId;
+            rs = db.executeQuery(sql);
+            if(rs.next()){
+                res.put("auth", rs.getInt("auth"));
+            }else{
+                res.put("auth", 0);
+            }
+        }
+        out.print(res);
+        out.flush();
+        out.close();
+    }
 
     private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException {
         HttpSession session = request.getSession();
@@ -161,12 +192,12 @@ public class GroupMember extends HttpServlet {
             item.put("create_time", rs.getString("createTime"));
             item.put("grades", rs.getInt("grades"));
             item.put("commodity", rs.getInt("commodity"));
-            if(auth>1&&rs.getInt("creatorId")!=rs.getInt("userId")){
+            if((auth>1||rs.getInt("creatorId")==user_id)&&rs.getInt("creatorId")!=rs.getInt("userId")){
                 item.put("delauth", 1);
             }else{
                 item.put("delauth", 0);
             }
-            if(auth>1||rs.getInt("userId")==user_id){
+            if(auth>1||rs.getInt("creatorId")==user_id||rs.getInt("userId")==user_id){
                 item.put("enterauth", 1);
             }else{
                 item.put("enterauth", 0);

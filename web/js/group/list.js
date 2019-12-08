@@ -14,13 +14,22 @@ function Record(){
         buttons:[
             {
                 extend: 'excel',
-                title: 'groupinfo',
+                title: '任务小组',
                 className: 'buttons-excel hidden',
                 exportOptions: {
                     columns: [ 0,1,2,3,4 ]
                 }
             },
+            {
+                extend: 'print',
+                title: '任务小组',
+                className: 'buttons-print hidden',
+                exportOptions: {
+                    columns: [ 0,1,2,3,4]
+                }
+            },
         ],
+
         fixedHeader: true,
         fixedColumns: {
             leftColumns: 1
@@ -257,11 +266,8 @@ function addRecord(){
     // console.log("group form"+form);
     form.submit();
 }
-function statisticRecord(){
-    window.location.href="statistic.jsp";
-};
 function printRecord(){
-    window.location.href="print.jsp";
+    $(".dt-buttons .buttons-print").click();
 };
 function expordExcel(){
     $(".dt-buttons .buttons-excel").click();
