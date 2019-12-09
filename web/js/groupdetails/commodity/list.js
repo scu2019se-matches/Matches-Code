@@ -163,10 +163,10 @@ function Record(){
         });
     });
 }
-function buyCommodity(sender, commodityId) {
+function buyCommodity( commodityId) {
     var url = String.format("{0}{1}?action={2}&commodityId={3}&groupId={4}",
         ContextPath, module, "buyCommodity", commodityId, group_id);
-    alert(url);
+    // alert(url);
     $.post(url, function (json) {
         if(json.errno != 0){
             Dialog.showWarning(json.msg, "");

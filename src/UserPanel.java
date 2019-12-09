@@ -134,7 +134,7 @@ public class UserPanel extends HttpServlet {
         MemberRecordTable.set("memberId",Integer.parseInt(userId));
         MemberRecordTable.set("object","task");
         MemberRecordTable.set("type","tag");
-        MemberRecordTable.set("context",new String(task.getBytes("iso-8859-1"),"utf-8")+"+"+grades);
+        MemberRecordTable.set("context",task+"+"+grades);
         MemberRecordTable.set("createTime",createTime);
         sql= MemberRecordTable.getInsertStmt();
         db.execute(sql);
