@@ -16,12 +16,15 @@ function getComment(){
             var id=Data["id"];
             var creator=Data["creator"];
             var citeuser=Data["citeuser"];
+            var cite_id=Data["cite_id"];
             var create_time=Time.MinToMinute(Data["create_time"]);
             var context=Data["context"];
             var auth=Data["auth"];
+            var activity_id=Data["activity_id"];
 
-            tmp="<div class=\"media\"><div class=\"media-body\"><h4 class=\"media-heading\">"+context+"</h4>"
-            if(citeuser==""||citeuser==null){
+            tmp="<div class=\"media\"><div class=\"media-body\">" +
+                "<a href=\"#\"><h4 onclick=enterAct("+activity_id+") class=\"media-heading\">"+context+"</h4></a>"
+            if(cite_id==0){
                 tmp+="<div><span>"+creator+"</span>"
             }else{
                 tmp+="<div><span>"+creator+"</span> @ <span>"+citeuser+"</span>"
@@ -76,6 +79,9 @@ function reply_comment(id){
 function cancel_comment(id){
     var id="block"+id;
     $('#'+id).css('display','none');
+}
+function enterAct(id){
+    window.location.href="../activity/detail.jsp?activity_id="+id;
 }
 getRecord();
 

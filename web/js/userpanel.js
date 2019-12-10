@@ -4,11 +4,13 @@ var existResultset="0";
 var ContextPath=$("#ContextPath").val();
 var taskurl=ContextPath+module;
 var activityurl=ContextPath+"/ActivityManagement";
+var commenturl=ContextPath+"/CommentManagement";
 var UserId=$("#user_id").val();
 var Auth=$("#auth").val();
 function getAllRecord(){
     getTask();
     getActivity();
+    // getComment();
 }
 function getTask(){
     var url=taskurl+"?action=get_task"+"&user_id="+UserId;
