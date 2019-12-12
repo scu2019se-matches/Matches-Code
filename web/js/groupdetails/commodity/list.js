@@ -5,13 +5,17 @@ var ContextPath=$("#ContextPath").val();
 var group_id=$("#group_id").val();
 var user_id=$("#user_id").val();
 var initurl=ContextPath+module;
+
 function Record(){
     console.log("group_id = " + group_id);
     console.log("user_id = " + user_id);
 
-    $.post(String.format("{0}?action={1}&groupId={2}",initurl,"getOwner",group_id),function(res){
-        if(res.errno == 0 && res.owner == user_id){
-            $('#navAddCommodity').css('visibility','visible');
+    $.post(String.format("{0}?action={1}&groupId={2}",initurl,"checkMember",group_id),function(res){
+        if(res.role == 1){
+            $('#navAddCommodity').css('display','inline');
+        }
+        if(res.role >= 0){
+            $('#myStatistics').css('display','inline');
         }
     });
 
@@ -314,6 +318,10 @@ function sortRecord(){
 
 function goback(){
     sendRedirect('../member/list.jsp', {'group_id':group_id});
+}
+
+function myspace(){
+    sendRedirect('../memberdetails/list.jsp', {'group_id':group_id, 'member_id':user_id});
 }
 
 function searchRecord(){

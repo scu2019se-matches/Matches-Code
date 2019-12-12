@@ -366,7 +366,7 @@
             $.fn.dataTable.ext.errMode = 'none';
             var dataTable=$('#myDataTable').DataTable({
                 dom: 'Bfrtip',
-                uttons:[
+                buttons:[
                     {
                         extend: 'print',
                         className: 'buttons-print hidden',
