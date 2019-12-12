@@ -32,7 +32,6 @@ function addRecord(){
     form.submit();
 }
 
-getRecord();
 
 var locale = {
     "applyLabel": "确定",

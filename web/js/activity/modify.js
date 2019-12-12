@@ -9,8 +9,6 @@ var BeginTime="";
 var EndTime="";
 
 function getRecord(){
-    var dataTable = $('#example23').DataTable();
-    dataTable.clear().draw(); //清除表格数据
     var url=initurl+"?action=get_record&activity_id="+ActivityId;
     $.post(url, function (json) {
         Data = json[0];

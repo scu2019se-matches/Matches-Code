@@ -2,15 +2,18 @@ var Data=[];
 var module="/UserPanel";
 var existResultset="0";
 var ContextPath=$("#ContextPath").val();
-var initurl=ContextPath+module;
+var taskurl=ContextPath+module;
+var activityurl=ContextPath+"/ActivityManagement";
+var commenturl=ContextPath+"/CommentManagement";
 var UserId=$("#user_id").val();
 var Auth=$("#auth").val();
 function getAllRecord(){
     getTask();
     getActivity();
+    // getComment();
 }
 function getTask(){
-    var url=initurl+"?action=get_task"+"&user_id="+UserId;
+    var url=taskurl+"?action=get_task"+"&user_id="+UserId;
     $.post(url, function (json) {
         Data = json;
         // console.log(json);
@@ -52,13 +55,13 @@ function getTask(){
     });
 };
 function getActivity(){
-    var url=initurl+"?action=get_activity"+"&user_id="+UserId;
+    var url=activityurl+"?action=get_activity"+"&user_id="+UserId;
     $.post(url, function (json) {
         Data = json;
         var html="";
         var html1="";
         var html2="";
-        console.log(json);
+        // console.log(json);
         for (var i = 0; i < json.length; i++) {
             var id = json[i]["id"];
             var headline = json[i]["headline"];
@@ -97,7 +100,7 @@ function getActivity(){
 $('ul#task_list_todo').on('click','input',function () {
     var id=$(this)[0].id;
     [group_id,task_id]=getTaskByRegex(id);
-    var url=initurl+"?action=finish_task&group_id="+group_id+"&user_id="+UserId
+    var url=taskurl+"?action=finish_task&group_id="+group_id+"&user_id="+UserId
         +"&task_id="+task_id;
     $.post(url, function (json) {
         getTask();

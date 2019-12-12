@@ -19,7 +19,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="<%=request.getContextPath()%>/image/png" sizes="16x16" href="<%=request.getContextPath()%>/images/favicon.png">
-    <title>活动与任务平台 | 关注的活动</title>
+    <title>活动与任务平台 | 收到的评论</title>
 
     <!-- Custom CSS -->
     <%@include file="../page_css.jsp"%>
@@ -32,7 +32,7 @@
     <%@include file="../page_sidebar_menu.jsp"%>
     <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
     <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
-
+        <input type="hidden" id="activity_id" name="activity_id" value="<%=request.getParameter("activity_id")%>"/>
     <!-- Page wrapper  -->
     <div class="page-wrapper">
         <!-- Bread crumb -->
@@ -41,51 +41,29 @@
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">活动与任务平台</a></li>
-                    <li class="breadcrumb-item active">关注的活动</li>
+                    <li class="breadcrumb-item active">收到的评论</li>
                 </ol>
             </div>
         </div>
         <!-- End Bread crumb -->
         <!-- Container fluid  -->
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+            <div class="row">
+                <div class="col-lg-12">
 
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">活动列表</h4>
-                    <div class="table-responsive m-t-40">
-                        <table id="example23" class="display nowrap table table-hover table-bordered" cellspacing="2px" width="100%">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>昵称</th>
-                                <th>发布者</th>
-                                <th>发布时间</th>
-                                <th>标签</th>
-                                <th>状态</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tfoot>
-                            <tr>
-                                <th>ID</th>
-                                <th>昵称</th>
-                                <th>发布者</th>
-                                <th>发布时间</th>
-                                <th>标签</th>
-                                <th>状态</th>
-                                <th>操作</th>
-                            </tr>
-                            </tfoot>
-                            <tbody>
+                    <div class="card">
+                        <div class="card-title">
+                            <h4>评论 </h4>
+                        </div>
+                        <div class="recent-comment" id="comment_list">
 
-                            </tbody>
-                        </table>
+                        </div>
                     </div>
+
                 </div>
             </div>
-        </div>
-
-        <!-- End PAge Content -->
+            <!-- End PAge Content -->
         <!-- End Container fluid  -->
         <%@include file="../page_footer.jsp"%>
     </div>
@@ -95,7 +73,7 @@
 <%@include file="../page_js.jsp"%>
 <%@include file="../js/mobileclass.jsp"%>
 <script src="<%=request.getContextPath()%>/js/tabview.js"></script>
-<script src="<%=request.getContextPath()%>/js/user/followActivity.js"></script>
+<script src="<%=request.getContextPath()%>/js/user/receiveComment.js"></script>
 <%--<script src="<%=request.getContextPath()%>/js/lib/atatables/datatables-init.js"></script>--%>
 
 </body>

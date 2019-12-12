@@ -31,7 +31,8 @@ public class ActivityManagement extends HttpServlet {
     private static QueryBuilder ActivityView = null;
     private static QueryBuilder ActivityTable = null;
     private static QueryBuilder FocusTable = null;
-    private static QueryBuilder CommentView = null;
+    private static QueryBuilder FocusView = null;
+
     static {
         try {
             queryResult = new JSONArray("[]");
@@ -39,9 +40,9 @@ public class ActivityManagement extends HttpServlet {
             e.printStackTrace();
         }
         ActivityView = new QueryBuilder("activitylist");
-        CommentView = new QueryBuilder("commentlist");
         ActivityTable = new QueryBuilder("activity");
         FocusTable = new QueryBuilder("focus");
+        FocusView = new QueryBuilder("focuslist");
     }
 
     @Override
@@ -64,17 +65,14 @@ public class ActivityManagement extends HttpServlet {
                 case "modify_record":
                     modifyRecord(request, response);
                     break;
-//                case "get_detail":
-//                     getStatistics(request, response);
-//                    break;
-                case "get_comment":
-//                    getStatistics(request, response);
-                    break;
                 case "focus_record":
                     focusAct(request, response);
                     break;
                 case "unfocus_record":
                     unfocusAct(request, response);
+                    break;
+                case "get_activity":
+                    getFocusActivity(request, response);
                     break;
                 default:
                     System.out.println("activity: invalid action: "+action);
@@ -121,13 +119,17 @@ public class ActivityManagement extends HttpServlet {
         System.out.println("enter activity getResult");
         ActivityView.clear();
         String activityId=request.getParameter("activity_id");
+        String publisherId=request.getParameter("publisher_id");
         if(activityId!=null){
             ActivityView.set("id",Integer.parseInt(activityId));
+        }
+        if(publisherId!=null){
+            ActivityView.set("publisherId",Integer.parseInt(publisherId));
         }
         String sql= ActivityView.getSelectStmt();
         try(DatabaseHelper db = new DatabaseHelper()){
             ResultSet rs=db.executeQuery(sql);
-            processResult(request,rs);
+            processActivity(request,rs);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -196,7 +198,36 @@ public class ActivityManagement extends HttpServlet {
             response.sendRedirect("activity/list.jsp");
         }
     }
-    private void processResult(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
+    private void getFocusActivity(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession();
+
+        System.out.println("enter follow_activity getResult");
+        FocusView.clear();
+        String activityId=request.getParameter("activity_id");
+        String userId=request.getParameter("user_id");
+        if(activityId!=null){
+            FocusView.set("id",Integer.parseInt(activityId));
+        }
+        if(userId!=null){
+            FocusView.set("userId",Integer.parseInt(userId));
+        }
+        String sql= FocusView.getSelectStmt();
+        try(DatabaseHelper db = new DatabaseHelper()){
+            ResultSet rs=db.executeQuery(sql);
+            processFocusActivity(request,rs);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        out.print(queryResult);
+        session.setAttribute("queryResult",queryResult);
+        out.flush();
+        out.close();
+        System.out.println("exit follow_activity getResult");
+    }
+    private void processActivity(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
         HttpSession session = request.getSession();
         int user_id=Integer.parseInt(session.getAttribute("id").toString());
         int auth=Integer.parseInt(session.getAttribute("auth")==null?"0":session.getAttribute("auth").toString());
@@ -246,6 +277,48 @@ public class ActivityManagement extends HttpServlet {
             }
             item.put("act_status", act_status);
             item.put("focus_status", focus_status);
+            queryResult.put(item);
+        }
+    }
+    private void processFocusActivity(HttpServletRequest request,ResultSet rs) throws JSONException, SQLException, ParseException {
+        HttpSession session = request.getSession();
+        int user_id=Integer.parseInt(session.getAttribute("id").toString());
+        int auth=Integer.parseInt(session.getAttribute("auth")==null?"0":session.getAttribute("auth").toString());
+        queryResult = new JSONArray("[]");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String queryTime=dateFormat.format(new Date());
+
+        rs.beforeFirst();
+        while(rs.next())
+        {
+            JSONObject item = new JSONObject();
+            item.put("id", rs.getInt("id"));
+            item.put("headline", rs.getString("headline"));
+            item.put("publisher_id", rs.getInt("publisherId"));
+            item.put("create_time", rs.getString("createTime"));
+            item.put("site", rs.getString("site"));
+            item.put("publisher", rs.getString("publisher"));
+            item.put("begin_time", rs.getString("beginTime"));
+            item.put("end_time", rs.getString("endTime"));
+            item.put("tag", rs.getString("tag"));
+            item.put("imageUrl", rs.getString("imageUrl"));
+            item.put("description", rs.getString("description"));
+            if(auth>1||rs.getInt("publisherId")==user_id){
+                item.put("auth", 1);
+            }else{
+                item.put("auth", 0);
+            }
+
+            //活动状态:0未开始,1进行中,2已结束
+            int act_status=0;
+            if(dateFormat.parse(rs.getString("endTime")).compareTo(dateFormat.parse(queryTime))<0){
+                act_status=2;
+            }else if(dateFormat.parse(rs.getString("beginTime")).compareTo(dateFormat.parse(queryTime))<0){
+                act_status=1;
+            }
+
+            item.put("act_status", act_status);
             queryResult.put(item);
         }
     }
