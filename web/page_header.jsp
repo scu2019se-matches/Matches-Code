@@ -74,7 +74,7 @@
 <script src="<%=request.getContextPath()%>/js/lib/jquery/jquery.min.js"></script>
 <script type="text/javascript">
     function enterAct(id){
-        window.location.href="../activity/detail.jsp?activity_id="+id;
+        window.location.href=$("#ContextPath").val()+"/activity/detail.jsp?activity_id="+id;
     }
     function getComment(){
         var url=$("#ContextPath").val()+"/CommentManagement?action=get_receiveComment";
