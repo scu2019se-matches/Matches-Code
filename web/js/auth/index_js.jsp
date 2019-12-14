@@ -481,7 +481,7 @@
             $("#tab-excel").click(excel_onclick);
             $("#tab-csv").click(csv_onclick);
             $("#tab-pdf").click(pdf_onclick);
-            $("#tab-sta").click(sta_onclick);
+//            $("#tab-sta").click(sta_onclick);
         }
 
         var delete_button_onclick = function(evt){
@@ -588,10 +588,10 @@
             $(".dt-buttons .buttons-pdf").click();
         }
 
-        var sta_onclick = function(evt){
-            console.log("sta_onclick");
-            window.location.href = "<%=request.getContextPath()%>/auth/statistics.jsp";
-        }
+        <%--var sta_onclick = function(evt){--%>
+            <%--console.log("sta_onclick");--%>
+            <%--window.location.href = "<%=request.getContextPath()%>/auth/statistics.jsp";--%>
+        <%--}--%>
 
         var fetchResult = function(){
             var dt = $('#myDataTable').DataTable();

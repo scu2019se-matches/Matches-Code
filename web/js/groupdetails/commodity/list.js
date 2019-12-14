@@ -263,9 +263,9 @@ function addRecord(){
     }
 }
 
-function statisticRecord(){
-    window.location.href="statistic.jsp";
-};
+//function statisticRecord(){
+//    window.location.href="statistic.jsp";
+//};
 function printRecord(){
     $(".dt-buttons .buttons-print").click();
 };

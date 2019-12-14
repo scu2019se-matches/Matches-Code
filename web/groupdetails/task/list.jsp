@@ -69,7 +69,7 @@
                             <div class="dropdown-menu">
                                 <span class="dropdown-item" onclick="printRecord()" role="tab">打印</span>
                                 <span class="dropdown-item" onclick="expordExcel()" role="tab">导出Excel</span>
-                                <span class="dropdown-item" onclick="statisticRecord()" role="tab">日志记录</span>
+                                <%--<span class="dropdown-item" onclick="statisticRecord()" role="tab">日志记录</span>--%>
                             </div>
                         </li>
                     </ul>

@@ -294,9 +294,9 @@ function addRecord(){
     $("#newTask #end_time").val(date[1]);
     form.submit();
 }
-function statisticRecord(){
-    window.location.href="statistic.jsp";
-};
+//function statisticRecord(){
+//    window.location.href="statistic.jsp";
+//};
 function printRecord(){
     window.location.href="print.jsp";
 };

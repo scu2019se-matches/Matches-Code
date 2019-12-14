@@ -50,7 +50,7 @@
                 <div class="row">
                     <div class="col-md-6 col-lg-3">
                         <div class="card">
-                            <a href="<%=request.getContextPath()%>/userinfo/index.jsp"></a>
+                            <%--<a href="<%=request.getContextPath()%>/userinfo/index.jsp"></a>--%>
                             <div class="stat-widget-five">
                                 <div class="stat-icon">
                                     <i class="ti-home bg-primary"></i>
