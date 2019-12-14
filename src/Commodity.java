@@ -64,8 +64,8 @@ public class Commodity extends HttpServlet {
                 case "sellCommodity":
                     sellCommodity(request, response);
                     break;
-                case "getOwner":
-                    getOwner(request, response);
+                case "checkMember":
+                    checkMember(request, response);
                     break;
                 default:
                     System.out.println("Commodity: invalid action: "+action);
@@ -181,11 +181,12 @@ public class Commodity extends HttpServlet {
         out.close();
     }
 
-    private void getOwner(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
+    private void checkMember(HttpServletRequest request, HttpServletResponse response) throws JSONException, SQLException, IOException{
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
 
+        int userId = (int)session.getAttribute("id");
         int groupId = Integer.parseInt(request.getParameter("groupId"));
         QueryBuilder queryBuilder = new QueryBuilder("group");
         queryBuilder.set("id", groupId);
@@ -194,10 +195,10 @@ public class Commodity extends HttpServlet {
         try(DatabaseHelper db = new DatabaseHelper()){
             ResultSet rs = db.executeQuery(sql);
             if(rs.next()){
-                res.put("errno", 0);
-                res.put("owner", rs.getInt("creatorId"));
+                if(rs.getInt("creatorId") == userId)res.put("role",1);
+                else res.put("role", 0);
             }else{
-                res.put("errno", 1);
+                res.put("role", -1);
             }
         }
         out.print(res);
@@ -224,9 +225,11 @@ public class Commodity extends HttpServlet {
             if(rs.next() && rs.getInt("newgrades") >= 0){
                 int memberId =  rs.getInt("memberId");
                 String commmodityName = rs.getString("context");
+                int newGrade = rs.getInt("newgrades");
+                result.put("newgrades", newGrade);
                 sql = String.format(
                         "update `groupmember` set `grades`=%d where `id`=%d",
-                        rs.getInt("newgrades"), memberId);
+                        newGrade, memberId);
                 db.execute(sql);
                 sql = String.format(
                         "insert into membercommodity (groupId, memberId, commodityId) values(%d, %d, %d)",
@@ -273,10 +276,10 @@ public class Commodity extends HttpServlet {
             rs.next();
             int memberId =  rs.getInt("memberId");
             String commodityName = rs.getString("context");
-            sql = String.format(
-                    "update `groupmember` set `grades`=%d where `id`=%d",
-                    rs.getInt("newgrades"), memberId);
-            db.execute(sql);
+//            sql = String.format(
+//                    "update `groupmember` set `grades`=%d where `id`=%d",
+//                    rs.getInt("newgrades"), memberId);
+//            db.execute(sql);
             sql = String.format(
                     "select `id` from `membercommodity` where `commodityId`=%d and `memberId`=%d",
                     commodityId, userId
@@ -292,7 +295,7 @@ public class Commodity extends HttpServlet {
             queryBuilder.set("operatorId", userId);
             queryBuilder.set("memberId", userId);
             queryBuilder.set("object", "commodity");
-            queryBuilder.set("type", "sell");
+            queryBuilder.set("type", "use");
             queryBuilder.set("context", commodityName);
             queryBuilder.set("createTime", (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));
             sql = queryBuilder.getInsertStmt();

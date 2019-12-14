@@ -62,7 +62,7 @@
                                 <span class="dropdown-item" id="tab-excel" role="tab">导出为Excel</span>
                                 <span class="dropdown-item" id="tab-csv" role="tab">导出为CSV</span>
                                 <%--<span class="dropdown-item" id="tab-pdf" role="tab">导出为PDF</span>--%>
-                                <a class="dropdown-item" id="tab-sta" role="tab" data-toggle="modal">统计</a>
+                                <%--<a class="dropdown-item" id="tab-sta" role="tab" data-toggle="modal">统计</a>--%>
                             </div>
                         </li>
                     </ul>

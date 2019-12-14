@@ -54,8 +54,9 @@
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <label id="fold-btn"> <a class="nav-link" href="#"><span><i id="fold-icon" style="font-size:20px" class="fa fa-angle-down"></i></span></a> </label>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="goback()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">小组成员列表</span></a> </li>
+                        <li id="myStatistics" style="display: none;"> <a class="nav-link" data-toggle="tab" href="#" onclick="myspace()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">我的统计</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-query" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">查询</span></a> </li>
-                        <li class="nav-item" id="navAddCommodity" style="visibility: collapse"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">添加商品</span></a> </li>
+                        <li class="nav-item" id="navAddCommodity" style="display: none;"> <a class="nav-link" data-toggle="tab" href="#tab-add" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">添加商品</span></a> </li>
                         <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab-sort" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">排序</span></a> </li>
                         <li> <a class="nav-link" data-toggle="tab" href="#" onclick="getAllRecord()" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">显示所有</span></a> </li>
                         <li class="nav-item dropdown">
@@ -65,7 +66,7 @@
                             <div class="dropdown-menu">
                                 <span class="dropdown-item" onclick="printRecord()" role="tab">打印</span>
                                 <span class="dropdown-item" onclick="expordExcel()" role="tab">导出Excel</span>
-                                <span class="dropdown-item" onclick="statisticRecord()" role="tab">日志记录</span>
+                                <%--<span class="dropdown-item" onclick="statisticRecord()" role="tab">日志记录</span>--%>
                             </div>
                         </li>
                     </ul>

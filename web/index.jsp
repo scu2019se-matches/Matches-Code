@@ -48,6 +48,7 @@
             <div class="container-fluid">
                 <!-- Start Page Content -->
                 <div class="row">
+
                     <%--<div class="col-md-6 col-lg-3">--%>
                         <%--<div class="card">--%>
                             <%--<a href="<%=request.getContextPath()%>/userinfo/index.jsp"></a>--%>

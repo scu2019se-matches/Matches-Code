@@ -133,13 +133,16 @@ function buyCommdity(sender, commodityId){
         ContextPath, "/Commodity", "buyCommodity", commodityId, GroupId);
     console.log(url);
     $.post(url, function (json) {
+        console.log(json);
         if(json.errno != 0){
             Dialog.showWarning(json.msg, "");
         }else{
             Dialog.showSuccess("兑换成功", "");
             var span = $(sender).prev();
             var h2Commodity = $('#commodity');
+            var h2Grades = $('#grades');
             span.text(parseInt(span.text())+1);
+            h2Grades.text(json['newgrades']);
             h2Commodity.text(parseInt(h2Commodity.text())+1);
         }
     });
@@ -153,7 +156,7 @@ function sellCommdity(sender, commodityId) {
         if(json.errno != 0){
             Dialog.showWarning(json.msg, "");
         }else{
-            Dialog.showSuccess("售出成功", "");
+            Dialog.showSuccess("使用成功", "");
             var span = $(sender).next();
             var h2Commodity = $('#commodity');
             span.text(parseInt(span.text())-1);
