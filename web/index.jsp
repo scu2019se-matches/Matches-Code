@@ -48,20 +48,21 @@
             <div class="container-fluid">
                 <!-- Start Page Content -->
                 <div class="row">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
+
+                    <%--<div class="col-md-6 col-lg-3">--%>
+                        <%--<div class="card">--%>
                             <%--<a href="<%=request.getContextPath()%>/userinfo/index.jsp"></a>--%>
-                            <div class="stat-widget-five">
-                                <div class="stat-icon">
-                                    <i class="ti-home bg-primary"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <div class="stat-heading color-primary">个人中心</div>
-                                    <div class="stat-text">查看用户信息</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            <%--<div class="stat-widget-five">--%>
+                                <%--<div class="stat-icon">--%>
+                                    <%--<i class="ti-home bg-primary"></i>--%>
+                                <%--</div>--%>
+                                <%--<div class="stat-content">--%>
+                                    <%--<div class="stat-heading color-primary">个人中心</div>--%>
+                                    <%--<div class="stat-text">查看用户信息</div>--%>
+                                <%--</div>--%>
+                            <%--</div>--%>
+                        <%--</div>--%>
+                    <%--</div>--%>
                     <div class="col-md-6 col-lg-3">
                         <div class="card">
                             <a href="<%=request.getContextPath()%>/activity/list.jsp"></a>

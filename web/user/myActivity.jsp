@@ -95,7 +95,7 @@
 <%@include file="../page_js.jsp"%>
 <%@include file="../js/mobileclass.jsp"%>
 <script src="<%=request.getContextPath()%>/js/tabview.js"></script>
-<script src="<%=request.getContextPath()%>/js/user/followActivity.js"></script>
+<script src="<%=request.getContextPath()%>/js/user/myActivity.js"></script>
 <%--<script src="<%=request.getContextPath()%>/js/lib/atatables/datatables-init.js"></script>--%>
 
 </body>

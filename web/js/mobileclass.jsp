@@ -241,26 +241,41 @@ var Dialog = function() {
 }();
 var Time=function(){
     var MinToMinute=function(time){
+        if(time==null||time==""){
+            return "";
+        }
         time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
         time = time.split(':');
         return time[1]+"月"+time[2]+"日  "+time[3]+":"+time[4];
     };
     var MinToHour=function(time){
+        if(time==null||time==""){
+            return "";
+        }
         time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
         time = time.split(':');
         return time[1]+"月"+time[2]+"日"+time[3]+"时";
     };
     var MinToDay=function(time){
+        if(time==null||time==""){
+            return "";
+        }
         time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
         time = time.split(':');
         return time[1]+"月"+time[2]+"日";
     };
     var StdToMinute=function(time){
+        if(time==null||time==""){
+            return "";
+        }
         time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
         time = time.split(':');
         return time[0]+"-"+time[1]+"-"+time[2]+" "+time[3]+":"+time[4];
     };
     var StdToDay=function(time){
+        if(time==null||time==""){
+            return "";
+        }
         time = time.replace(/-/g,':').replace(' ',':'); // 注意，第二个replace里，是' '，中间有个空格，千万不能遗漏
         time = time.split(':');
         return time[0]+"-"+time[1]+"-"+time[2];

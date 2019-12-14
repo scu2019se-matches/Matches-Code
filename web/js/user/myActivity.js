@@ -192,7 +192,7 @@ function deleteRecord(activity_id) {
 function getAllRecord(){
     var dataTable = $('#example23').DataTable();
     dataTable.clear().draw(); //清除表格数据
-    var url=initurl+"?action=get_record";
+    var url=initurl+"?action=get_record&publisher_id="+UserId;
     $.post(url, function (json) {
         Data = json;
         // console.log(json);

@@ -20,6 +20,9 @@
                 <%--<span><img src="<%=request.getContextPath()%>/images/logo-text.png" alt="homepage" class="dark-logo" /></span>--%>
             </a>
         </div>
+        <input type="hidden" id="ContextPath" name="ContextPath" value="<%=request.getContextPath()%>" />
+        <input type="hidden" id="user_id" name="user_id" value="<%=session.getAttribute("id")%>" />
+        <input type="hidden" id="auth" name="auth" value="<%=session.getAttribute("auth")%>" />
         <!-- End Logo -->
         <div class="navbar-collapse">
             <!-- toggle and nav items -->
@@ -33,7 +36,7 @@
                 <!-- Profile -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-muted  " href="#" id="2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-envelope"></i>
-                        <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                        <%--<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>--%>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right mailbox animated slideInRight" aria-labelledby="2">
                         <ul>
@@ -41,24 +44,9 @@
                                 <div class="drop-title">你收到的回复</div>
                             </li>
                             <li>
-                                <div class="header-notify">
+                                <div class="header-notify" id="header_comment_list">
                                     <!-- Message -->
-                                    <a href="#">
-                                        <div class="notification-contnet">
-                                            <div class="row">
-                                                <h3 class="mail-desc">老王回复了你</h3>
-                                            </div>
-                                            今天晚上一起做项目吗
-                                        </div>
-                                    </a>
-                                    <a href="#">
-                                        <div class="notification-contnet">
-                                            <div class="row">
-                                                <h3 class="mail-desc">XX评论了你</h3>
-                                            </div>
-                                            这个活动策划的挺好
-                                        </div>
-                                    </a>
+
                                 </div>
                             </li>
                             <li>
@@ -79,7 +67,41 @@
                     </div>
                 </li>
             </ul>
-            <span>当前用户：</span><span id="header_username">sss</span>
+            <span>当前用户：</span><span id="header_username">用户</span>
         </div>
     </nav>
 </div>
+<script src="<%=request.getContextPath()%>/js/lib/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    function enterAct(id){
+        window.location.href=$("#ContextPath").val()+"/activity/detail.jsp?activity_id="+id;
+    }
+    function getComment(){
+        var url=$("#ContextPath").val()+"/CommentManagement?action=get_receiveComment";
+        $.post(url, function (json) {
+            var html="";
+            for(var i=0;i<json.length;i++){
+                Data = json[i];
+                let tmp="";
+                var id=Data["id"];
+                var creator=Data["creator"];
+                var citeuser=Data["citeuser"];
+                var cite_id=Data["cite_id"];
+                var create_time=Time.MinToMinute(Data["create_time"]);
+                var context=Data["context"];
+                var auth=Data["auth"];
+                var activity_id=Data["activity_id"];
+
+                tmp="<a href=\"#\" onclick=enterAct("+activity_id+")>"
+                    +"<div class=\"notification-contnet\">"
+                    +"<div class=\"row\">"
+                    +"<h3 class=\"mail-desc\">"+creator+"回复了你</h3>"
+                    +"</div>"+context+"</div></a>"
+
+                html+=tmp;
+            }
+            document.getElementById("header_comment_list").innerHTML=html;
+        });
+    }
+    getComment();
+</script>
